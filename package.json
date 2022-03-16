@@ -1,0 +1,23 @@
+{
+  "name": "Mateusz-Kalucki-pab",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MattCobosco/Mateusz-Kalucki-pab.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MattCobosco/Mateusz-Kalucki-pab/issues"
+  },
+  "homepage": "https://github.com/MattCobosco/Mateusz-Kalucki-pab#readme",
+  "dependencies": {
+    "@types/node": "^17.0.21"
+  }
+}
