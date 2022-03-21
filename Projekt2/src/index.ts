@@ -1,9 +1,8 @@
-import express from 'express';
+import express = require ('express');
 import {Request, Response} from 'express';
 import Note from '../note';
 
 const app = express();
-
 app.use(express.json());
 
 const notes : Note[] = [];
@@ -76,10 +75,5 @@ app.delete('/note/:id', function(req : Request, res : Response)
     res.status(204).send('The requested note has been deleted')
   }
 })
-
-function noteMissing(res : Response)
-{
-  res.status(404).send('Note of this id does not exist');
-}
 
 app.listen(3000)
