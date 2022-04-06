@@ -6,13 +6,16 @@ class Note {
     createDate? : string;
     tags? : Tag[];
     id? : number;
+    private? : boolean;
 
-    constructor(note: Note){
+    constructor(note: Note)
+    {
         this.title = note.title;
         this.content = note.content;
         this.createDate = note.createDate;
         this.tags = note.tags;
         this.id = note.id;
+        this.private = note.private;
     }
 }
 
