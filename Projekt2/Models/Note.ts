@@ -6,7 +6,7 @@ class Note {
     createDate? : string;
     tags? : Tag[];
     id? : number;
-    private? : boolean;
+    private? : boolean = true;
 
     constructor(note: Note)
     {

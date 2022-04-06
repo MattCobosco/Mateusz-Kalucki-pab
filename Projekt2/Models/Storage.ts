@@ -15,7 +15,6 @@ class Storage
             this.notes = data.notes;
             this.tags = data.tags;
             this.users = data.users;
-
         }
     }
 }

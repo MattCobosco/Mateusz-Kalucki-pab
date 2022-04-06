@@ -4,8 +4,8 @@ import {Request, Response} from 'express';
 import Note from '../Models/Note';
 import Tag from '../Models/Tag';
 import User from '../Models/User';
+import Storage from '../Models/Storage';
 import Repository from '../Repository';
-
 
 const app = express();
 app.use(express.json());
@@ -27,11 +27,11 @@ repo.readStorage().then(data =>
 // Dodanie nowej notatki
 app.post('/note', function(req : Request, res : Response)
 {
-  const token = req.headers.Authorization ?? '';
-  if(registeredUser.UserIsAuthorized(token, secret))
+  const token = req.headers.Authorization as string;
+  if (registeredUser.UserIsAuthorized(token, secret))
   {
     const note : Note = req.body;
-    if(note.title === undefined || note.content === undefined)
+    if (note.title === undefined || note.content === undefined)
       res.status(400).send('Note title or content is missing');
     else
     {
@@ -71,7 +71,7 @@ app.get("/notes", function (req: Request, res: Response)
   {
     try 
     {
-      res.status(200).send(storage.notes.filter((n: { id: any; }) => registeredUser.notesCreatedIds.includes(n.id ?? 0)));
+      res.status(200).send(storage.notes.filter(n => registeredUser.notesCreatedIds.includes(n.id ?? 0)));
     } 
     catch (error) 
     {
@@ -88,7 +88,7 @@ app.get("/note/:id", function (req: Request, res: Response)
   const token = req.headers.authorization ?? '';
   if (registeredUser.UserIsAuthorized(token, secret)) 
   {
-    const note = storage.notes.find((n: { id: number; }) => n.id === +req.params.id && registeredUser.notesCreatedIds.includes(+req.params.id));
+    const note = storage.notes.find(n => n.id === +req.params.id && registeredUser.notesCreatedIds.includes(+req.params.id));
     if (note === undefined) 
       res.status(404).send("Note does not exist");
     else
@@ -101,12 +101,12 @@ app.get("/note/:id", function (req: Request, res: Response)
 // Odczytanie listy publicznych notatek uźytkownika
 app.get("/notes/user/:userName", function (req: Request, res: Response)
 {
-  const user = storage.users.find((u: { name: any; }) => u.name === req.params.userName);
+  const user = storage.users.find(u => u.login === req.params.userName);
   if (user === undefined)
     res.status(404).send("User does not exist");
   else
   {
-    const notes = storage.notes.filter((n: { private: boolean; id: any; }) => n.private === false && user.notesCreatedIds.includes(n.id ?? 0));
+    const notes = storage.notes.filter(n => n.private === false && user.notesCreatedIds.includes(n.id ?? 0));
     res.status(200).send(notes);
   }
 });
@@ -115,14 +115,14 @@ app.get("/notes/user/:userName", function (req: Request, res: Response)
 app.put("/note/:id", function (req: Request, res: Response) 
 {
   const token = req.headers.authorization ?? '';
-  if(registeredUser.UserIsAuthorized(token, secret)) 
+  if (registeredUser.UserIsAuthorized(token, secret)) 
   {
     const newNote: Note = req.body;
     if (newNote.title === undefined || newNote.content === undefined || newNote.id === undefined) 
       res.status(400).send("Note title, content or id is missing");
     else 
     {
-      let currentNote = storage.notes.find((n: { id: number; }) => n.id === newNote.id);
+      let currentNote = storage.notes.find(n => n.id === newNote.id);
       if (currentNote === undefined)
         res.status(404).send("Note does not exist");
       else 
@@ -139,7 +139,7 @@ app.put("/note/:id", function (req: Request, res: Response)
 app.delete("/note/:id", function (req: Request, res: Response) {
   const token = req.headers.authorization ?? ''
   if(registeredUser.UserIsAuthorized(token, secret)) {
-    const note = storage.notes.find((n: { id: number; }) => n.id === +req.params.id);
+    const note = storage.notes.find(n => n.id === +req.params.id);
     if (note === undefined)
       res.status(400).send("Note does not exist");
     else 
@@ -188,7 +188,7 @@ app.get("/tags", function (req: Request, res: Response)
   {
     try 
     {
-      res.status(200).send(storage.tags.filter((t: { id: any; }) => registeredUser.tagsCreatedIds.includes(t.id ?? 0)));
+      res.status(200).send(storage.tags.filter(t => registeredUser.tagsCreatedIds.includes(t.id ?? 0)));
     } 
     catch (error) 
     {
@@ -205,7 +205,7 @@ app.get("/tag/:id", function (req: Request, res: Response)
   const token = req.headers.authorization ?? '';
   if(registeredUser.UserIsAuthorized(token, secret))
   {
-    const tag = storage.tags.find((t: { id: number; }) => t.id === +req.params.id && registeredUser.tagsCreatedIds.includes(+req.params.id));
+    const tag = storage.tags.find(t => t.id === +req.params.id && registeredUser.tagsCreatedIds.includes(+req.params.id));
     if (tag === undefined) 
       res.status(404).send("Tag does not exist");
     else 
@@ -230,7 +230,7 @@ app.put("/tag/:id", function (req: Request, res: Response)
       res.status(400).send("Tag id is undefined");
     else 
     {
-      let currentTag = storage.tags.find((a: { id: number; }) => a.id === newTag.id);
+      let currentTag = storage.tags.find(a => a.id === newTag.id);
       if (currentTag === undefined)
         res.status(404).send("Tag does not exist");
       else 
@@ -250,7 +250,7 @@ app.delete("/tag/:id", function (req: Request, res: Response)
   const token = req.headers.authorization ?? '';
   if(registeredUser.UserIsAuthorized(token, secret)) 
   {
-    const tag = storage.tags.find((a: { id: number; }) => a.id === +req.params.id);
+    const tag = storage.tags.find(a => a.id === +req.params.id);
     if (tag === undefined)
       res.status(400).send("Tag does not exist"); 
     else 
