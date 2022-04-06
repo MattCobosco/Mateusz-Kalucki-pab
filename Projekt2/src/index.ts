@@ -12,7 +12,7 @@ app.use(express.json());
 
 const repo : Repository = new Repository();
 let registeredUser : User = new User();
-const secret : string = 'secret';
+const secret : string = 'aezakmi';
 
 let storage : Storage;
 repo.readStorage().then(data => 
@@ -36,9 +36,9 @@ app.post('/note', function(req : Request, res : Response)
     else
     {
       console.log(note);
-      if(note.tags!=undefined)
+      if(note.tags != undefined)
       {
-        note.tags.forEach(tag=>
+        note.tags.forEach(tag =>
           {
             if(!storage.tags.find((t: { name: string; }) => t.name === tag.name))
             {
@@ -98,10 +98,23 @@ app.get("/note/:id", function (req: Request, res: Response)
     res.status(401).send("Unauthorized user");
 });
 
+// Odczytanie listy publicznych notatek uźytkownika
+app.get("/notes/user/:userName", function (req: Request, res: Response)
+{
+  const user = storage.users.find((u: { name: any; }) => u.name === req.params.userName);
+  if (user === undefined)
+    res.status(404).send("User does not exist");
+  else
+  {
+    const notes = storage.notes.filter((n: { private: boolean; id: any; }) => n.private === false && user.notesCreatedIds.includes(n.id ?? 0));
+    res.status(200).send(notes);
+  }
+});
+
 // Edycja notatki o danym id
 app.put("/note/:id", function (req: Request, res: Response) 
 {
-  const token = req.headers.authorization ?? ''
+  const token = req.headers.authorization ?? '';
   if(registeredUser.UserIsAuthorized(token, secret)) 
   {
     const newNote: Note = req.body;
@@ -113,13 +126,13 @@ app.put("/note/:id", function (req: Request, res: Response)
       if (currentNote === undefined)
         res.status(404).send("Note does not exist");
       else 
-      currentNote = newNote;
+        currentNote = newNote;
       res.status(201).send(newNote);
       repo.updateStorage(JSON.stringify(storage));
     }
-  } else {
+  } 
+  else
     res.status(401).send("Unauthorized user");
-  }
 });
 
 // Usunięcie notatki o danym id
