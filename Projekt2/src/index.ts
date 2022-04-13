@@ -4,8 +4,9 @@ import {Request, Response} from 'express';
 import Note from '../Models/Note';
 import Tag from '../Models/Tag';
 import User from '../Models/User';
-import Storage from '../Models/Storage';
+import Storage from '../Storage/Storage';
 import Repository from '../Repository';
+import FileDataStorage from '../Storage/IDataStorage';
 
 const app = express();
 app.use(express.json());
@@ -14,6 +15,7 @@ const repo : Repository = new Repository();
 let registeredUser : User = new User();
 const secret : string = 'aezakmi';
 
+let dataStorage: FileDataStorage;
 let storage : Storage;
 repo.readStorage().then(data => 
 {
@@ -35,25 +37,7 @@ app.post('/note', function(req : Request, res : Response)
       res.status(400).send('Note title or content is missing');
     else
     {
-      console.log(note);
-      if(note.tags != undefined)
-      {
-        note.tags.forEach(tag =>
-          {
-            if(!storage.tags.find((t: { name: string; }) => t.name === tag.name))
-            {
-              const newTag : Tag = {
-                id: Date.now(), 
-                name : tag.name
-              };
-
-            storage.tags.push(newTag);
-            registeredUser.tagsCreatedIds.push(newTag.id ?? 0);
-            }
-          });
-      }
-      note.id=Date.now();
-      storage.notes.push(note);
+      dataStorage.addNote(note);
       registeredUser.notesCreatedIds.push(note.id ?? 0);
       res.status(201).send(note);
       repo.updateStorage(JSON.stringify(storage));
@@ -71,7 +55,7 @@ app.get("/notes", function (req: Request, res: Response)
   {
     try 
     {
-      res.status(200).send(storage.notes.filter(n => registeredUser.notesCreatedIds.includes(n.id ?? 0)));
+      res.status(200).send(dataStorage.getNotes(registeredUser));
     } 
     catch (error) 
     {

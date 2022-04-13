@@ -1,6 +1,6 @@
-import Note from './Note';
-import Tag from './Tag';
-import User from './User';
+import Note from '../Models/Note';
+import Tag from '../Models/Tag';
+import User from '../Models/User';
 
 class Storage
 {
