@@ -7,6 +7,7 @@ class User
     password: string;
     notesCreatedIds: number[];
     tagsCreatedIds : number[];
+    isAdmin: boolean;
 
     constructor(user?: User)
     {
