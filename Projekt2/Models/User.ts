@@ -8,6 +8,7 @@ class User
     notesCreatedIds: number[];
     tagsCreatedIds : number[];
     isAdmin: boolean;
+    notesSharedToUserIds: number[];
 
     constructor(user?: User)
     {
@@ -18,6 +19,8 @@ class User
             this.password = user.password;
             this.notesCreatedIds = user.notesCreatedIds;
             this.tagsCreatedIds = user.tagsCreatedIds;
+            this.isAdmin = user.isAdmin;
+            this.notesSharedToUserIds = user.notesSharedToUserIds;
         }
         else 
         {
@@ -25,6 +28,8 @@ class User
             this.password = '';
             this.notesCreatedIds = [];
             this.tagsCreatedIds = [];
+            this.isAdmin = false;
+            this.notesSharedToUserIds = [];
         }
     }
 
