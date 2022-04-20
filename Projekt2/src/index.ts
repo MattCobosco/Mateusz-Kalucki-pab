@@ -118,8 +118,8 @@ app.put("/note/share/:noteId/:login", function (req: Request, res: Response)
   const token = req.headers.authorization ?? '';
   if (registeredUser.UserIsAuthorized(token, secret)) 
   {
-    const note : Note = dataStorage.getNoteById(+req.params.noteId);
-    const user : User = dataStorage.getUserByLogin(req.params.login);
+    const note = dataStorage.getNoteById(+req.params.noteId);
+    const user = dataStorage.getUserByLogin(req.params.login);
     if (note === undefined || user === undefined)
       res.status(404).send("Note or user does not exist");
     else
