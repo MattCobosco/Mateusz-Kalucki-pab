@@ -7,10 +7,10 @@ let storage: Storage;
 
 interface IDataStorage 
 {
-    addNote(note: Note): void;
+    addNote(note: Note, user: User): void;
     getNotes(user: User): Note[];
     getNoteById(noteId: number): Note;
-    editNoteById(noteId: number): void;
+    editNoteById(noteId: number, noteContent: Note): void;
     deleteNoteById(noteId: number): void;
     getPublicNotesByUsername(username: string): Note[];
 
@@ -19,6 +19,8 @@ interface IDataStorage
     getTagById(tagId: number): Tag;
     editTagById(tagId: number): void;
     deleteTagById(tagId: number): void;
+
+    getUserByUsername(username: string): User;
 }
 
 export default IDataStorage;
