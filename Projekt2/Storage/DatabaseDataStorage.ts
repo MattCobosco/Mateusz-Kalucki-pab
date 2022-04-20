@@ -24,7 +24,8 @@ export class DatabaseDataStorage implements IDataStorage
     getPublicNotesByUsername(username: string): Note[] {
         throw new Error('Method not implemented.');
     }
-    addTag(tag: Tag): void {
+
+    addTag(tag: Tag, user : User): void {
         throw new Error('Method not implemented.');
     }
     getTags(): Tag[] {
@@ -33,12 +34,13 @@ export class DatabaseDataStorage implements IDataStorage
     getTagById(tagId: number): Tag {
         throw new Error('Method not implemented.');
     }
-    editTagById(tagId: number): void {
+    editTagById(tagId: number, tagContent: Tag): void {
         throw new Error('Method not implemented.');
     }
     deleteTagById(tagId: number): void {
         throw new Error('Method not implemented.');
     }
+
     getUserByUsername(username: string): User {
         throw new Error('Method not implemented.');
     }
