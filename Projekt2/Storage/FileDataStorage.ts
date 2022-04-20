@@ -144,14 +144,14 @@ class FileDataStorage implements IDataStorage
         }
     }
 
-    getUsers() : User[]
-    {
-        return storage.users;
-    }
-
     getUserByUsername(username: string): User 
     {
         return storage.users.find(u => u.login === username)
+    }
+
+    getUsers() : User[]
+    {
+        return storage.users;
     }
 
     deleteUser(username: string)
