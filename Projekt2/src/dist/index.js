@@ -2,15 +2,16 @@
 exports.__esModule = true;
 var express = require("express");
 var jwt = require("jsonwebtoken");
+var mongoose = require("mongoose");
 var User_1 = require("../Models/User");
 var Storage_1 = require("../Storage/Storage");
 var Repository_1 = require("../Repository");
 var config_json_1 = require("../config.json");
 var FileDataStorage_1 = require("../Storage/FileDataStorage");
 var DatabaseDataStorage_1 = require("../Storage/DatabaseDataStorage");
-mongoose.connect(config_json_1["default"].mongoConnectionString, { useNewUrlParser: true });
 var app = express();
 app.use(express.json());
+mongoose.connect(config_json_1["default"].mongoConnectionString);
 var repo = new Repository_1["default"]();
 var registeredUser = new User_1["default"]();
 var secret = 'aezakmi';

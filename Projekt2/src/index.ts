@@ -1,5 +1,7 @@
 import express = require ('express');
 import jwt = require ('jsonwebtoken');
+import mongoose = require ('mongoose');
+
 import {Request, Response} from 'express';
 import Note from '../Models/Note';
 import Tag from '../Models/Tag';
@@ -10,9 +12,10 @@ import Repository from '../Repository';
 import jsonConfig from '../config.json';
 import FileDataStorage from '../Storage/FileDataStorage';
 import DatabaseDataStorage from '../Storage/DatabaseDataStorage';
-mongoose.connect(jsonConfig.mongoConnectionString, {useNewUrlParser: true});
 const app = express();
 app.use(express.json());
+
+mongoose.connect(jsonConfig.mongoConnectionString);
 
 const repo : Repository = new Repository();
 let registeredUser : User = new User();
