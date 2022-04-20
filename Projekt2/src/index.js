@@ -2,63 +2,59 @@
 exports.__esModule = true;
 var express = require("express");
 var jwt = require("jsonwebtoken");
+var mongoose = require("mongoose");
+var fs = require("fs");
 var User_1 = require("../Models/User");
+var Storage_1 = require("../Storage/Storage");
 var Repository_1 = require("../Repository");
+var jsonConfig = JSON.parse(fs.readFileSync('../config.json', 'utf8'));
+var FileDataStorage_1 = require("../Storage/FileDataStorage");
+var DatabaseDataStorage_1 = require("../Storage/DatabaseDataStorage");
 var app = express();
 app.use(express.json());
-var router = express.Router();
-app.use('/', router);
+mongoose.connect(jsonConfig.mongoConnectionString);
 var repo = new Repository_1["default"]();
 var registeredUser = new User_1["default"]();
 var secret = 'aezakmi';
+var dataStorage;
 var storage;
 repo.readStorage().then(function (data) {
     if (data)
         storage = JSON.parse(data);
     else
-        storage = new Storage();
+        storage = new Storage_1["default"]();
 });
+// Wybiera dataStorage na podstawie boolean z pliku config.json
+if (JSON.stringify(jsonConfig.readFromFile) === 'true') {
+    dataStorage = new FileDataStorage_1["default"]();
+}
+else {
+    dataStorage = new DatabaseDataStorage_1["default"]();
+}
 // CRUD NOTATKI:
 // Dodanie nowej notatki
-router.post('/note', function (req, res) {
+app.post('/note', function (req, res) {
     var _a;
-    var token = req.headers.Authorization;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
         var note = req.body;
         if (note.title === undefined || note.content === undefined)
             res.status(400).send('Note title or content is missing');
         else {
-            console.log(note);
-            if (note.tags != undefined) {
-                note.tags.forEach(function (tag) {
-                    var _a;
-                    if (!storage.tags.find(function (t) { return t.name === tag.name; })) {
-                        var newTag = {
-                            id: Date.now(),
-                            name: tag.name
-                        };
-                        storage.tags.push(newTag);
-                        registeredUser.tagsCreatedIds.push((_a = newTag.id) !== null && _a !== void 0 ? _a : 0);
-                    }
-                });
-            }
-            note.id = Date.now();
-            storage.notes.push(note);
-            registeredUser.notesCreatedIds.push((_a = note.id) !== null && _a !== void 0 ? _a : 0);
+            dataStorage.addNote(note, registeredUser);
             res.status(201).send(note);
-            repo.updateStorage(JSON.stringify(storage));
         }
     }
     else
         res.status(401).send('Unauthorized user');
 });
 // Wyświetlenie listy notatek
-router.get("/notes", function (req, res) {
+app.get("/notes", function (req, res) {
     var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
         try {
-            res.status(200).send(storage.notes.filter(function (n) { var _a; return registeredUser.notesCreatedIds.includes((_a = n.id) !== null && _a !== void 0 ? _a : 0); }));
+            res.status(200).send(dataStorage.getNotes(registeredUser));
         }
         catch (error) {
             res.status(400).send(error);
@@ -68,11 +64,11 @@ router.get("/notes", function (req, res) {
         res.status(401).send("Unauthorized user");
 });
 // Odczytanie notatki o danym id
-router.get("/note/:id", function (req, res) {
+app.get("/note/:id", function (req, res) {
     var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
-        var note = storage.notes.find(function (n) { return n.id === +req.params.id && registeredUser.notesCreatedIds.includes(+req.params.id); });
+        var note = dataStorage.getNoteById(+req.params.id);
         if (note === undefined)
             res.status(404).send("Note does not exist");
         else
@@ -82,38 +78,66 @@ router.get("/note/:id", function (req, res) {
         res.status(401).send("Unauthorized user");
 });
 // Odczytanie listy publicznych notatek uźytkownika
-router.get("/notes/user/:userName", function (req, res) {
-    var user = storage.users.find(function (u) { return u.name === req.params.userName; });
+app.get("/notes/user/:login", function (req, res) {
+    var user = dataStorage.getUserByLogin(req.params.login);
     if (user === undefined)
         res.status(404).send("User does not exist");
     else {
-        var notes = storage.notes.filter(function (n) { var _a; return n.private === false && user.notesCreatedIds.includes((_a = n.id) !== null && _a !== void 0 ? _a : 0); });
+        var notes = dataStorage.getPublicNotesByLogin(req.params.login);
         res.status(200).send(notes);
     }
 });
-// Edycja notatki o danym id
-router.put("/note/:id", function (req, res) {
+// Udostepnienie notatki innemu uzytkownikowi
+app.put("/note/share/:noteId/:login", function (req, res) {
     var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
-        var newNote_1 = req.body;
-        if (newNote_1.title === undefined || newNote_1.content === undefined || newNote_1.id === undefined)
-            res.status(400).send("Note title, content or id is missing");
+        var note = dataStorage.getNoteById(+req.params.noteId);
+        var user = dataStorage.getUserByLogin(req.params.login);
+        if (note === undefined || user === undefined)
+            res.status(404).send("Note or user does not exist");
         else {
-            var currentNote = storage.notes.find(function (n) { return n.id === newNote_1.id; });
-            if (currentNote === undefined)
-                res.status(404).send("Note does not exist");
-            else
-                currentNote = newNote_1;
-            res.status(201).send(newNote_1);
-            repo.updateStorage(JSON.stringify(storage));
+            dataStorage.shareNote(+req.params.noteId, req.params.login);
+            res.status(200).send("Note shared");
+        }
+    }
+    else
+        res.status(401).send("Unauthorized user");
+});
+// Wyswielenie notatek udostepnionych danemu uzytkownikowi
+app.get("/notes/shared/:login", function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    if (registeredUser.UserIsAuthorized(token, secret)) {
+        var notes = dataStorage.getNotesSharedToUserByLogin(req.params.login);
+        if (notes === undefined)
+            res.status(404).send("User does not have any notes shared to them");
+        else
+            res.status(200).send(notes);
+    }
+    else
+        res.status(401).send("Unauthorized user");
+});
+// Edycja notatki o danym id
+app.put("/note/:id", function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    if (registeredUser.UserIsAuthorized(token, secret)) {
+        var newNote = req.body;
+        if (newNote.title === undefined || newNote.content === undefined || newNote.id === undefined)
+            res.status(400).send("Note title, content or id is missing");
+        else if (dataStorage.getNoteById(newNote.id) === undefined)
+            res.status(404).send("Note does not exist");
+        else {
+            var currentNote = dataStorage.editNoteById(newNote.id, newNote);
+            res.status(200).send(currentNote);
         }
     }
     else
         res.status(401).send("Unauthorized user");
 });
 // Usunięcie notatki o danym id
-router["delete"]("/note/:id", function (req, res) {
+app["delete"]("/note/:id", function (req, res) {
     var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
@@ -121,10 +145,8 @@ router["delete"]("/note/:id", function (req, res) {
         if (note === undefined)
             res.status(400).send("Note does not exist");
         else {
-            storage.notes.splice(req.body.id, 1);
-            registeredUser.notesCreatedIds.splice(req.body.id, 1);
-            res.status(204).send(note);
-            repo.updateStorage(JSON.stringify(storage));
+            dataStorage.deleteNoteById(+req.params.id);
+            res.status(204).send("Note deleted");
         }
     }
     else
@@ -132,8 +154,8 @@ router["delete"]("/note/:id", function (req, res) {
 });
 // CRUD TAGI:
 // Dodanie nowego tagu:
-router.post("/tag", function (req, res) {
-    var _a, _b;
+app.post("/tag", function (req, res) {
+    var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
         var tag = req.body;
@@ -142,23 +164,20 @@ router.post("/tag", function (req, res) {
         else if (storage.tags.find(function (t) { return t.name === req.body.name; }))
             res.status(400).send("This tag name has already exist");
         else {
-            tag.id = Date.now();
-            storage.tags.push(tag);
-            registeredUser.tagsCreatedIds.push((_b = tag.id) !== null && _b !== void 0 ? _b : 0);
+            dataStorage.addTag(tag, registeredUser);
             res.status(201).send(tag);
-            repo.updateStorage(JSON.stringify(storage));
         }
     }
     else
         res.status(401).send("Unauthorized user");
 });
 // Wyświetlenie listy tagów
-router.get("/tags", function (req, res) {
+app.get("/tags", function (req, res) {
     var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
         try {
-            res.status(200).send(storage.tags.filter(function (t) { var _a; return registeredUser.tagsCreatedIds.includes((_a = t.id) !== null && _a !== void 0 ? _a : 0); }));
+            res.status(200).send(dataStorage.getTags(registeredUser));
         }
         catch (error) {
             res.status(400).send(error);
@@ -168,7 +187,7 @@ router.get("/tags", function (req, res) {
         res.status(401).send("Unauthorized user");
 });
 // Wyświetlenie tagu o danym id
-router.get("/tag/:id", function (req, res) {
+app.get("/tag/:id", function (req, res) {
     var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
@@ -182,32 +201,27 @@ router.get("/tag/:id", function (req, res) {
         res.status(401).send("Unauthorized user");
 });
 // Edycja tagu o danym id
-router.put("/tag/:id", function (req, res) {
+app.put("/tag/:id", function (req, res) {
     var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
-        var newTag_1 = req.body;
-        if (newTag_1.name === undefined)
+        var newTag = req.body;
+        if (newTag.name === undefined)
             res.status(400).send("Tag name is undefined");
-        else if (storage.tags.find(function (t) { return t.name === req.body.name; }))
-            res.status(400).send("This tag name has already exist");
-        else if (newTag_1.id === undefined)
+        else if (dataStorage.getTagById(newTag.id) === undefined)
+            res.status(400).send("This tag does not exist");
+        else if (newTag.id === undefined)
             res.status(400).send("Tag id is undefined");
         else {
-            var currentTag = storage.tags.find(function (a) { return a.id === newTag_1.id; });
-            if (currentTag === undefined)
-                res.status(404).send("Tag does not exist");
-            else
-                currentTag = newTag_1;
-            res.status(201).send(newTag_1);
-            repo.updateStorage(JSON.stringify(storage));
+            var currentTag = dataStorage.editTagById(newTag.id, newTag);
+            res.status(200).send(currentTag);
         }
     }
     else
         res.status(401).send("Unauthorized user");
 });
 // Usuniecie tagu z listy
-router["delete"]("/tag/:id", function (req, res) {
+app["delete"]("/tag/:id", function (req, res) {
     var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
@@ -215,15 +229,86 @@ router["delete"]("/tag/:id", function (req, res) {
         if (tag === undefined)
             res.status(400).send("Tag does not exist");
         else {
-            storage.tags.splice(req.body.id, 1);
-            registeredUser.tagsCreatedIds.splice(req.body.id, 1);
+            dataStorage.deleteTagById(+req.params.id);
             res.status(204).send(tag);
-            repo.updateStorage(JSON.stringify(storage));
+        }
+    }
+    else
+        res.status(401).send("Unauthorized user");
+});
+// CRUD UZYTKOWNICY:
+// Dodanie nowego użytkownika
+app.post("/user", function (req, res) {
+    var user = req.body;
+    if (user.login === undefined || user.password === undefined)
+        res.status(400).send("login or password is undefined");
+    else if (user.login === registeredUser.login)
+        res.status(400).send("This login has already exist");
+    else {
+        dataStorage.addUser(user);
+        res.status(201).send(user);
+    }
+});
+// Wyświetlenie listy użytkowników
+app.get("/users", function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    if (!registeredUser.UserIsAuthorized(token, secret) || !registeredUser.isAdmin)
+        res.status(401).send("Unauthorized user");
+    try {
+        res.status(200).send(dataStorage.getUsers());
+    }
+    catch (error) {
+        res.status(400).send(error);
+    }
+});
+// Wyświetlenie użytkownika o danym loginie
+app.get("/user/:login", function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    var user = dataStorage.getUserByLogin(req.params.login);
+    if (user === undefined)
+        res.status(404).send("User does not exist");
+    else if (registeredUser.login != user.login || !registeredUser.isAdmin)
+        res.status(401).send("Unauthorized user");
+    else
+        res.status(200).send(user);
+});
+// Edycja użytkownika o danym loginie
+app.put("/user/:login", function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    var user = dataStorage.getUserByLogin(req.params.login);
+    if (user === undefined)
+        res.status(404).send("User does not exist");
+    else if (registeredUser.login != user.login || !registeredUser.isAdmin)
+        res.status(401).send("Unauthorized user");
+    else {
+        var newUser = req.body;
+        if (newUser.login === undefined || newUser.password === undefined)
+            res.status(400).send("login or password is undefined");
+        else {
+            dataStorage.editUserByLogin(newUser.login, newUser);
+            res.status(200).send(newUser);
         }
     }
 });
+// Usuniecie użytkownika o danym loginie
+app["delete"]("/user/:login", function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    if (!registeredUser.isAdmin)
+        res.status(401).send("Unauthorized user");
+    var user = dataStorage.getUserByLogin(req.params.login);
+    if (user === undefined)
+        res.status(404).send("User does not exist");
+    else {
+        dataStorage.deleteUserByLogin(req.params.login);
+        res.status(204).send(user);
+    }
+});
 // Logowanie za pomocą jsonwebtoken
-router.post('/login', function (req, res) {
+app.post('/login', function (req, res) {
     var user = req.body;
     if (!user.login || !user.password)
         res.status(401).send('Login or password is missing');
@@ -236,5 +321,18 @@ router.post('/login', function (req, res) {
     res.status(200).send(token);
     storage.users.push(user);
     repo.updateStorage(JSON.stringify(storage));
+});
+// Wylogowanie
+app.post('/logout', function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    if (registeredUser.UserIsAuthorized(token, secret)) {
+        registeredUser.id = 0;
+        registeredUser.login = "";
+        registeredUser.password = "";
+        res.status(200).send("Logout successful");
+    }
+    else
+        res.status(401).send("Unauthorized user");
 });
 app.listen(3000);

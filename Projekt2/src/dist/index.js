@@ -3,15 +3,16 @@ exports.__esModule = true;
 var express = require("express");
 var jwt = require("jsonwebtoken");
 var mongoose = require("mongoose");
+var fs = require("fs");
 var User_1 = require("../Models/User");
 var Storage_1 = require("../Storage/Storage");
 var Repository_1 = require("../Repository");
-var config_json_1 = require("../config.json");
+var jsonConfig = JSON.parse(fs.readFileSync('../config.json', 'utf8'));
 var FileDataStorage_1 = require("../Storage/FileDataStorage");
 var DatabaseDataStorage_1 = require("../Storage/DatabaseDataStorage");
 var app = express();
 app.use(express.json());
-mongoose.connect(config_json_1["default"].mongoConnectionString);
+mongoose.connect(jsonConfig.mongoConnectionString);
 var repo = new Repository_1["default"]();
 var registeredUser = new User_1["default"]();
 var secret = 'aezakmi';
@@ -24,7 +25,7 @@ repo.readStorage().then(function (data) {
         storage = new Storage_1["default"]();
 });
 // Wybiera dataStorage na podstawie boolean z pliku config.json
-if (JSON.stringify(config_json_1["default"].readFromFile) === 'true') {
+if (JSON.stringify(jsonConfig.readFromFile) === 'true') {
     dataStorage = new FileDataStorage_1["default"]();
 }
 else {
@@ -67,7 +68,7 @@ app.get("/note/:id", function (req, res) {
     var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
-        var note = dataStorage.getNoteById(req.params.id);
+        var note = dataStorage.getNoteById(+req.params.id);
         if (note === undefined)
             res.status(404).send("Note does not exist");
         else
@@ -77,14 +78,45 @@ app.get("/note/:id", function (req, res) {
         res.status(401).send("Unauthorized user");
 });
 // Odczytanie listy publicznych notatek uźytkownika
-app.get("/notes/user/:userName", function (req, res) {
-    var user = dataStorage.getUserByUsername(req.params.userName);
+app.get("/notes/user/:login", function (req, res) {
+    var user = dataStorage.getUserByLogin(req.params.login);
     if (user === undefined)
         res.status(404).send("User does not exist");
     else {
-        var notes = dataStorage.getPublicNotesByUsername(req.params.userName);
+        var notes = dataStorage.getPublicNotesByLogin(req.params.login);
         res.status(200).send(notes);
     }
+});
+// Udostepnienie notatki innemu uzytkownikowi
+app.put("/note/share/:noteId/:login", function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    if (registeredUser.UserIsAuthorized(token, secret)) {
+        var note = dataStorage.getNoteById(+req.params.noteId);
+        var user = dataStorage.getUserByLogin(req.params.login);
+        if (note === undefined || user === undefined)
+            res.status(404).send("Note or user does not exist");
+        else {
+            dataStorage.shareNote(+req.params.noteId, req.params.login);
+            res.status(200).send("Note shared");
+        }
+    }
+    else
+        res.status(401).send("Unauthorized user");
+});
+// Wyswielenie notatek udostepnionych danemu uzytkownikowi
+app.get("/notes/shared/:login", function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    if (registeredUser.UserIsAuthorized(token, secret)) {
+        var notes = dataStorage.getNotesSharedToUserByLogin(req.params.login);
+        if (notes === undefined)
+            res.status(404).send("User does not have any notes shared to them");
+        else
+            res.status(200).send(notes);
+    }
+    else
+        res.status(401).send("Unauthorized user");
 });
 // Edycja notatki o danym id
 app.put("/note/:id", function (req, res) {
@@ -113,7 +145,7 @@ app["delete"]("/note/:id", function (req, res) {
         if (note === undefined)
             res.status(400).send("Note does not exist");
         else {
-            dataStorage.deleteNoteById(req.params.id);
+            dataStorage.deleteNoteById(+req.params.id);
             res.status(204).send("Note deleted");
         }
     }
@@ -197,12 +229,83 @@ app["delete"]("/tag/:id", function (req, res) {
         if (tag === undefined)
             res.status(400).send("Tag does not exist");
         else {
-            dataStorage.deleteTagById(req.params.id);
+            dataStorage.deleteTagById(+req.params.id);
             res.status(204).send(tag);
         }
     }
     else
         res.status(401).send("Unauthorized user");
+});
+// CRUD UZYTKOWNICY:
+// Dodanie nowego użytkownika
+app.post("/user", function (req, res) {
+    var user = req.body;
+    if (user.login === undefined || user.password === undefined)
+        res.status(400).send("login or password is undefined");
+    else if (user.login === registeredUser.login)
+        res.status(400).send("This login has already exist");
+    else {
+        dataStorage.addUser(user);
+        res.status(201).send(user);
+    }
+});
+// Wyświetlenie listy użytkowników
+app.get("/users", function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    if (!registeredUser.UserIsAuthorized(token, secret) || !registeredUser.isAdmin)
+        res.status(401).send("Unauthorized user");
+    try {
+        res.status(200).send(dataStorage.getUsers());
+    }
+    catch (error) {
+        res.status(400).send(error);
+    }
+});
+// Wyświetlenie użytkownika o danym loginie
+app.get("/user/:login", function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    var user = dataStorage.getUserByLogin(req.params.login);
+    if (user === undefined)
+        res.status(404).send("User does not exist");
+    else if (registeredUser.login != user.login || !registeredUser.isAdmin)
+        res.status(401).send("Unauthorized user");
+    else
+        res.status(200).send(user);
+});
+// Edycja użytkownika o danym loginie
+app.put("/user/:login", function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    var user = dataStorage.getUserByLogin(req.params.login);
+    if (user === undefined)
+        res.status(404).send("User does not exist");
+    else if (registeredUser.login != user.login || !registeredUser.isAdmin)
+        res.status(401).send("Unauthorized user");
+    else {
+        var newUser = req.body;
+        if (newUser.login === undefined || newUser.password === undefined)
+            res.status(400).send("login or password is undefined");
+        else {
+            dataStorage.editUserByLogin(newUser.login, newUser);
+            res.status(200).send(newUser);
+        }
+    }
+});
+// Usuniecie użytkownika o danym loginie
+app["delete"]("/user/:login", function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    if (!registeredUser.isAdmin)
+        res.status(401).send("Unauthorized user");
+    var user = dataStorage.getUserByLogin(req.params.login);
+    if (user === undefined)
+        res.status(404).send("User does not exist");
+    else {
+        dataStorage.deleteUserByLogin(req.params.login);
+        res.status(204).send(user);
+    }
 });
 // Logowanie za pomocą jsonwebtoken
 app.post('/login', function (req, res) {
@@ -218,5 +321,18 @@ app.post('/login', function (req, res) {
     res.status(200).send(token);
     storage.users.push(user);
     repo.updateStorage(JSON.stringify(storage));
+});
+// Wylogowanie
+app.post('/logout', function (req, res) {
+    var _a;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+    if (registeredUser.UserIsAuthorized(token, secret)) {
+        registeredUser.id = 0;
+        registeredUser.login = "";
+        registeredUser.password = "";
+        res.status(200).send("Logout successful");
+    }
+    else
+        res.status(401).send("Unauthorized user");
 });
 app.listen(3000);

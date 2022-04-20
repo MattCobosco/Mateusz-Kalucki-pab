@@ -9,12 +9,16 @@ var User = /** @class */ (function () {
             this.password = user.password;
             this.notesCreatedIds = user.notesCreatedIds;
             this.tagsCreatedIds = user.tagsCreatedIds;
+            this.isAdmin = user.isAdmin;
+            this.notesSharedToUserIds = user.notesSharedToUserIds;
         }
         else {
             this.login = '';
             this.password = '';
             this.notesCreatedIds = [];
             this.tagsCreatedIds = [];
+            this.isAdmin = false;
+            this.notesSharedToUserIds = [];
         }
     }
     User.prototype.UserIsAuthorized = function (authData, secret) {
