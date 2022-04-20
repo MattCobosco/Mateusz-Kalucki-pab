@@ -110,6 +110,42 @@ app.get("/notes/user/:userName", function (req: Request, res: Response)
   }
 });
 
+// Udostepnienie notatki innemu uzytkownikowi
+app.put("/note/share/:noteId/:userName", function (req: Request, res: Response)
+{
+  const token = req.headers.authorization ?? '';
+  if (registeredUser.UserIsAuthorized(token, secret)) 
+  {
+    const note = dataStorage.getNoteById(req.params.noteId);
+    const user = dataStorage.getUserByUsername(req.params.userName);
+    if (note === undefined || user === undefined)
+      res.status(404).send("Note or user does not exist");
+    else
+    {
+      dataStorage.shareNote(req.params.noteId, req.params.userName);
+      res.status(200).send("Note shared");
+    }
+  } 
+  else 
+    res.status(401).send("Unauthorized user");
+});
+
+// Wyswielenie notatek udostepnionych danemu uzytkownikowi
+app.get("/notes/shared/:userName", function (req: Request, res: Response)
+{
+  const token = req.headers.authorization ?? '';
+  if (registeredUser.UserIsAuthorized(token, secret)) 
+  {
+    const notes = dataStorage.getNotesSharedToUserByUsername(req.params.userName);
+    if (notes === undefined)
+      res.status(404).send("User does not have any notes shared to them");
+    else
+      res.status(200).send(notes);
+  } 
+  else 
+    res.status(401).send("Unauthorized user");
+});
+
 // Edycja notatki o danym id
 app.put("/note/:id", function (req: Request, res: Response) 
 {
@@ -147,6 +183,8 @@ app.delete("/note/:id", function (req: Request, res: Response) {
   else 
     res.status(401).send("Unauthorized user");
 });
+
+
 
 
 // CRUD TAGI:
