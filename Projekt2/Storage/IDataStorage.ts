@@ -20,7 +20,11 @@ interface IDataStorage
     editTagById(tagId: number, tagContent : Tag): void;
     deleteTagById(tagId: number): void;
 
-    getUserByUsername(username: string): User;
+    addUser(user : User) : void;
+    editUserByUsername(username: string, user : User) : void;
+    getUserByUsername(username: string) : User;
+    getUsers() : User[];
+    deleteUserByUsername(username: string) : void;
 }
 
 export default IDataStorage;
