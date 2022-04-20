@@ -12,9 +12,9 @@ interface IDataStorage
     getNoteById(noteId: number): Note;
     editNoteById(noteId: number, noteContent: Note): void;
     deleteNoteById(noteId: number): void;
-    getPublicNotesByUsername(username: string): Note[];
-    shareNote(noteId: number, username: string) : void;
-    getNotesSharedToUserByUsername(username: string) : Note[];
+    getPublicNotesByLogin(login: string): Note[];
+    shareNote(noteId: number, login: string) : void;
+    getNotesSharedToUserByLogin(login: string) : Note[];
 
     addTag(tag: Tag, user: User) :  void;
     getTags(user: User): Tag[];
@@ -23,10 +23,10 @@ interface IDataStorage
     deleteTagById(tagId: number): void;
 
     addUser(user: User) : void;
-    editUserByUsername(username: string, user: User) : void;
-    getUserByUsername(username: string) : User;
+    editUserByLogin(login: string, user: User) : void;
+    getUserByLogin(login: string) : User;
     getUsers() : User[];
-    deleteUserByUsername(username: string) : void;
+    deleteUserByLogin(login: string) : void;
 }
 
 export default IDataStorage;

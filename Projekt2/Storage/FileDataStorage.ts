@@ -77,15 +77,15 @@ class FileDataStorage implements IDataStorage
         }
     }
 
-    getPublicNotesByUsername(username: string): Note[] 
+    getPublicNotesByLogin(login: string): Note[] 
     {
-        const user = storage.users.find(u => u.login === username);
+        const user = storage.users.find(u => u.login === login);
         return storage.notes.filter(n => n.private === false && user.notesCreatedIds.includes(n.id ?? 0));
     }
 
-    shareNote(noteId: number, username: string) : void
+    shareNote(noteId: number, login: string) : void
     {
-        const user = storage.users.find(n => n.login === username);
+        const user = storage.users.find(n => n.login === login);
         if(user)
         {
             user.notesSharedToUserIds.push(noteId);
@@ -93,9 +93,9 @@ class FileDataStorage implements IDataStorage
         }
     }
 
-    getNotesSharedToUserByUsername(username: string) : Note[]
+    getNotesSharedToUserByLogin(login: string) : Note[]
     {
-        const user = storage.users.find(n => n.login === username);
+        const user = storage.users.find(n => n.login === login);
         if(user)
         {
             return storage.notes.filter(n => user.notesSharedToUserIds.includes(n.id ?? 0));
@@ -150,9 +150,9 @@ class FileDataStorage implements IDataStorage
         repo.updateStorage(JSON.stringify(storage));
     }
 
-    editUserByUsername(username: string, userContent: User): void
+    editUserByLogin(login: string, userContent: User): void
     {
-        const userToEdit = storage.users.find(u => u.login === username);
+        const userToEdit = storage.users.find(u => u.login === login);
 
         if(userToEdit)
         {
@@ -163,9 +163,9 @@ class FileDataStorage implements IDataStorage
         }
     }
 
-    getUserByUsername(username: string): User 
+    getUserByLogin(login: string): User 
     {
-        return storage.users.find(u => u.login === username)
+        return storage.users.find(u => u.login === login)
     }
 
     getUsers() : User[]
@@ -173,9 +173,9 @@ class FileDataStorage implements IDataStorage
         return storage.users;
     }
 
-    deleteUserByUsername(username: string)
+    deleteUserByLogin(login: string)
     {
-        const userToDelete = storage.users.find(u => u.login === username);
+        const userToDelete = storage.users.find(u => u.login === login);
         userToDelete.tagsCreatedIds.forEach(id => {
             const tagToDelete = storage.tags.find(t => t.id === id);
             storage.tags.splice(storage.tags.indexOf(tagToDelete), 1);

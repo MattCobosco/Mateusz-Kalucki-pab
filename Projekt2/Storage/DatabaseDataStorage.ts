@@ -20,13 +20,13 @@ export class DatabaseDataStorage implements IDataStorage
     deleteNoteById(noteId: number): void {
         throw new Error('Method not implemented.');
     }
-    getPublicNotesByUsername(username: string): Note[] {
+    getPublicNotesByLogin(login: string): Note[] {
         throw new Error('Method not implemented.');
     }
-    shareNote(noteId: number, username: string): void {
+    shareNote(noteId: number, login: string): void {
         throw new Error('Method not implemented.');
     }
-    getNotesSharedToUserByUsername(username: string) : Note[] {
+    getNotesSharedToUserByLogin(login: string) : Note[] {
         throw new Error('Method not implemented.');
     }
 
@@ -49,16 +49,16 @@ export class DatabaseDataStorage implements IDataStorage
     addUser(user: User): void {
         throw new Error('Method not implemented.');
     }
-    editUserByUsername(username: string, user: User): void {
+    editUserByLogin(login: string, user: User): void {
         throw new Error('Method not implemented.');
     }
-    getUserByUsername(username: string): User {
+    getUserByLogin(login: string): User {
         throw new Error('Method not implemented.');
     }
     getUsers(): User[] {
         throw new Error('Method not implemented.');
     }
-    deleteUserByUsername(username: string): void {
+    deleteUserByLogin(login: string): void {
         throw new Error('Method not implemented.');
     }
 
