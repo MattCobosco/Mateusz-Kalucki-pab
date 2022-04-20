@@ -3,46 +3,43 @@ exports.__esModule = true;
 var express = require("express");
 var jwt = require("jsonwebtoken");
 var User_1 = require("../Models/User");
+var Storage_1 = require("../Storage/Storage");
 var Repository_1 = require("../Repository");
+var config_json_1 = require("../config.json");
+var FileDataStorage_1 = require("../Storage/FileDataStorage");
+var DatabaseDataStorage_1 = require("../Storage/DatabaseDataStorage");
 var app = express();
 app.use(express.json());
 var repo = new Repository_1["default"]();
 var registeredUser = new User_1["default"]();
-var secret = 'secret';
+var secret = 'aezakmi';
+var dataStorage;
 var storage;
 repo.readStorage().then(function (data) {
     if (data)
         storage = JSON.parse(data);
     else
-        storage = new Storage();
+        storage = new Storage_1["default"]();
 });
+// Wybiera dataStorage na podstawie boolean z pliku config.json
+if (JSON.stringify(config_json_1["default"].readFromFile) === 'true') {
+    dataStorage = new FileDataStorage_1["default"]();
+}
+else {
+    dataStorage = new DatabaseDataStorage_1["default"]();
+}
 // CRUD NOTATKI:
 // Dodanie nowej notatki
 app.post('/note', function (req, res) {
-    var _a, _b;
-    var token = (_a = req.headers.Authorization) !== null && _a !== void 0 ? _a : '';
+    var _a;
+    var token = req.headers.Authorization;
     if (registeredUser.UserIsAuthorized(token, secret)) {
         var note = req.body;
         if (note.title === undefined || note.content === undefined)
             res.status(400).send('Note title or content is missing');
         else {
-            console.log(note);
-            if (note.tags != undefined) {
-                note.tags.forEach(function (tag) {
-                    var _a;
-                    if (!storage.tags.find(function (t) { return t.name === tag.name; })) {
-                        var newTag = {
-                            id: Date.now(),
-                            name: tag.name
-                        };
-                        storage.tags.push(newTag);
-                        registeredUser.tagsCreatedIds.push((_a = newTag.id) !== null && _a !== void 0 ? _a : 0);
-                    }
-                });
-            }
-            note.id = Date.now();
-            storage.notes.push(note);
-            registeredUser.notesCreatedIds.push((_b = note.id) !== null && _b !== void 0 ? _b : 0);
+            dataStorage.addNote(note);
+            registeredUser.notesCreatedIds.push((_a = note.id) !== null && _a !== void 0 ? _a : 0);
             res.status(201).send(note);
             repo.updateStorage(JSON.stringify(storage));
         }
@@ -56,7 +53,7 @@ app.get("/notes", function (req, res) {
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
         try {
-            res.status(200).send(storage.notes.filter(function (n) { var _a; return registeredUser.notesCreatedIds.includes((_a = n.id) !== null && _a !== void 0 ? _a : 0); }));
+            res.status(200).send(dataStorage.getNotes(registeredUser));
         }
         catch (error) {
             res.status(400).send(error);
@@ -79,6 +76,16 @@ app.get("/note/:id", function (req, res) {
     else
         res.status(401).send("Unauthorized user");
 });
+// Odczytanie listy publicznych notatek uźytkownika
+app.get("/notes/user/:userName", function (req, res) {
+    var user = storage.users.find(function (u) { return u.login === req.params.userName; });
+    if (user === undefined)
+        res.status(404).send("User does not exist");
+    else {
+        var notes = storage.notes.filter(function (n) { var _a; return n.private === false && user.notesCreatedIds.includes((_a = n.id) !== null && _a !== void 0 ? _a : 0); });
+        res.status(200).send(notes);
+    }
+});
 // Edycja notatki o danym id
 app.put("/note/:id", function (req, res) {
     var _a;
@@ -97,9 +104,8 @@ app.put("/note/:id", function (req, res) {
             repo.updateStorage(JSON.stringify(storage));
         }
     }
-    else {
+    else
         res.status(401).send("Unauthorized user");
-    }
 });
 // Usunięcie notatki o danym id
 app["delete"]("/note/:id", function (req, res) {

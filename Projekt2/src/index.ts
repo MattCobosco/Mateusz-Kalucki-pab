@@ -5,8 +5,11 @@ import Note from '../Models/Note';
 import Tag from '../Models/Tag';
 import User from '../Models/User';
 import Storage from '../Storage/Storage';
+import IDataStorage from '../Storage/IDataStorage';
 import Repository from '../Repository';
-import FileDataStorage from '../Storage/IDataStorage';
+import jsonConfig from '../config.json';
+import FileDataStorage from '../Storage/FileDataStorage';
+import DatabaseDataStorage from '../Storage/DatabaseDataStorage';
 
 const app = express();
 app.use(express.json());
@@ -15,7 +18,7 @@ const repo : Repository = new Repository();
 let registeredUser : User = new User();
 const secret : string = 'aezakmi';
 
-let dataStorage: FileDataStorage;
+let dataStorage: IDataStorage;
 let storage : Storage;
 repo.readStorage().then(data => 
 {
@@ -24,6 +27,16 @@ repo.readStorage().then(data =>
   else 
     storage = new Storage();
 });
+
+// Wybiera dataStorage na podstawie boolean z pliku config.json
+if(JSON.stringify(jsonConfig.readFromFile) === 'true')
+{
+  dataStorage = new FileDataStorage();
+}
+else
+{
+  dataStorage = new DatabaseDataStorage();
+}
 
 // CRUD NOTATKI:
 // Dodanie nowej notatki
