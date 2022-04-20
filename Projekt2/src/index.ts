@@ -20,6 +20,7 @@ const secret : string = 'aezakmi';
 
 let dataStorage: IDataStorage;
 let storage : Storage;
+
 repo.readStorage().then(data => 
 {
   if(data)
@@ -42,7 +43,7 @@ else
 // Dodanie nowej notatki
 app.post('/note', function(req : Request, res : Response)
 {
-  const token = req.headers.Authorization as string;
+  const token = req.headers.authorization ?? '';
   if (registeredUser.UserIsAuthorized(token, secret))
   {
     const note : Note = req.body;
@@ -50,10 +51,8 @@ app.post('/note', function(req : Request, res : Response)
       res.status(400).send('Note title or content is missing');
     else
     {
-      dataStorage.addNote(note);
-      registeredUser.notesCreatedIds.push(note.id ?? 0);
+      dataStorage.addNote(note, registeredUser);
       res.status(201).send(note);
-      repo.updateStorage(JSON.stringify(storage));
     }
   }
   else 
@@ -85,7 +84,7 @@ app.get("/note/:id", function (req: Request, res: Response)
   const token = req.headers.authorization ?? '';
   if (registeredUser.UserIsAuthorized(token, secret)) 
   {
-    const note = storage.notes.find(n => n.id === +req.params.id && registeredUser.notesCreatedIds.includes(+req.params.id));
+    const note = dataStorage.getNoteById(req.params.id);
     if (note === undefined) 
       res.status(404).send("Note does not exist");
     else
@@ -98,12 +97,12 @@ app.get("/note/:id", function (req: Request, res: Response)
 // Odczytanie listy publicznych notatek uźytkownika
 app.get("/notes/user/:userName", function (req: Request, res: Response)
 {
-  const user = storage.users.find(u => u.login === req.params.userName);
+  const user = dataStorage.getUserByUsername(req.params.userName);
   if (user === undefined)
     res.status(404).send("User does not exist");
   else
   {
-    const notes = storage.notes.filter(n => n.private === false && user.notesCreatedIds.includes(n.id ?? 0));
+    const notes = dataStorage.getPublicNotesByUsername(req.params.userName);
     res.status(200).send(notes);
   }
 });
@@ -117,15 +116,12 @@ app.put("/note/:id", function (req: Request, res: Response)
     const newNote: Note = req.body;
     if (newNote.title === undefined || newNote.content === undefined || newNote.id === undefined) 
       res.status(400).send("Note title, content or id is missing");
+    else if(dataStorage.getNoteById(newNote.id) === undefined)
+      res.status(404).send("Note does not exist");
     else 
     {
-      let currentNote = storage.notes.find(n => n.id === newNote.id);
-      if (currentNote === undefined)
-        res.status(404).send("Note does not exist");
-      else 
-        currentNote = newNote;
-      res.status(201).send(newNote);
-      repo.updateStorage(JSON.stringify(storage));
+      let currentNote = dataStorage.editNoteById(newNote.id, newNote);
+      res.status(200).send(currentNote);
     }
   } 
   else
@@ -141,10 +137,7 @@ app.delete("/note/:id", function (req: Request, res: Response) {
       res.status(400).send("Note does not exist");
     else 
     {
-      storage.notes.splice(req.body.id, 1);
-      registeredUser.notesCreatedIds.splice(req.body.id, 1);
-      res.status(204).send(note);
-      repo.updateStorage(JSON.stringify(storage));
+      dataStorage.deleteNoteById(req.params.id);
     }
   } 
   else 

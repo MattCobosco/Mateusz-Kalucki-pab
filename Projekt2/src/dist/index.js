@@ -32,16 +32,14 @@ else {
 // Dodanie nowej notatki
 app.post('/note', function (req, res) {
     var _a;
-    var token = req.headers.Authorization;
+    var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
         var note = req.body;
         if (note.title === undefined || note.content === undefined)
             res.status(400).send('Note title or content is missing');
         else {
-            dataStorage.addNote(note);
-            registeredUser.notesCreatedIds.push((_a = note.id) !== null && _a !== void 0 ? _a : 0);
+            dataStorage.addNote(note, registeredUser);
             res.status(201).send(note);
-            repo.updateStorage(JSON.stringify(storage));
         }
     }
     else
@@ -67,7 +65,7 @@ app.get("/note/:id", function (req, res) {
     var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
-        var note = storage.notes.find(function (n) { return n.id === +req.params.id && registeredUser.notesCreatedIds.includes(+req.params.id); });
+        var note = dataStorage.getNoteById(req.params.id);
         if (note === undefined)
             res.status(404).send("Note does not exist");
         else
@@ -78,11 +76,11 @@ app.get("/note/:id", function (req, res) {
 });
 // Odczytanie listy publicznych notatek uźytkownika
 app.get("/notes/user/:userName", function (req, res) {
-    var user = storage.users.find(function (u) { return u.login === req.params.userName; });
+    var user = dataStorage.getUserByUsername(req.params.userName);
     if (user === undefined)
         res.status(404).send("User does not exist");
     else {
-        var notes = storage.notes.filter(function (n) { var _a; return n.private === false && user.notesCreatedIds.includes((_a = n.id) !== null && _a !== void 0 ? _a : 0); });
+        var notes = dataStorage.getPublicNotesByUsername(req.params.userName);
         res.status(200).send(notes);
     }
 });
@@ -91,17 +89,14 @@ app.put("/note/:id", function (req, res) {
     var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
-        var newNote_1 = req.body;
-        if (newNote_1.title === undefined || newNote_1.content === undefined || newNote_1.id === undefined)
+        var newNote = req.body;
+        if (newNote.title === undefined || newNote.content === undefined || newNote.id === undefined)
             res.status(400).send("Note title, content or id is missing");
+        else if (dataStorage.getNoteById(newNote.id) === undefined)
+            res.status(404).send("Note does not exist");
         else {
-            var currentNote = storage.notes.find(function (n) { return n.id === newNote_1.id; });
-            if (currentNote === undefined)
-                res.status(404).send("Note does not exist");
-            else
-                currentNote = newNote_1;
-            res.status(201).send(newNote_1);
-            repo.updateStorage(JSON.stringify(storage));
+            var currentNote = dataStorage.editNoteById(newNote.id, newNote);
+            res.status(200).send(currentNote);
         }
     }
     else
@@ -116,10 +111,7 @@ app["delete"]("/note/:id", function (req, res) {
         if (note === undefined)
             res.status(400).send("Note does not exist");
         else {
-            storage.notes.splice(req.body.id, 1);
-            registeredUser.notesCreatedIds.splice(req.body.id, 1);
-            res.status(204).send(note);
-            repo.updateStorage(JSON.stringify(storage));
+            dataStorage.deleteNoteById(req.params.id);
         }
     }
     else
