@@ -18,6 +18,7 @@ repo.readStorage().then(data =>
 
 class FileDataStorage implements IDataStorage
 {
+    // CRUD dla notatek
     addNote(note: Note, user: User): void 
     {
         console.log(note);
@@ -81,6 +82,8 @@ class FileDataStorage implements IDataStorage
         return storage.notes.filter(n => n.private === false && this.getUserByUsername(username).notesCreatedIds.includes(n.id ?? 0));
     }
 
+
+    // CRUD dla tagów
     addTag(tag: Tag, user : User): void 
     {
         tag.id = Date.now();
@@ -120,9 +123,50 @@ class FileDataStorage implements IDataStorage
         }
     }
 
+    // CRUD dla użytkowników
+    addUser(user: User): void
+    {
+        user.id = storage.users.length + 1;
+        storage.users.push(user);
+        repo.updateStorage(JSON.stringify(storage));
+    }
+
+    editUserByUsername(username: string, userContent: User): void
+    {
+        const userToEdit = storage.users.find(u => u.login === username);
+
+        if(userToEdit)
+        {
+            userToEdit.login = userContent.login;
+            userToEdit.password = userContent.password;
+            userToEdit.isAdmin = userContent.isAdmin;
+            repo.updateStorage(JSON.stringify(storage));
+        }
+    }
+
+    getUsers() : User[]
+    {
+        return storage.users;
+    }
+
     getUserByUsername(username: string): User 
     {
         return storage.users.find(u => u.login === username)
+    }
+
+    deleteUser(username: string)
+    {
+        const userToDelete = storage.users.find(u => u.login === username);
+        userToDelete.tagsCreatedIds.forEach(id => {
+            const tagToDelete = storage.tags.find(t => t.id === id);
+            storage.tags.splice(storage.tags.indexOf(tagToDelete), 1);
+        });
+        userToDelete.notesCreatedIds.forEach(id => {
+            const noteToDelete = storage.notes.find(n => n.id === id);
+            storage.notes.splice(storage.notes.indexOf(noteToDelete), 1);
+        });
+        storage.users.splice(storage.users.indexOf(userToDelete), 1);
+        repo.updateStorage(JSON.stringify(storage));
     }
 }
 
