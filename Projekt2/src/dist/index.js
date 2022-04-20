@@ -112,6 +112,7 @@ app["delete"]("/note/:id", function (req, res) {
             res.status(400).send("Note does not exist");
         else {
             dataStorage.deleteNoteById(req.params.id);
+            res.status(204).send("Note deleted");
         }
     }
     else
@@ -120,7 +121,7 @@ app["delete"]("/note/:id", function (req, res) {
 // CRUD TAGI:
 // Dodanie nowego tagu:
 app.post("/tag", function (req, res) {
-    var _a, _b;
+    var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
         var tag = req.body;
@@ -129,11 +130,8 @@ app.post("/tag", function (req, res) {
         else if (storage.tags.find(function (t) { return t.name === req.body.name; }))
             res.status(400).send("This tag name has already exist");
         else {
-            tag.id = Date.now();
-            storage.tags.push(tag);
-            registeredUser.tagsCreatedIds.push((_b = tag.id) !== null && _b !== void 0 ? _b : 0);
+            dataStorage.addTag(tag, registeredUser);
             res.status(201).send(tag);
-            repo.updateStorage(JSON.stringify(storage));
         }
     }
     else
@@ -145,7 +143,7 @@ app.get("/tags", function (req, res) {
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
         try {
-            res.status(200).send(storage.tags.filter(function (t) { var _a; return registeredUser.tagsCreatedIds.includes((_a = t.id) !== null && _a !== void 0 ? _a : 0); }));
+            res.status(200).send(dataStorage.getTags(registeredUser));
         }
         catch (error) {
             res.status(400).send(error);
@@ -173,21 +171,16 @@ app.put("/tag/:id", function (req, res) {
     var _a;
     var token = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
     if (registeredUser.UserIsAuthorized(token, secret)) {
-        var newTag_1 = req.body;
-        if (newTag_1.name === undefined)
+        var newTag = req.body;
+        if (newTag.name === undefined)
             res.status(400).send("Tag name is undefined");
-        else if (storage.tags.find(function (t) { return t.name === req.body.name; }))
-            res.status(400).send("This tag name has already exist");
-        else if (newTag_1.id === undefined)
+        else if (dataStorage.getTagById(newTag.id) === undefined)
+            res.status(400).send("This tag does not exist");
+        else if (newTag.id === undefined)
             res.status(400).send("Tag id is undefined");
         else {
-            var currentTag = storage.tags.find(function (a) { return a.id === newTag_1.id; });
-            if (currentTag === undefined)
-                res.status(404).send("Tag does not exist");
-            else
-                currentTag = newTag_1;
-            res.status(201).send(newTag_1);
-            repo.updateStorage(JSON.stringify(storage));
+            var currentTag = dataStorage.editTagById(newTag.id, newTag);
+            res.status(200).send(currentTag);
         }
     }
     else
@@ -202,12 +195,12 @@ app["delete"]("/tag/:id", function (req, res) {
         if (tag === undefined)
             res.status(400).send("Tag does not exist");
         else {
-            storage.tags.splice(req.body.id, 1);
-            registeredUser.tagsCreatedIds.splice(req.body.id, 1);
+            dataStorage.deleteTagById(req.params.id);
             res.status(204).send(tag);
-            repo.updateStorage(JSON.stringify(storage));
         }
     }
+    else
+        res.status(401).send("Unauthorized user");
 });
 // Logowanie za pomocą jsonwebtoken
 app.post('/login', function (req, res) {

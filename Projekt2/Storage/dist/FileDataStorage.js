@@ -14,6 +14,7 @@ var FileDataStorage = /** @class */ (function () {
     function FileDataStorage() {
     }
     FileDataStorage.prototype.addNote = function (note, user) {
+        var _this = this;
         var _a;
         console.log(note);
         if (note.tags != undefined) {
@@ -23,7 +24,7 @@ var FileDataStorage = /** @class */ (function () {
                         id: Date.now(),
                         name: tag.name
                     };
-                    storage.tags.push(newTag);
+                    _this.addTag(newTag, user);
                 }
             });
         }
@@ -32,8 +33,8 @@ var FileDataStorage = /** @class */ (function () {
         user.notesCreatedIds.push((_a = note.id) !== null && _a !== void 0 ? _a : 0);
         repo.updateStorage(JSON.stringify(storage));
     };
-    FileDataStorage.prototype.getNotes = function (registeredUser) {
-        return storage.notes.filter(function (n) { var _a; return registeredUser.notesCreatedIds.includes((_a = n.id) !== null && _a !== void 0 ? _a : 0); });
+    FileDataStorage.prototype.getNotes = function (user) {
+        return storage.notes.filter(function (n) { var _a; return user.notesCreatedIds.includes((_a = n.id) !== null && _a !== void 0 ? _a : 0); });
     };
     FileDataStorage.prototype.getNoteById = function (noteId) {
         return storage.notes.find(function (n) { return n.id === noteId; });
@@ -58,20 +59,32 @@ var FileDataStorage = /** @class */ (function () {
         var _this = this;
         return storage.notes.filter(function (n) { var _a; return n.private === false && _this.getUserByUsername(username).notesCreatedIds.includes((_a = n.id) !== null && _a !== void 0 ? _a : 0); });
     };
-    FileDataStorage.prototype.addTag = function (tag) {
-        throw new Error('Method not implemented.');
+    FileDataStorage.prototype.addTag = function (tag, user) {
+        var _a;
+        tag.id = Date.now();
+        storage.tags.push(tag);
+        user.tagsCreatedIds.push((_a = tag.id) !== null && _a !== void 0 ? _a : 0);
+        repo.updateStorage(JSON.stringify(storage));
     };
-    FileDataStorage.prototype.getTags = function () {
-        throw new Error('Method not implemented.');
+    FileDataStorage.prototype.getTags = function (user) {
+        return storage.tags.filter(function (t) { var _a; return user.tagsCreatedIds.includes((_a = t.id) !== null && _a !== void 0 ? _a : 0); });
     };
     FileDataStorage.prototype.getTagById = function (tagId) {
-        throw new Error('Method not implemented.');
+        return storage.tags.find(function (t) { return t.id === tagId; });
     };
-    FileDataStorage.prototype.editTagById = function (tagId) {
-        throw new Error('Method not implemented.');
+    FileDataStorage.prototype.editTagById = function (tagId, tagContent) {
+        var tagToEdit = storage.tags.find(function (t) { return t.id === tagId; });
+        if (tagToEdit) {
+            tagToEdit.name = tagContent.name;
+            repo.updateStorage(JSON.stringify(storage));
+        }
     };
     FileDataStorage.prototype.deleteTagById = function (tagId) {
-        throw new Error('Method not implemented.');
+        var tagToDelete = storage.tags.find(function (t) { return t.id === tagId; });
+        if (tagToDelete) {
+            storage.tags.splice(storage.tags.indexOf(tagToDelete), 1);
+            repo.updateStorage(JSON.stringify(storage));
+        }
     };
     FileDataStorage.prototype.getUserByUsername = function (username) {
         return storage.users.find(function (u) { return u.login === username; });

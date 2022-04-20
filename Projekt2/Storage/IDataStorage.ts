@@ -14,10 +14,10 @@ interface IDataStorage
     deleteNoteById(noteId: number): void;
     getPublicNotesByUsername(username: string): Note[];
 
-    addTag(tag: Tag) :  void;
-    getTags(): Tag[];
+    addTag(tag: Tag, user : User) :  void;
+    getTags(user: User): Tag[];
     getTagById(tagId: number): Tag;
-    editTagById(tagId: number): void;
+    editTagById(tagId: number, tagContent : Tag): void;
     deleteTagById(tagId: number): void;
 
     getUserByUsername(username: string): User;

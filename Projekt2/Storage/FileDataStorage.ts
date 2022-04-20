@@ -32,19 +32,20 @@ class FileDataStorage implements IDataStorage
                 id: Date.now(), 
                 name : tag.name
               };
-                storage.tags.push(newTag);
+                this.addTag(newTag, user);
             }
           });
       }
+
       note.id = Date.now();
       storage.notes.push(note);
       user.notesCreatedIds.push(note.id ?? 0);
       repo.updateStorage(JSON.stringify(storage));
     }
 
-    getNotes(registeredUser: User): Note[] 
+    getNotes(user: User): Note[] 
     {
-        return storage.notes.filter(n => registeredUser.notesCreatedIds.includes(n.id ?? 0));
+        return storage.notes.filter(n => user.notesCreatedIds.includes(n.id ?? 0));
     }
 
     getNoteById(noteId: number): Note 
@@ -55,6 +56,7 @@ class FileDataStorage implements IDataStorage
     editNoteById(noteId: number, noteContent: Note): void 
     {
         const noteToEdit = storage.notes.find(n => n.id === noteId);
+
         if(noteToEdit)
         {
             noteToEdit.title = noteContent.title;
@@ -64,7 +66,8 @@ class FileDataStorage implements IDataStorage
         }
     }
 
-    deleteNoteById(noteId: number): void {
+    deleteNoteById(noteId: number): void 
+    {
         const noteToDelete = storage.notes.find(n => n.id === noteId);
         if(noteToDelete)
         {
@@ -78,23 +81,47 @@ class FileDataStorage implements IDataStorage
         return storage.notes.filter(n => n.private === false && this.getUserByUsername(username).notesCreatedIds.includes(n.id ?? 0));
     }
 
-    addTag(tag: Tag): void {
-        throw new Error('Method not implemented.');
-    }
-    getTags(): Tag[] {
-        throw new Error('Method not implemented.');
-    }
-    getTagById(tagId: number): Tag {
-        throw new Error('Method not implemented.');
-    }
-    editTagById(tagId: number): void {
-        throw new Error('Method not implemented.');
-    }
-    deleteTagById(tagId: number): void {
-        throw new Error('Method not implemented.');
+    addTag(tag: Tag, user : User): void 
+    {
+        tag.id = Date.now();
+        storage.tags.push(tag);
+        user.tagsCreatedIds.push(tag.id ?? 0);
+        repo.updateStorage(JSON.stringify(storage));
     }
 
-    getUserByUsername(username: string): User {
+    getTags(user: User): Tag[] 
+    {
+        return storage.tags.filter(t => user.tagsCreatedIds.includes(t.id ?? 0))
+    }
+
+    getTagById(tagId: number): Tag 
+    {
+        return storage.tags.find(t => t.id === tagId);
+    }
+
+    editTagById(tagId: number, tagContent: Tag): void 
+    {
+        const tagToEdit = storage.tags.find(t => t.id === tagId);
+
+        if(tagToEdit)
+        {
+            tagToEdit.name = tagContent.name;
+            repo.updateStorage(JSON.stringify(storage));
+        }
+    }
+
+    deleteTagById(tagId: number): void 
+    {
+        const tagToDelete = storage.tags.find(t => t.id === tagId);
+        if(tagToDelete)
+        {
+            storage.tags.splice(storage.tags.indexOf(tagToDelete), 1);
+            repo.updateStorage(JSON.stringify(storage));
+        }
+    }
+
+    getUserByUsername(username: string): User 
+    {
         return storage.users.find(u => u.login === username)
     }
 }

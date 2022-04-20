@@ -138,6 +138,7 @@ app.delete("/note/:id", function (req: Request, res: Response) {
     else 
     {
       dataStorage.deleteNoteById(req.params.id);
+      res.status(204).send("Note deleted");
     }
   } 
   else 
@@ -159,11 +160,8 @@ app.post("/tag", function (req: Request, res: Response)
       res.status(400).send("This tag name has already exist"); 
     else 
     {
-      tag.id = Date.now();
-      storage.tags.push(tag);
-      registeredUser.tagsCreatedIds.push(tag.id ?? 0)
+      dataStorage.addTag(tag, registeredUser);
       res.status(201).send(tag);
-      repo.updateStorage(JSON.stringify(storage));
     }
   } 
   else 
@@ -178,7 +176,7 @@ app.get("/tags", function (req: Request, res: Response)
   {
     try 
     {
-      res.status(200).send(storage.tags.filter(t => registeredUser.tagsCreatedIds.includes(t.id ?? 0)));
+      res.status(200).send(dataStorage.getTags(registeredUser));
     } 
     catch (error) 
     {
@@ -214,25 +212,19 @@ app.put("/tag/:id", function (req: Request, res: Response)
     const newTag: Tag = req.body;
     if (newTag.name === undefined)
       res.status(400).send("Tag name is undefined");
-    else if (storage.tags.find((t: { name: any; }) => t.name === req.body.name))
-      res.status(400).send("This tag name has already exist");
+    else if (dataStorage.getTagById(newTag.id) === undefined)
+      res.status(400).send("This tag does not exist");
     else if (newTag.id === undefined) 
       res.status(400).send("Tag id is undefined");
     else 
     {
-      let currentTag = storage.tags.find(a => a.id === newTag.id);
-      if (currentTag === undefined)
-        res.status(404).send("Tag does not exist");
-      else 
-        currentTag = newTag;
-      res.status(201).send(newTag);
-      repo.updateStorage(JSON.stringify(storage));
+      let currentTag = dataStorage.editTagById(newTag.id, newTag);
+      res.status(200).send(currentTag);
     }
   } 
   else
     res.status(401).send("Unauthorized user");
 });
-
 
 // Usuniecie tagu z listy
 app.delete("/tag/:id", function (req: Request, res: Response)
@@ -245,12 +237,12 @@ app.delete("/tag/:id", function (req: Request, res: Response)
       res.status(400).send("Tag does not exist"); 
     else 
     {
-      storage.tags.splice(req.body.id, 1);
-      registeredUser.tagsCreatedIds.splice(req.body.id, 1)
+      dataStorage.deleteTagById(req.params.id);
       res.status(204).send(tag);
-      repo.updateStorage(JSON.stringify(storage));
     }
   }
+  else
+   res.status(401).send("Unauthorized user");
 });
 
 // Logowanie za pomocą jsonwebtoken
