@@ -23,6 +23,12 @@ export class DatabaseDataStorage implements IDataStorage
     getPublicNotesByUsername(username: string): Note[] {
         throw new Error('Method not implemented.');
     }
+    shareNote(noteId: number, username: string): void {
+        throw new Error('Method not implemented.');
+    }
+    getNotesSharedToUserByUsername(username: string) : Note[] {
+        throw new Error('Method not implemented.');
+    }
 
     addTag(tag: Tag, user : User): void {
         throw new Error('Method not implemented.');

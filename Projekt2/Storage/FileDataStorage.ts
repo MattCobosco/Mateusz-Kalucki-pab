@@ -79,9 +79,28 @@ class FileDataStorage implements IDataStorage
 
     getPublicNotesByUsername(username: string): Note[] 
     {
-        return storage.notes.filter(n => n.private === false && this.getUserByUsername(username).notesCreatedIds.includes(n.id ?? 0));
+        const user = storage.users.find(u => u.login === username);
+        return storage.notes.filter(n => n.private === false && user.notesCreatedIds.includes(n.id ?? 0));
     }
 
+    shareNote(noteId: number, username: string) : void
+    {
+        const user = storage.users.find(n => n.login === username);
+        if(user)
+        {
+            user.notesSharedToUserIds.push(noteId);
+            repo.updateStorage(JSON.stringify(storage));
+        }
+    }
+
+    getNotesSharedToUserByUsername(username: string) : Note[]
+    {
+        const user = storage.users.find(n => n.login === username);
+        if(user)
+        {
+            return storage.notes.filter(n => user.notesSharedToUserIds.includes(n.id ?? 0));
+        }
+    }
 
     // CRUD dla tagów
     addTag(tag: Tag, user : User): void 
