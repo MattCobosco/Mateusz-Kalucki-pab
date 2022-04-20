@@ -10,7 +10,7 @@ import Repository from '../Repository';
 import jsonConfig from '../config.json';
 import FileDataStorage from '../Storage/FileDataStorage';
 import DatabaseDataStorage from '../Storage/DatabaseDataStorage';
-
+mongoose.connect(jsonConfig.mongoConnectionString, {useNewUrlParser: true});
 const app = express();
 app.use(express.json());
 

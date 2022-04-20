@@ -8,6 +8,7 @@ var Repository_1 = require("../Repository");
 var config_json_1 = require("../config.json");
 var FileDataStorage_1 = require("../Storage/FileDataStorage");
 var DatabaseDataStorage_1 = require("../Storage/DatabaseDataStorage");
+mongoose.connect(config_json_1["default"].mongoConnectionString, { useNewUrlParser: true });
 var app = express();
 app.use(express.json());
 var repo = new Repository_1["default"]();
