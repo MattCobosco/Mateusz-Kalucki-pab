@@ -349,4 +349,19 @@ app.post('/login', function(req : Request, res : Response)
   repo.updateStorage(JSON.stringify(storage));
 });
 
+// Wylogowanie
+app.post('/logout', function(req : Request, res : Response)
+{
+  const token = req.headers.authorization ?? '';
+  if(registeredUser.UserIsAuthorized(token, secret))
+  {
+    registeredUser.id = 0;
+    registeredUser.login = "";
+    registeredUser.password = "";
+    res.status(200).send("Logout successful");
+  }
+  else
+    res.status(401).send("Unauthorized user");
+});
+
 app.listen(3000);
