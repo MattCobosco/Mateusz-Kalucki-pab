@@ -6,7 +6,7 @@ import User from '../Models/User';
 
 export class DatabaseDataStorage implements IDataStorage
 {
-    addNote(note: Note): void {
+    addNote(note: Note, user: User): void {
         throw new Error('Method not implemented.');
     }
     getNotes(): Note[] {
@@ -15,7 +15,7 @@ export class DatabaseDataStorage implements IDataStorage
     getNoteById(noteId: number): Note {
         throw new Error('Method not implemented.');
     }
-    editNoteById(noteId: number): void {
+    editNoteById(noteId: number, noteContent: Note): void {
         throw new Error('Method not implemented.');
     }
     deleteNoteById(noteId: number): void {
@@ -37,6 +37,9 @@ export class DatabaseDataStorage implements IDataStorage
         throw new Error('Method not implemented.');
     }
     deleteTagById(tagId: number): void {
+        throw new Error('Method not implemented.');
+    }
+    getUserByUsername(username: string): User {
         throw new Error('Method not implemented.');
     }
 }

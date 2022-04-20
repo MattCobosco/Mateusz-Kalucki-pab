@@ -37,6 +37,9 @@ var DatabaseDataStorage = /** @class */ (function () {
     DatabaseDataStorage.prototype.deleteTagById = function (tagId) {
         throw new Error('Method not implemented.');
     };
+    DatabaseDataStorage.prototype.getUserByUsername = function (username) {
+        throw new Error('Method not implemented.');
+    };
     return DatabaseDataStorage;
 }());
 exports.DatabaseDataStorage = DatabaseDataStorage;
