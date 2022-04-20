@@ -1,7 +1,6 @@
 import IDataStorage from './IDataStorage';
 import Note from '../Models/Note';
 import Tag from '../Models/Tag';
-import Storage from './Storage';
 import User from '../Models/User';
 
 export class DatabaseDataStorage implements IDataStorage
