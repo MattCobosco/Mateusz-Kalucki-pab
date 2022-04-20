@@ -248,6 +248,90 @@ app.delete("/tag/:id", function (req: Request, res: Response)
    res.status(401).send("Unauthorized user");
 });
 
+// CRUD UZYTKOWNICY:
+// Dodanie nowego użytkownika
+app.post("/user", function (req: Request, res: Response)
+{
+  const user = req.body;
+  if (user.username === undefined || user.password === undefined)
+    res.status(400).send("Username or password is undefined");
+  else if (user.username === registeredUser.login)
+    res.status(400).send("This username has already exist");
+  else
+  {
+    dataStorage.addUser(user);
+    res.status(201).send(user);
+  }
+});
+
+// Wyświetlenie listy użytkowników
+app.get("/users", function (req: Request, res: Response)
+{
+  const token = req.headers.authorization ?? '';
+  if(!registeredUser.UserIsAuthorized(token, secret) || !registeredUser.isAdmin)
+    res.status(401).send("Unauthorized user");
+
+  try 
+  {
+    res.status(200).send(dataStorage.getUsers());
+  } 
+  catch (error) 
+  {
+    res.status(400).send(error);
+  }
+});
+
+// Wyświetlenie użytkownika o danym loginie
+app.get("/user/:username", function (req: Request, res: Response)
+{
+  const token = req.headers.authorization ?? '';
+  const user = dataStorage.getUserByUsername(req.params.username);
+  if (user === undefined)
+    res.status(404).send("User does not exist");
+  else if(registeredUser.login != user.login || !registeredUser.isAdmin)
+    res.status(401).send("Unauthorized user");
+  else
+    res.status(200).send(user);
+});
+
+// Edycja użytkownika o danym loginie
+app.put("/user/:username", function (req: Request, res: Response)
+{
+  const token = req.headers.authorization ?? '';
+  const user = dataStorage.getUserByUsername(req.params.username);
+  if (user === undefined)
+    res.status(404).send("User does not exist");
+  else if(registeredUser.login != user.login || !registeredUser.isAdmin)
+    res.status(401).send("Unauthorized user");
+  else
+  {
+    const newUser: User = req.body;
+    if (newUser.login === undefined || newUser.password === undefined)
+      res.status(400).send("Username or password is undefined");
+    else
+    {
+      dataStorage.editUserByUsername(newUser.login, newUser);
+      res.status(200).send(newUser);
+    }
+  }
+});
+
+// Usuniecie użytkownika o danym loginie
+app.delete("/user/:username", function (req: Request, res: Response)
+{
+  const token = req.headers.authorization ?? '';
+  if (!registeredUser.isAdmin)
+    res.status(401).send("Unauthorized user");
+  const user = dataStorage.getUserByUsername(req.params.username);
+  if (user === undefined)
+    res.status(404).send("User does not exist");
+  else
+  {
+    dataStorage.deleteUserByUsername(req.params.username);
+    res.status(204).send(user);
+  }
+});
+
 // Logowanie za pomocą jsonwebtoken
 app.post('/login', function(req : Request, res : Response)
 {
