@@ -40,9 +40,22 @@ export class DatabaseDataStorage implements IDataStorage
         throw new Error('Method not implemented.');
     }
 
+    addUser(user: User): void {
+        throw new Error('Method not implemented.');
+    }
+    editUserByUsername(username: string, user: User): void {
+        throw new Error('Method not implemented.');
+    }
     getUserByUsername(username: string): User {
         throw new Error('Method not implemented.');
     }
+    getUsers(): User[] {
+        throw new Error('Method not implemented.');
+    }
+    deleteUserByUsername(username: string): void {
+        throw new Error('Method not implemented.');
+    }
+
 }
 
 export default DatabaseDataStorage;
