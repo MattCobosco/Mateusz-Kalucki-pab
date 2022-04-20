@@ -154,7 +154,7 @@ class FileDataStorage implements IDataStorage
         return storage.users;
     }
 
-    deleteUser(username: string)
+    deleteUserByUsername(username: string)
     {
         const userToDelete = storage.users.find(u => u.login === username);
         userToDelete.tagsCreatedIds.forEach(id => {
