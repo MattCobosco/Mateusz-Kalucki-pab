@@ -1,6 +1,7 @@
 import express = require ('express');
 import jwt = require ('jsonwebtoken');
 import mongoose = require ('mongoose');
+import * as fs from 'fs';
 
 import {Request, Response} from 'express';
 import Note from '../Models/Note';
@@ -9,9 +10,10 @@ import User from '../Models/User';
 import Storage from '../Storage/Storage';
 import IDataStorage from '../Storage/IDataStorage';
 import Repository from '../Repository';
-import jsonConfig from '../config.json';
+var jsonConfig =JSON.parse(fs.readFileSync('../config.json', 'utf8'));
 import FileDataStorage from '../Storage/FileDataStorage';
 import DatabaseDataStorage from '../Storage/DatabaseDataStorage';
+
 const app = express();
 app.use(express.json());
 
@@ -87,7 +89,7 @@ app.get("/note/:id", function (req: Request, res: Response)
   const token = req.headers.authorization ?? '';
   if (registeredUser.UserIsAuthorized(token, secret)) 
   {
-    const note = dataStorage.getNoteById(req.params.id);
+    const note = dataStorage.getNoteById(+req.params.id);
     if (note === undefined) 
       res.status(404).send("Note does not exist");
     else
@@ -98,31 +100,31 @@ app.get("/note/:id", function (req: Request, res: Response)
 });
 
 // Odczytanie listy publicznych notatek uźytkownika
-app.get("/notes/user/:userName", function (req: Request, res: Response)
+app.get("/notes/user/:login", function (req: Request, res: Response)
 {
-  const user = dataStorage.getUserByUsername(req.params.userName);
+  const user = dataStorage.getUserByLogin(req.params.login);
   if (user === undefined)
     res.status(404).send("User does not exist");
   else
   {
-    const notes = dataStorage.getPublicNotesByUsername(req.params.userName);
+    const notes = dataStorage.getPublicNotesByLogin(req.params.login);
     res.status(200).send(notes);
   }
 });
 
 // Udostepnienie notatki innemu uzytkownikowi
-app.put("/note/share/:noteId/:userName", function (req: Request, res: Response)
+app.put("/note/share/:noteId/:login", function (req: Request, res: Response)
 {
   const token = req.headers.authorization ?? '';
   if (registeredUser.UserIsAuthorized(token, secret)) 
   {
-    const note = dataStorage.getNoteById(req.params.noteId);
-    const user = dataStorage.getUserByUsername(req.params.userName);
+    const note : Note = dataStorage.getNoteById(+req.params.noteId);
+    const user : User = dataStorage.getUserByLogin(req.params.login);
     if (note === undefined || user === undefined)
       res.status(404).send("Note or user does not exist");
     else
     {
-      dataStorage.shareNote(req.params.noteId, req.params.userName);
+      dataStorage.shareNote(+req.params.noteId, req.params.login);
       res.status(200).send("Note shared");
     }
   } 
@@ -131,12 +133,12 @@ app.put("/note/share/:noteId/:userName", function (req: Request, res: Response)
 });
 
 // Wyswielenie notatek udostepnionych danemu uzytkownikowi
-app.get("/notes/shared/:userName", function (req: Request, res: Response)
+app.get("/notes/shared/:login", function (req: Request, res: Response)
 {
   const token = req.headers.authorization ?? '';
   if (registeredUser.UserIsAuthorized(token, secret)) 
   {
-    const notes = dataStorage.getNotesSharedToUserByUsername(req.params.userName);
+    const notes = dataStorage.getNotesSharedToUserByLogin(req.params.login);
     if (notes === undefined)
       res.status(404).send("User does not have any notes shared to them");
     else
@@ -176,7 +178,7 @@ app.delete("/note/:id", function (req: Request, res: Response) {
       res.status(400).send("Note does not exist");
     else 
     {
-      dataStorage.deleteNoteById(req.params.id);
+      dataStorage.deleteNoteById(+req.params.id);
       res.status(204).send("Note deleted");
     }
   } 
@@ -278,7 +280,7 @@ app.delete("/tag/:id", function (req: Request, res: Response)
       res.status(400).send("Tag does not exist"); 
     else 
     {
-      dataStorage.deleteTagById(req.params.id);
+      dataStorage.deleteTagById(+req.params.id);
       res.status(204).send(tag);
     }
   }
@@ -291,10 +293,10 @@ app.delete("/tag/:id", function (req: Request, res: Response)
 app.post("/user", function (req: Request, res: Response)
 {
   const user = req.body;
-  if (user.username === undefined || user.password === undefined)
-    res.status(400).send("Username or password is undefined");
-  else if (user.username === registeredUser.login)
-    res.status(400).send("This username has already exist");
+  if (user.login === undefined || user.password === undefined)
+    res.status(400).send("login or password is undefined");
+  else if (user.login === registeredUser.login)
+    res.status(400).send("This login has already exist");
   else
   {
     dataStorage.addUser(user);
@@ -320,10 +322,10 @@ app.get("/users", function (req: Request, res: Response)
 });
 
 // Wyświetlenie użytkownika o danym loginie
-app.get("/user/:username", function (req: Request, res: Response)
+app.get("/user/:login", function (req: Request, res: Response)
 {
   const token = req.headers.authorization ?? '';
-  const user = dataStorage.getUserByUsername(req.params.username);
+  const user = dataStorage.getUserByLogin(req.params.login);
   if (user === undefined)
     res.status(404).send("User does not exist");
   else if(registeredUser.login != user.login || !registeredUser.isAdmin)
@@ -333,10 +335,10 @@ app.get("/user/:username", function (req: Request, res: Response)
 });
 
 // Edycja użytkownika o danym loginie
-app.put("/user/:username", function (req: Request, res: Response)
+app.put("/user/:login", function (req: Request, res: Response)
 {
   const token = req.headers.authorization ?? '';
-  const user = dataStorage.getUserByUsername(req.params.username);
+  const user = dataStorage.getUserByLogin(req.params.login);
   if (user === undefined)
     res.status(404).send("User does not exist");
   else if(registeredUser.login != user.login || !registeredUser.isAdmin)
@@ -345,27 +347,27 @@ app.put("/user/:username", function (req: Request, res: Response)
   {
     const newUser: User = req.body;
     if (newUser.login === undefined || newUser.password === undefined)
-      res.status(400).send("Username or password is undefined");
+      res.status(400).send("login or password is undefined");
     else
     {
-      dataStorage.editUserByUsername(newUser.login, newUser);
+      dataStorage.editUserByLogin(newUser.login, newUser);
       res.status(200).send(newUser);
     }
   }
 });
 
 // Usuniecie użytkownika o danym loginie
-app.delete("/user/:username", function (req: Request, res: Response)
+app.delete("/user/:login", function (req: Request, res: Response)
 {
   const token = req.headers.authorization ?? '';
   if (!registeredUser.isAdmin)
     res.status(401).send("Unauthorized user");
-  const user = dataStorage.getUserByUsername(req.params.username);
+  const user = dataStorage.getUserByLogin(req.params.login);
   if (user === undefined)
     res.status(404).send("User does not exist");
   else
   {
-    dataStorage.deleteUserByUsername(req.params.username);
+    dataStorage.deleteUserByLogin(req.params.login);
     res.status(204).send(user);
   }
 });
