@@ -253,8 +253,8 @@ app.put("/tag/:id", function (req: Request, res: Response)
   if(registeredUser.UserIsAuthorized(token, secret)) 
   {
     const newTag: Tag = req.body;
-    if (newTag.name === undefined)
-      res.status(400).send("Tag name is undefined");
+    if (newTag.name === undefined || newTag.id === undefined)
+      res.status(400).send("Tag name or id is missing");
     else if (dataStorage.getTagById(newTag.id) === undefined)
       res.status(400).send("This tag does not exist");
     else if (newTag.id === undefined) 
