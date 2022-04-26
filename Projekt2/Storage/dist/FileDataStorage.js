@@ -13,6 +13,17 @@ repo.readStorage().then(function (data) {
 var FileDataStorage = /** @class */ (function () {
     function FileDataStorage() {
     }
+    FileDataStorage.prototype.populateDatabase = function () {
+        return new Promise(function (resolve, reject) {
+            repo.readStorage().then(function (data) {
+                if (data)
+                    storage = JSON.parse(data);
+                else
+                    storage = new Storage_1["default"]();
+                resolve();
+            });
+        });
+    };
     // CRUD dla notatek
     FileDataStorage.prototype.addNote = function (note, user) {
         var _this = this;
