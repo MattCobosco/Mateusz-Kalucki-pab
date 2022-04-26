@@ -1,6 +1,5 @@
 import express = require ('express');
 import jwt = require ('jsonwebtoken');
-import mongoose = require ('mongoose');
 import * as fs from 'fs';
 
 import {Request, Response} from 'express';
@@ -8,7 +7,6 @@ import Note from '../Models/Note';
 import Tag from '../Models/Tag';
 import User from '../Models/User';
 import Storage from '../Storage/Storage';
-import IDataStorage from '../Storage/IDataStorage';
 import Repository from '../Repository';
 var jsonConfig =JSON.parse(fs.readFileSync('../config.json', 'utf8'));
 import FileDataStorage from '../Storage/FileDataStorage';
@@ -17,13 +15,11 @@ import DatabaseDataStorage from '../Storage/DatabaseDataStorage';
 const app = express();
 app.use(express.json());
 
-mongoose.connect(jsonConfig.mongoConnectionString);
 
 const repo : Repository = new Repository();
 let registeredUser : User = new User();
 const secret : string = 'aezakmi';
 
-let dataStorage: IDataStorage;
 let storage : Storage;
 
 repo.readStorage().then(data => 
@@ -34,6 +30,8 @@ repo.readStorage().then(data =>
     storage = new Storage();
 });
 
+let dataStorage: DatabaseDataStorage | FileDataStorage;
+
 // Wybiera dataStorage na podstawie boolean z pliku config.json
 if(JSON.stringify(jsonConfig.readFromFile) === 'true')
 {
@@ -43,6 +41,11 @@ else
 {
   dataStorage = new DatabaseDataStorage();
 }
+
+dataStorage.populateDatabase().then(() =>
+{
+  console.log('Database populated');
+});
 
 // CRUD NOTATKI:
 // Dodanie nowej notatki

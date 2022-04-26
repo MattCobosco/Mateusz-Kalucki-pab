@@ -2,7 +2,6 @@
 exports.__esModule = true;
 var express = require("express");
 var jwt = require("jsonwebtoken");
-var mongoose = require("mongoose");
 var fs = require("fs");
 var User_1 = require("../Models/User");
 var Storage_1 = require("../Storage/Storage");
@@ -12,11 +11,9 @@ var FileDataStorage_1 = require("../Storage/FileDataStorage");
 var DatabaseDataStorage_1 = require("../Storage/DatabaseDataStorage");
 var app = express();
 app.use(express.json());
-mongoose.connect(jsonConfig.mongoConnectionString);
 var repo = new Repository_1["default"]();
 var registeredUser = new User_1["default"]();
 var secret = 'aezakmi';
-var dataStorage;
 var storage;
 repo.readStorage().then(function (data) {
     if (data)
@@ -24,6 +21,7 @@ repo.readStorage().then(function (data) {
     else
         storage = new Storage_1["default"]();
 });
+var dataStorage;
 // Wybiera dataStorage na podstawie boolean z pliku config.json
 if (JSON.stringify(jsonConfig.readFromFile) === 'true') {
     dataStorage = new FileDataStorage_1["default"]();
@@ -31,6 +29,9 @@ if (JSON.stringify(jsonConfig.readFromFile) === 'true') {
 else {
     dataStorage = new DatabaseDataStorage_1["default"]();
 }
+dataStorage.populateDatabase().then(function () {
+    console.log('Database populated');
+});
 // CRUD NOTATKI:
 // Dodanie nowej notatki
 app.post('/note', function (req, res) {
