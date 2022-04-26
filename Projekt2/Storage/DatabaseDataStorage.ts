@@ -8,35 +8,49 @@ var jsonConfig =JSON.parse(fs.readFileSync('../config.json', 'utf8'));
 
 export class DatabaseDataStorage implements IDataStorage
 {
-    // models for mongoose
-    noteModel = new mongoose.model('Notes', new mongoose.Schema(Note));
-    tagModel = new mongoose.model('Tags', new mongoose.Schema(Tag));
-    userModel = new mongoose.model('Users', new mongoose.Schema(User));
+    noteModel: any;
+    userModel: any;
+    tagModel: any;
 
     async populateDatabase(): Promise<void> 
     {
-        // Check database connection
         if(!mongoose.connection.readyState)
         {
             await mongoose.connect(jsonConfig.mongoConnectionString);
         }
 
-        // Check if database is empty
-        // get all notes
         const notes = await mongoose.connection.db.collection('notes').find({}).toArray();
-        // get all tags
         const tags = await mongoose.connection.db.collection('tags').find({}).toArray();
-        // get all users
         const users = await mongoose.connection.db.collection('users').find({}).toArray();
 
         if(notes.length === 0 && tags.length === 0 && users.length === 0)
         {
-            // Add tables for notes, tags and users
-            const noteModel = new mongoose.model('Notes', new mongoose.Schema(Note));
-            const tagModel = new mongoose.model('Tags', new mongoose.Schema(Tag));
-            const userModel = new mongoose.model('Users', new mongoose.Schema(User));
+            const noteSchema = new mongoose.Schema({
+                title: String,
+                content: String,
+                createDate: String,
+                tags: [{type: mongoose.Schema.Types.ObjectId, ref: 'tags'}],
+                id: Number,
+                private: Boolean
+            });
+            
+            const tagSchema = new mongoose.Schema({
+                name: String,
+                id: Number
+            });
 
-            // Add some tags
+            const userSchema = new mongoose.Schema({
+                username: String,
+                password: String,
+                notesCreatedIds: [Number],
+                notesSharedIds: [Number],
+                id: Number
+            });
+
+            const noteModel = mongoose.model('notes', noteSchema);
+            const tagModel = mongoose.model('tags', tagSchema);
+            const userModel = mongoose.model('users', userSchema);
+
             const tag1 = new tagModel({
                 id: 1,
                 name: 'tag1'
@@ -55,7 +69,6 @@ export class DatabaseDataStorage implements IDataStorage
             });
             await tag3.save();
 
-            // Add some notes
             const note1 = new noteModel({
                 id: 1,
                 title: 'Note 1',
@@ -86,7 +99,6 @@ export class DatabaseDataStorage implements IDataStorage
             });
             await note3.save();
 
-            // Add some users
             const user1 = new userModel({
                 id: 1,
                 login: 'user1',
@@ -144,7 +156,7 @@ export class DatabaseDataStorage implements IDataStorage
         const user = this.userModel.findOne({login: login}).exec();
         if (user)
         {
-            user.notesCreatedIds.forEach((noteId: number) => {
+            user.notesCreatedIds.forEach((noteId: any) => {
                 const note = this.noteModel.findOne({id: noteId}).exec();
                 if (note && !note.private)
                 {
@@ -152,6 +164,7 @@ export class DatabaseDataStorage implements IDataStorage
                 }
             });
         }
+
         return notes;
     }
 

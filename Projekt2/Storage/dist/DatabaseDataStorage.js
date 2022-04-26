@@ -37,22 +37,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 exports.DatabaseDataStorage = void 0;
-var Note_1 = require("../Models/Note");
-var Tag_1 = require("../Models/Tag");
-var User_1 = require("../Models/User");
 var mongoose_1 = require("mongoose");
 var fs = require("fs");
 var jsonConfig = JSON.parse(fs.readFileSync('../config.json', 'utf8'));
 var DatabaseDataStorage = /** @class */ (function () {
     function DatabaseDataStorage() {
-        // models for mongoose
-        this.noteModel = new mongoose_1["default"].model('Notes', new mongoose_1["default"].Schema(Note_1["default"]));
-        this.tagModel = new mongoose_1["default"].model('Tags', new mongoose_1["default"].Schema(Tag_1["default"]));
-        this.userModel = new mongoose_1["default"].model('Users', new mongoose_1["default"].Schema(User_1["default"]));
     }
+    // models for mongoose
     DatabaseDataStorage.prototype.populateDatabase = function () {
         return __awaiter(this, void 0, Promise, function () {
-            var notes, tags, users, noteModel, tagModel, userModel, tag1, tag2, tag3, note1, note2, note3, user1, user2;
+            var notes, tags, users, noteSchema, tagSchema, userSchema, noteModel, tagModel, userModel, tag1, tag2, tag3, note1, note2, note3, user1, user2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -71,9 +65,28 @@ var DatabaseDataStorage = /** @class */ (function () {
                     case 5:
                         users = _a.sent();
                         if (!(notes.length === 0 && tags.length === 0 && users.length === 0)) return [3 /*break*/, 14];
-                        noteModel = new mongoose_1["default"].model('Notes', new mongoose_1["default"].Schema(Note_1["default"]));
-                        tagModel = new mongoose_1["default"].model('Tags', new mongoose_1["default"].Schema(Tag_1["default"]));
-                        userModel = new mongoose_1["default"].model('Users', new mongoose_1["default"].Schema(User_1["default"]));
+                        noteSchema = new mongoose_1["default"].Schema({
+                            title: String,
+                            content: String,
+                            createDate: String,
+                            tags: [{ type: mongoose_1["default"].Schema.Types.ObjectId, ref: 'tags' }],
+                            id: Number,
+                            private: Boolean
+                        });
+                        tagSchema = new mongoose_1["default"].Schema({
+                            name: String,
+                            id: Number
+                        });
+                        userSchema = new mongoose_1["default"].Schema({
+                            username: String,
+                            password: String,
+                            notesCreatedIds: [Number],
+                            notesSharedIds: [Number],
+                            id: Number
+                        });
+                        noteModel = mongoose_1["default"].model('notes', noteSchema);
+                        tagModel = mongoose_1["default"].model('tags', tagSchema);
+                        userModel = mongoose_1["default"].model('users', userSchema);
                         tag1 = new tagModel({
                             id: 1,
                             name: 'tag1'
@@ -177,7 +190,9 @@ var DatabaseDataStorage = /** @class */ (function () {
     };
     DatabaseDataStorage.prototype.getPublicNotesByLogin = function (login) {
         var _this = this;
+        // create array of notes
         var notes = [];
+        // get all public notes created by user
         var user = this.userModel.findOne({ login: login }).exec();
         if (user) {
             user.notesCreatedIds.forEach(function (noteId) {
