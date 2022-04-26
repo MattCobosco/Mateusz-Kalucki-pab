@@ -18,6 +18,21 @@ repo.readStorage().then(data =>
 
 class FileDataStorage implements IDataStorage
 {
+    populateDatabase(): Promise<void>
+    {
+        return new Promise<void>((resolve, reject) =>
+        {
+            repo.readStorage().then(data => 
+            {
+                if(data)
+                    storage = JSON.parse(data);
+                else 
+                    storage = new Storage();
+                resolve();
+            });
+        });
+    }
+
     // CRUD dla notatek
     addNote(note: Note, user: User): void 
     {
