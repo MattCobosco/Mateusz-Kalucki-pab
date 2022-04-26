@@ -43,7 +43,6 @@ var jsonConfig = JSON.parse(fs.readFileSync('../config.json', 'utf8'));
 var DatabaseDataStorage = /** @class */ (function () {
     function DatabaseDataStorage() {
     }
-    // models for mongoose
     DatabaseDataStorage.prototype.populateDatabase = function () {
         return __awaiter(this, void 0, Promise, function () {
             var notes, tags, users, noteSchema, tagSchema, userSchema, noteModel, tagModel, userModel, tag1, tag2, tag3, note1, note2, note3, user1, user2;
@@ -190,9 +189,7 @@ var DatabaseDataStorage = /** @class */ (function () {
     };
     DatabaseDataStorage.prototype.getPublicNotesByLogin = function (login) {
         var _this = this;
-        // create array of notes
         var notes = [];
-        // get all public notes created by user
         var user = this.userModel.findOne({ login: login }).exec();
         if (user) {
             user.notesCreatedIds.forEach(function (noteId) {
