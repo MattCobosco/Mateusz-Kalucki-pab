@@ -6,7 +6,7 @@ enum TableStatus
     OutOfOrder
 }
 
-class TableModel
+class Table
 {
     tableNumber: number;
     seats: number;
@@ -20,4 +20,4 @@ class TableModel
     }
 }
 
-export default TableModel;
+export default Table;

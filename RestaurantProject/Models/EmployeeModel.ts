@@ -1,4 +1,4 @@
-class EmployeeModel
+class Employee
 {
     name: string;
     surname: string;
@@ -12,4 +12,4 @@ class EmployeeModel
     }
 }
 
-export default EmployeeModel;
+export default Employee;

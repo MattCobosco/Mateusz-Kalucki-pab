@@ -1,4 +1,4 @@
-class RestaurantModel
+class Restaurant
 {
     name: string;
     address: string;
@@ -18,4 +18,4 @@ class RestaurantModel
     }
 }
 
-export default RestaurantModel;
+export default Restaurant;
