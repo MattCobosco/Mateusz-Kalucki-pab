@@ -1,3 +1,10 @@
+enum TableStatus{
+    Available,
+    Occupied,
+    Dirty,
+    OutOfOrder
+}
+
 class Table
 {
     tableNumber: number;
@@ -12,9 +19,4 @@ class Table
     }
 }
 
-enum TableStatus{
-    Available,
-    Occupied,
-    Dirty,
-    OutOfOrder
-}
+export default Table;
