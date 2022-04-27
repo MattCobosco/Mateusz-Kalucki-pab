@@ -1,98 +1,84 @@
 import {Schema, model, connect} from 'mongoose';
 import Restaurant from '../CoreBusiness/RestaurantModel';
 
-const restaurantSchema = new Schema<Restaurant>(
-    {
-        name: {type: String, required: true},
-        address: {type: String, required: true},
-        phone: {type: String, required: true},
-        nip: {type: String, required: true},
-        email: {type: String, required: true},
-        website: {type: String, required: true},
-        description: String
-    });
-
-const RestaurantModel = model<Restaurant>('Restaurant', restaurantSchema);
-
-async function populateRestaurants()
+export class RestaurantRepository
 {
-    await connect('ConnectionString');
-
-    const restaurants = [
+    restaurantSchema = new Schema<Restaurant>(
         {
-            name: 'Restaurant1',
-            address: 'Address1',
-            phone: '123456789',
-            nip: '123456789',
-            email: 'someEmail@something.com',
-            website: 'someWebsite.com'
-        },
+            name: {type: String, required: true},
+            address: {type: String, required: true},
+            phone: {type: String, required: true},
+            nip: {type: String, required: true},
+            email: {type: String, required: true},
+            website: {type: String, required: true},
+            description: String
+        });
+
+    RestaurantModel = model<Restaurant>('Restaurant', this.restaurantSchema);
+
+    async populateRestaurants()
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        const restaurants = [
+            {
+                name: 'Restaurant1',
+                address: 'Address1',
+                phone: '123456789',
+                nip: '123456789',
+                email: 'someEmail@something.com',
+                website: 'someWebsite.com'
+            },
+            {
+                name: 'Restaurant2',
+                address: 'Address2',
+                phone: '987654321',
+                nip: '987654321',
+                email: 'someEmail@somethingElse.com',
+                website: 'someOtherWebsite.com'
+            }];
+
+        await this.RestaurantModel
+        .insertMany(restaurants)
+        .then(function()
         {
-            name: 'Restaurant2',
-            address: 'Address2',
-            phone: '987654321',
-            nip: '987654321',
-            email: 'someEmail@somethingElse.com',
-            website: 'someOtherWebsite.com'
-        }];
+            console.log("Restaurants have been populated!")
+        }).catch(function(err)
+        {
+            console.log(err);
+        });
+    }
 
-    await RestaurantModel
-    .insertMany(restaurants)
-    .then(function()
+    async addRestaurant(restaurant: Restaurant) : Promise<void>
     {
-        console.log("Restaurants have been populated!")
-    }).catch(function(err)
+        await this.RestaurantModel
+        .create(restaurant)
+        .then(function()
+        {
+            console.log("Restaurant has been added!")
+        });
+    }
+
+    async deleteRestaurantByName(restaurantName: string) : Promise<void>
     {
-        console.log(err);
-    });
+        await this.RestaurantModel
+        .deleteOne({name: restaurantName})
+        .then(function()
+        {
+            console.log("Restaurant has been deleted!")
+        });
+    }
+    /*
+    async function getRestaurantByName(restaurantName: string) : Promise<Restaurant>
+    {
+        return await RestaurantModel.findOne({name: restaurantName});
+
+    }
+    */
+
+    async getRestaurants() : Promise<Restaurant[]>
+    {
+        return await this.RestaurantModel.find();
+    }
 }
-
-async function addRestaurant(restaurant: Restaurant) : Promise<void>
-{
-    await RestaurantModel
-    .create(restaurant)
-    .then(function()
-    {
-        console.log("Restaurant has been added!")
-    });
-}
-
-async function deleteRestaurantByName(restaurantName: string) : Promise<void>
-{
-    await RestaurantModel
-    .deleteOne({name: restaurantName})
-    .then(function()
-    {
-        console.log("Restaurant has been deleted!")
-    });
-}
-
-async function getRestaurantByName(restaurantName: string) : Promise<Restaurant>
-{
-    let restaurant: Restaurant;
-
-    await RestaurantModel
-    .findOne({name: restaurantName})
-    .then(function(res)
-    {
-        restaurant = res;
-    });
-
-    return restaurant;
-}
-
-async function getRestaurants() : Promise<Restaurant[]>
-{
-    let restaurants: Restaurant[];
-
-    await RestaurantModel
-    .find()
-    .then(function(res)
-    {
-        restaurants = res;
-    });
-
-    return restaurants;
-}
-
 
