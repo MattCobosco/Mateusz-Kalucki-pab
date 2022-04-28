@@ -9,15 +9,7 @@ enum Type
     Dessert
 }
 
-enum Unit{
-    piece,
-    g,
-    ml,
-    kg,
-    l
-}
-
-class MenuPosition
+class MenuItem
 {
     name: string;
     price: number;
@@ -35,4 +27,4 @@ class MenuPosition
     }
 }
 
-export default MenuPosition;
+export default MenuItem;
