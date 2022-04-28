@@ -95,12 +95,15 @@ var RestaurantRepository = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.RestaurantModel
-                            .create(restaurant)
-                            .then(function () {
-                            console.log("Restaurant has been added!");
-                        })];
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.RestaurantModel
+                                .create(restaurant)
+                                .then(function () {
+                                console.log("Restaurant has been added!");
+                            })];
+                    case 2:
                         _a.sent();
                         return [2 /*return*/];
                 }
@@ -111,31 +114,52 @@ var RestaurantRepository = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.RestaurantModel
-                            .deleteOne({ name: restaurantName })
-                            .then(function () {
-                            console.log("Restaurant has been deleted!");
-                        })];
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.RestaurantModel
+                                .deleteOne({ name: restaurantName })
+                                .then(function () {
+                                console.log("Restaurant has been deleted!");
+                            })];
+                    case 2:
                         _a.sent();
                         return [2 /*return*/];
                 }
             });
         });
     };
-    /*
-    async function getRestaurantByName(restaurantName: string) : Promise<Restaurant>
-    {
-        return await RestaurantModel.findOne({name: restaurantName});
-
-    }
-    */
+    RestaurantRepository.prototype.getRestaurantByName = function (restaurantName) {
+        return __awaiter(this, void 0, void 0, function () {
+            var restaurant;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.RestaurantModel.findOne({ name: restaurantName })];
+                    case 2:
+                        restaurant = _a.sent();
+                        if (restaurant) {
+                            return [2 /*return*/, restaurant];
+                        }
+                        else {
+                            return [2 /*return*/, null];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     RestaurantRepository.prototype.getRestaurants = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.RestaurantModel.find()];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.RestaurantModel.find({})];
+                    case 2: return [2 /*return*/, _a.sent()];
                 }
             });
         });

@@ -37,30 +37,45 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var mongoose = require('mongoose');
+var Restaurant = require('./CoreBusiness/RestaurantModel');
+var express = require("express");
 var RestaurantRepository_1 = require("./DataStore/RestaurantRepository");
+var app = express();
+var router = express.Router();
 var restaurantRepository = new RestaurantRepository_1.RestaurantRepository();
-// if restaurant collection is empty, populate it with some data
-population();
-function population() {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: 
-                // check if restaurant collection exists
-                return [4 /*yield*/, mongoose.connection.db.listCollections({ name: 'Restaurant' })
-                        .next(function (err, collinfo) {
-                        if (collinfo) {
-                            console.log("Restaurant collection exists");
-                        }
-                        else {
-                            restaurantRepository.populateRestaurants();
-                        }
-                    })];
-                case 1:
-                    // check if restaurant collection exists
-                    _a.sent();
-                    return [2 /*return*/];
-            }
-        });
+router.get('/restaurants', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var restaurants;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, restaurantRepository.getRestaurants()];
+            case 1:
+                restaurants = _a.sent();
+                if (restaurants) {
+                    res.json(restaurants);
+                }
+                else {
+                    res.status(404).send("No restaurants found");
+                }
+                return [2 /*return*/];
+        }
     });
-}
+}); });
+router.get('/restaurant/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var restaurant;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, restaurantRepository.getRestaurantByName(req.params.name)];
+            case 1:
+                restaurant = _a.sent();
+                if (restaurant) {
+                    res.json(restaurant);
+                }
+                else {
+                    res.status(404).send("Restaurant not found");
+                }
+                return [2 /*return*/];
+        }
+    });
+}); });
+app.use('/', router);
+app.listen(3000);
