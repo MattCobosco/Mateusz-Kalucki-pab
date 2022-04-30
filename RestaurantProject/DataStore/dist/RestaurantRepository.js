@@ -102,6 +102,8 @@ var RestaurantRepository = /** @class */ (function () {
                                 .create(restaurant)
                                 .then(function () {
                                 console.log("Restaurant has been added!");
+                            })["catch"](function (err) {
+                                console.log(err);
                             })];
                     case 2:
                         _a.sent();
@@ -121,6 +123,8 @@ var RestaurantRepository = /** @class */ (function () {
                                 .deleteOne({ name: restaurantName })
                                 .then(function () {
                                 console.log("Restaurant has been deleted!");
+                            })["catch"](function (err) {
+                                console.log(err);
                             })];
                     case 2:
                         _a.sent();

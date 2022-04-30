@@ -37,11 +37,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var mongoose = require('mongoose');
-var Restaurant = require('./CoreBusiness/RestaurantModel');
+var Restaurant = require('./CoreBusiness/RestaurantModel').Restaurant;
 var express = require("express");
+var bodyParser = require("body-parser");
 var RestaurantRepository_1 = require("./DataStore/RestaurantRepository");
 var app = express();
 var router = express.Router();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/', router);
 var restaurantRepository = new RestaurantRepository_1.RestaurantRepository();
 router.get('/restaurants', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var restaurants;
@@ -50,12 +54,12 @@ router.get('/restaurants', function (req, res) { return __awaiter(void 0, void 0
             case 0: return [4 /*yield*/, restaurantRepository.getRestaurants()];
             case 1:
                 restaurants = _a.sent();
-                if (restaurants) {
+                if (restaurants.length > 0)
                     res.json(restaurants);
-                }
-                else {
+                else if (restaurants.length == 0)
+                    res.status(200).send("Restaurant list is empty");
+                else
                     res.status(404).send("No restaurants found");
-                }
                 return [2 /*return*/];
         }
     });
@@ -67,15 +71,37 @@ router.get('/restaurant/:name', function (req, res) { return __awaiter(void 0, v
             case 0: return [4 /*yield*/, restaurantRepository.getRestaurantByName(req.params.name)];
             case 1:
                 restaurant = _a.sent();
-                if (restaurant) {
+                if (restaurant)
                     res.json(restaurant);
-                }
-                else {
+                else
                     res.status(404).send("Restaurant not found");
-                }
                 return [2 /*return*/];
         }
     });
 }); });
-app.use('/', router);
+router["delete"]('/restaurant/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, restaurantRepository.deleteRestaurantByName(req.params.name)];
+            case 1:
+                _a.sent();
+                res.status(200).send("Restaurant deleted");
+                return [2 /*return*/];
+        }
+    });
+}); });
+router.post('/restaurant', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var restaurant;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                restaurant = req.body;
+                return [4 /*yield*/, restaurantRepository.addRestaurant(restaurant)];
+            case 1:
+                _a.sent();
+                res.status(200).send("Restaurant added");
+                return [2 /*return*/];
+        }
+    });
+}); });
 app.listen(3000);
