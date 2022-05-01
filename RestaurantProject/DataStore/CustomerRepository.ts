@@ -57,7 +57,7 @@ export class CustomerRepository
         .create(customer)
         .then(function()
         {
-            console.log("Customer" + customer.name + "has been added!");
+            console.log("Customer " + customer.name + " has been added!");
         }
         ).catch(function(err)
         {
@@ -73,7 +73,7 @@ export class CustomerRepository
         .deleteOne({name: customerName})
         .then(function()
         {
-            console.log("Customer" + customerName + "has been deleted!");
+            console.log("Customer " + customerName + " has been deleted!");
         }
         ).catch(function(err)
         {
@@ -105,7 +105,7 @@ export class CustomerRepository
         .updateOne({name: customer.name}, customer)
         .then(function()
         {
-            console.log("Customer" +  customer.name + "has been updated!")
+            console.log("Customer " +  customer.name + " has been updated!")
         }
         ).catch(function(err)
         {
@@ -125,7 +125,7 @@ export class CustomerRepository
             .updateOne({name: customerName}, customer)
             .then(function()
             {
-                console.log("Customer loyalty points have been added to" + customerName + "!")
+                console.log("Customer loyalty points have been added to " + customerName + "!")
             }
             ).catch(function(err)
             {
@@ -133,7 +133,7 @@ export class CustomerRepository
             });
         }
         else
-            console.log("Customer" + customerName + "does not exist!");
+            console.log("Customer " + customerName + " does not exist!");
     }
 }
 

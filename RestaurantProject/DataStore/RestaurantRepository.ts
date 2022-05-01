@@ -20,7 +20,8 @@ export class RestaurantRepository
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        const restaurants = [
+        const restaurants = 
+        [
             {
                 name: 'Restaurant1',
                 address: 'Address1',
@@ -36,7 +37,8 @@ export class RestaurantRepository
                 nip: '987654321',
                 email: 'someEmail@somethingElse.com',
                 website: 'someOtherWebsite.com'
-            }];
+            }
+        ];
 
         await this.RestaurantModel
         .insertMany(restaurants)
@@ -57,7 +59,7 @@ export class RestaurantRepository
         .create(restaurant)
         .then(function()
         {
-            console.log("Restaurant" + restaurant.name + "has been added!");
+            console.log("Restaurant " + restaurant.name + " has been added!");
         }).catch(function(err)
         {
             console.log(err);
@@ -71,7 +73,7 @@ export class RestaurantRepository
         .deleteOne({name: restaurantName})
         .then(function()
         {
-            console.log("Restaurant" + restaurantName + "has been deleted!")
+            console.log("Restaurant " + restaurantName + " has been deleted!")
         }).catch(function(err)
         {
             console.log(err);
@@ -102,7 +104,7 @@ export class RestaurantRepository
         .updateOne({name: restaurant.name}, restaurant)
         .then(function()
         {
-            console.log("Restaurant" + restaurant.name + "has been updated!")
+            console.log("Restaurant " + restaurant.name + " has been updated!")
         }
         ).catch(function(err)
         {

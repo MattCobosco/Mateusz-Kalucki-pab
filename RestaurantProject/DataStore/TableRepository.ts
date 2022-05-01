@@ -60,7 +60,7 @@ export class TableRepository
         .create(table)
         .then(function()
         {
-            console.log("Table" + table.tableNumber + "has been added!");
+            console.log("Table " + table.tableNumber + " has been added!");
         }
         ).catch(function(err)
         {
@@ -76,7 +76,7 @@ export class TableRepository
         .deleteOne({tableNumber: tableNumber})
         .then(function()
         {
-            console.log("Table" + {tableNumber} + "has been deleted!");
+            console.log("Table " + {tableNumber} + " has been deleted!");
         }).catch(function(err)
         {
             console.log(err);
@@ -109,7 +109,7 @@ export class TableRepository
         .updateOne({tableNumber: table.tableNumber}, table)
         .then(function()
         {
-            console.log("Table" + table.tableNumber + "has been updated!");
+            console.log("Table " + table.tableNumber + " has been updated!");
         }).catch(function(err)
         {
             console.log(err);
