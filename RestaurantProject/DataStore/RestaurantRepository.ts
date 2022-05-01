@@ -83,19 +83,31 @@ export class RestaurantRepository
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
         let restaurant = await this.RestaurantModel.findOne({name: restaurantName});
         if (restaurant)
-        {
             return restaurant;
-        }
         else
-        {
             return null as any;
-        }
     }
 
     async getRestaurants() : Promise<Restaurant[]>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
         return await this.RestaurantModel.find({});
+    }
+
+    async updateRestaurant(restaurant: Restaurant) : Promise<void>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        await this.RestaurantModel
+        .updateOne({name: restaurant.name}, restaurant)
+        .then(function()
+        {
+            console.log("Restaurant has been updated!")
+        }
+        ).catch(function(err)
+        {
+            console.log(err);
+        });
     }
 }
 
