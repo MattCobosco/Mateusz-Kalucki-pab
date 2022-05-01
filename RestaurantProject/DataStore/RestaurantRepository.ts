@@ -57,7 +57,7 @@ export class RestaurantRepository
         .create(restaurant)
         .then(function()
         {
-            console.log("Restaurant has been added!")
+            console.log("Restaurant" + restaurant.name + "has been added!");
         }).catch(function(err)
         {
             console.log(err);
@@ -71,7 +71,7 @@ export class RestaurantRepository
         .deleteOne({name: restaurantName})
         .then(function()
         {
-            console.log("Restaurant has been deleted!")
+            console.log("Restaurant" + restaurantName + "has been deleted!")
         }).catch(function(err)
         {
             console.log(err);
@@ -102,7 +102,7 @@ export class RestaurantRepository
         .updateOne({name: restaurant.name}, restaurant)
         .then(function()
         {
-            console.log("Restaurant has been updated!")
+            console.log("Restaurant" + restaurant.name + "has been updated!")
         }
         ).catch(function(err)
         {
