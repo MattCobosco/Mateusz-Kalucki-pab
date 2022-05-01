@@ -16,7 +16,8 @@ export class TableRepository
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        const tables = [
+        const tables = 
+        [
             {
                 tableNumber: 1,
                 seats: 4,
@@ -36,7 +37,8 @@ export class TableRepository
                 tableNumber: 4,
                 seats: 8,
                 status: 3
-            }];
+            }
+        ];
 
         await this.TableModel
         .insertMany(tables)
