@@ -109,4 +109,28 @@ export class CustomerRepository
             console.log(err);
         });
     }
+
+    async addLoyaltyPoints(customerName: string, loyaltyPoints: number) : Promise<void>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+        
+        let customer = await this.CustomerModel.findOne({name: customerName});
+        if (customer)
+        {
+            customer.loyaltyPoints += loyaltyPoints;
+            await this.CustomerModel
+            .updateOne({name: customerName}, customer)
+            .then(function()
+            {
+                console.log("Customer loyalty points have been added!")
+            }
+            ).catch(function(err)
+            {
+                console.log(err);
+            });
+        }
+        else
+            console.log("Customer not found!");
+    }
 }
+
