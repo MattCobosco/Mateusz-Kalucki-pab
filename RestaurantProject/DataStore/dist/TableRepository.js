@@ -36,51 +36,51 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.RestaurantRepository = void 0;
+exports.TableRepository = void 0;
 var mongoose_1 = require("mongoose");
-var RestaurantRepository = /** @class */ (function () {
-    function RestaurantRepository() {
-        this.restaurantSchema = new mongoose_1.Schema({
-            name: { type: String, required: true },
-            address: { type: String, required: true },
-            phone: { type: String, required: true },
-            nip: { type: String, required: true },
-            email: { type: String, required: true },
-            website: { type: String, required: true },
-            description: String
+var TableRepository = /** @class */ (function () {
+    function TableRepository() {
+        this.tableSchema = new mongoose_1.Schema({
+            tableNumber: { type: Number, required: true },
+            seats: { type: Number, required: true },
+            status: { type: Number, required: true }
         });
-        this.RestaurantModel = mongoose_1.model('Restaurant', this.restaurantSchema);
+        this.TableModel = mongoose_1.model('Table', this.tableSchema);
     }
-    RestaurantRepository.prototype.populateRestaurants = function () {
+    TableRepository.prototype.populateTables = function () {
         return __awaiter(this, void 0, Promise, function () {
-            var restaurants;
+            var tables;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        restaurants = [
+                        tables = [
                             {
-                                name: 'Restaurant1',
-                                address: 'Address1',
-                                phone: '123456789',
-                                nip: '123456789',
-                                email: 'someEmail@something.com',
-                                website: 'someWebsite.com'
+                                tableNumber: 1,
+                                seats: 4,
+                                status: 0
                             },
                             {
-                                name: 'Restaurant2',
-                                address: 'Address2',
-                                phone: '987654321',
-                                nip: '987654321',
-                                email: 'someEmail@somethingElse.com',
-                                website: 'someOtherWebsite.com'
+                                tableNumber: 2,
+                                seats: 4,
+                                status: 1
+                            },
+                            {
+                                tableNumber: 3,
+                                seats: 6,
+                                status: 2
+                            },
+                            {
+                                tableNumber: 4,
+                                seats: 8,
+                                status: 3
                             }
                         ];
-                        return [4 /*yield*/, this.RestaurantModel
-                                .insertMany(restaurants)
+                        return [4 /*yield*/, this.TableModel
+                                .insertMany(tables)
                                 .then(function () {
-                                console.log("Restaurants have been populated!");
+                                console.log("Tables have been populated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -91,17 +91,17 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.addRestaurant = function (restaurant) {
+    TableRepository.prototype.addTable = function (table) {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel
-                                .create(restaurant)
+                        return [4 /*yield*/, this.TableModel
+                                .create(table)
                                 .then(function () {
-                                console.log("Restaurant " + restaurant.name + " has been added!");
+                                console.log("Table " + table.tableNumber + " has been added!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -112,17 +112,17 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.deleteRestaurantByName = function (restaurantName) {
+    TableRepository.prototype.deleteTableByNumber = function (tableNumber) {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel
-                                .deleteOne({ name: restaurantName })
+                        return [4 /*yield*/, this.TableModel
+                                .deleteOne({ tableNumber: tableNumber })
                                 .then(function () {
-                                console.log("Restaurant " + restaurantName + " has been deleted!");
+                                console.log("Table " + { tableNumber: tableNumber } + " has been deleted!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -133,19 +133,19 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.getRestaurantByName = function (restaurantName) {
+    TableRepository.prototype.getTableByNumber = function (tableNumber) {
         return __awaiter(this, void 0, Promise, function () {
-            var restaurant;
+            var table;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel.findOne({ name: restaurantName })];
+                        return [4 /*yield*/, this.TableModel.findOne({ tableNumber: tableNumber })];
                     case 2:
-                        restaurant = _a.sent();
-                        if (restaurant)
-                            return [2 /*return*/, restaurant];
+                        table = _a.sent();
+                        if (table)
+                            return [2 /*return*/, table];
                         else
                             return [2 /*return*/, null];
                         return [2 /*return*/];
@@ -153,30 +153,30 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.getRestaurants = function () {
+    TableRepository.prototype.getTables = function () {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel.find({})];
+                        return [4 /*yield*/, this.TableModel.find({})];
                     case 2: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    RestaurantRepository.prototype.updateRestaurant = function (restaurant) {
+    TableRepository.prototype.updateTable = function (table) {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel
-                                .updateOne({ name: restaurant.name }, restaurant)
+                        return [4 /*yield*/, this.TableModel
+                                .updateOne({ tableNumber: table.tableNumber }, table)
                                 .then(function () {
-                                console.log("Restaurant " + restaurant.name + " has been updated!");
+                                console.log("Table " + table.tableNumber + " has been updated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -187,6 +187,6 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    return RestaurantRepository;
+    return TableRepository;
 }());
-exports.RestaurantRepository = RestaurantRepository;
+exports.TableRepository = TableRepository;

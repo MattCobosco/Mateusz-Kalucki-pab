@@ -1,7 +1,8 @@
 "use strict";
 exports.__esModule = true;
 var Customer = /** @class */ (function () {
-    function Customer(name, email, phone, address) {
+    function Customer(customerId, name, email, phone, address) {
+        this.customerId = customerId;
         this.name = name;
         this.email = email;
         this.phone = phone;

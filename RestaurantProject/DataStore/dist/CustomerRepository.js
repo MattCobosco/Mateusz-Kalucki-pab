@@ -36,51 +36,50 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.RestaurantRepository = void 0;
+exports.CustomerRepository = void 0;
 var mongoose_1 = require("mongoose");
-var RestaurantRepository = /** @class */ (function () {
-    function RestaurantRepository() {
-        this.restaurantSchema = new mongoose_1.Schema({
+var CustomerRepository = /** @class */ (function () {
+    function CustomerRepository() {
+        this.customerSchema = new mongoose_1.Schema({
+            customerId: { type: Number, required: true },
             name: { type: String, required: true },
-            address: { type: String, required: true },
-            phone: { type: String, required: true },
-            nip: { type: String, required: true },
             email: { type: String, required: true },
-            website: { type: String, required: true },
-            description: String
+            phone: { type: String, required: true },
+            address: { type: String, required: true },
+            loyaltyPoints: { type: Number, required: true }
         });
-        this.RestaurantModel = mongoose_1.model('Restaurant', this.restaurantSchema);
+        this.CustomerModel = mongoose_1.model('Customer', this.customerSchema);
     }
-    RestaurantRepository.prototype.populateRestaurants = function () {
+    CustomerRepository.prototype.populateCustomers = function () {
         return __awaiter(this, void 0, Promise, function () {
-            var restaurants;
+            var customers;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        restaurants = [
+                        customers = [
                             {
-                                name: 'Restaurant1',
-                                address: 'Address1',
+                                customerId: 1,
+                                name: 'Customer1',
+                                email: 'customer1@gmail.com',
                                 phone: '123456789',
-                                nip: '123456789',
-                                email: 'someEmail@something.com',
-                                website: 'someWebsite.com'
+                                address: 'CustomerAddress1',
+                                loyaltyPoints: 0
                             },
                             {
-                                name: 'Restaurant2',
-                                address: 'Address2',
+                                customerId: 2,
+                                name: 'Customer2',
+                                email: 'customer2@gmail.com',
                                 phone: '987654321',
-                                nip: '987654321',
-                                email: 'someEmail@somethingElse.com',
-                                website: 'someOtherWebsite.com'
+                                address: 'CustomerAddress2',
+                                loyaltyPoints: 0
                             }
                         ];
-                        return [4 /*yield*/, this.RestaurantModel
-                                .insertMany(restaurants)
+                        return [4 /*yield*/, this.CustomerModel
+                                .insertMany(customers)
                                 .then(function () {
-                                console.log("Restaurants have been populated!");
+                                console.log("Customers have been populated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -91,17 +90,17 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.addRestaurant = function (restaurant) {
+    CustomerRepository.prototype.addCustomer = function (customer) {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel
-                                .create(restaurant)
+                        return [4 /*yield*/, this.CustomerModel
+                                .create(customer)
                                 .then(function () {
-                                console.log("Restaurant " + restaurant.name + " has been added!");
+                                console.log("Customer " + customer.name + " has been added!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -112,17 +111,17 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.deleteRestaurantByName = function (restaurantName) {
+    CustomerRepository.prototype.deleteCustomerByName = function (customerName) {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel
-                                .deleteOne({ name: restaurantName })
+                        return [4 /*yield*/, this.CustomerModel
+                                .deleteOne({ name: customerName })
                                 .then(function () {
-                                console.log("Restaurant " + restaurantName + " has been deleted!");
+                                console.log("Customer " + customerName + " has been deleted!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -133,19 +132,19 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.getRestaurantByName = function (restaurantName) {
+    CustomerRepository.prototype.getCustomerByName = function (customerName) {
         return __awaiter(this, void 0, Promise, function () {
-            var restaurant;
+            var customer;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel.findOne({ name: restaurantName })];
+                        return [4 /*yield*/, this.CustomerModel.findOne({ name: customerName })];
                     case 2:
-                        restaurant = _a.sent();
-                        if (restaurant)
-                            return [2 /*return*/, restaurant];
+                        customer = _a.sent();
+                        if (customer)
+                            return [2 /*return*/, customer];
                         else
                             return [2 /*return*/, null];
                         return [2 /*return*/];
@@ -153,30 +152,30 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.getRestaurants = function () {
+    CustomerRepository.prototype.getCustomers = function () {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel.find({})];
+                        return [4 /*yield*/, this.CustomerModel.find({})];
                     case 2: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    RestaurantRepository.prototype.updateRestaurant = function (restaurant) {
+    CustomerRepository.prototype.updateCustomer = function (customer) {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel
-                                .updateOne({ name: restaurant.name }, restaurant)
+                        return [4 /*yield*/, this.CustomerModel
+                                .updateOne({ name: customer.name }, customer)
                                 .then(function () {
-                                console.log("Restaurant " + restaurant.name + " has been updated!");
+                                console.log("Customer " + customer.name + " has been updated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -187,6 +186,37 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    return RestaurantRepository;
+    CustomerRepository.prototype.addLoyaltyPoints = function (customerName, loyaltyPoints) {
+        return __awaiter(this, void 0, Promise, function () {
+            var customer;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.CustomerModel.findOne({ name: customerName })];
+                    case 2:
+                        customer = _a.sent();
+                        if (!customer) return [3 /*break*/, 4];
+                        customer.loyaltyPoints += loyaltyPoints;
+                        return [4 /*yield*/, this.CustomerModel
+                                .updateOne({ name: customerName }, customer)
+                                .then(function () {
+                                console.log("Customer loyalty points have been added to " + customerName + "!");
+                            })["catch"](function (err) {
+                                console.log(err);
+                            })];
+                    case 3:
+                        _a.sent();
+                        return [3 /*break*/, 5];
+                    case 4:
+                        console.log("Customer " + customerName + " does not exist!");
+                        _a.label = 5;
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return CustomerRepository;
 }());
-exports.RestaurantRepository = RestaurantRepository;
+exports.CustomerRepository = CustomerRepository;
