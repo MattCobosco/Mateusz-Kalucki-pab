@@ -5,6 +5,7 @@ export class CustomerRepository
 {
     customerSchema = new Schema<Customer>(
         {
+            customerId: {type: Number, required: true},
             name: {type: String, required: true},
             email: {type: String, required: true},
             phone: {type: String, required: true},
@@ -20,6 +21,7 @@ export class CustomerRepository
     
         const customers = [
             {
+                customerId: 1,
                 name: 'Customer1',
                 email: 'customer1@gmail.com',
                 phone: '123456789',
@@ -27,6 +29,7 @@ export class CustomerRepository
                 loyaltyPoints: 0
             },
             {
+                customerId: 2,
                 name: 'Customer2',
                 email: 'customer2@gmail.com',
                 phone: '987654321',
