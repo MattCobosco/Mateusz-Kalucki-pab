@@ -41,8 +41,7 @@ export class ReservationRepository
         .then(function()
         {
             console.log("Reservations have been populated!")
-        }
-        ).catch(function(err)
+        }).catch(function(err)
         {
             console.log(err);
         });       
