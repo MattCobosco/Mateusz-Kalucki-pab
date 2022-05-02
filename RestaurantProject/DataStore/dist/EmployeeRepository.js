@@ -36,51 +36,62 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.RestaurantRepository = void 0;
+exports.EmployeeRepository = void 0;
 var mongoose_1 = require("mongoose");
-var RestaurantRepository = /** @class */ (function () {
-    function RestaurantRepository() {
-        this.restaurantSchema = new mongoose_1.Schema({
+var RestaurantRepository_1 = require("./RestaurantRepository");
+var EmployeeRepository = /** @class */ (function () {
+    function EmployeeRepository() {
+        this.employeeSchema = new mongoose_1.Schema({
+            employeeId: { type: Number, required: true },
             name: { type: String, required: true },
-            address: { type: String, required: true },
-            phone: { type: String, required: true },
-            nip: { type: String, required: true },
-            email: { type: String, required: true },
-            website: { type: String, required: true },
-            description: String
+            surname: { type: String, required: true },
+            position: { type: String, required: true },
+            restaurantName: { type: String, required: true }
         });
-        this.RestaurantModel = mongoose_1.model('Restaurant', this.restaurantSchema);
+        this.EmployeeModel = mongoose_1.model('Employee', this.employeeSchema);
     }
-    RestaurantRepository.prototype.populateRestaurants = function () {
+    EmployeeRepository.prototype.populateEmployees = function () {
         return __awaiter(this, void 0, Promise, function () {
-            var restaurants;
+            var employees;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        restaurants = [
+                        employees = [
                             {
-                                name: 'Restaurant1',
-                                address: 'Address1',
-                                phone: '123456789',
-                                nip: '123456789',
-                                email: 'someEmail@something.com',
-                                website: 'someWebsite.com'
+                                employeeId: 1,
+                                name: 'Employee1',
+                                surname: 'Employee1',
+                                position: 'Manager',
+                                restaurantName: 'Restaurant1'
                             },
                             {
-                                name: 'Restaurant2',
-                                address: 'Address2',
-                                phone: '987654321',
-                                nip: '987654321',
-                                email: 'someEmail@somethingElse.com',
-                                website: 'someOtherWebsite.com'
+                                employeeId: 2,
+                                name: 'Employee2',
+                                surname: 'Employee2',
+                                position: 'Waiter',
+                                restaurantName: 'Restaurant1'
+                            },
+                            {
+                                employeeId: 3,
+                                name: 'Employee3',
+                                surname: 'Employee3',
+                                position: 'Waiter',
+                                restaurantName: 'Restaurant2'
+                            },
+                            {
+                                employeeId: 4,
+                                name: 'Employee4',
+                                surname: 'Employee4',
+                                position: 'Manager',
+                                restaurantName: 'Restaurant2'
                             }
                         ];
-                        return [4 /*yield*/, this.RestaurantModel
-                                .insertMany(restaurants)
+                        return [4 /*yield*/, this.EmployeeModel
+                                .insertMany(employees)
                                 .then(function () {
-                                console.log("Restaurants have been populated!");
+                                console.log("Employees have been populated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -91,17 +102,48 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.addRestaurant = function (restaurant) {
+    EmployeeRepository.prototype.addEmployee = function (employee) {
+        return __awaiter(this, void 0, Promise, function () {
+            var restaurantRepository, resturantExists;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        restaurantRepository = new RestaurantRepository_1.RestaurantRepository();
+                        return [4 /*yield*/, restaurantRepository.CheckIfRestaurantExists(employee.restaurantName)];
+                    case 2:
+                        resturantExists = _a.sent();
+                        if (!resturantExists) return [3 /*break*/, 4];
+                        return [4 /*yield*/, this.EmployeeModel
+                                .create(employee)
+                                .then(function () {
+                                console.log("Employee " + employee.name + " has been added!");
+                            })["catch"](function (err) {
+                                console.log(err);
+                            })];
+                    case 3:
+                        _a.sent();
+                        return [3 /*break*/, 5];
+                    case 4:
+                        console.log("Restaurant " + employee.restaurantName + " does not exist!");
+                        _a.label = 5;
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    EmployeeRepository.prototype.deleteEmployeeById = function (employeeId) {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel
-                                .create(restaurant)
+                        return [4 /*yield*/, this.EmployeeModel
+                                .deleteOne({ employeeId: employeeId })
                                 .then(function () {
-                                console.log("Restaurant " + restaurant.name + " has been added!");
+                                console.log("Employee " + employeeId + " has been deleted!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -112,71 +154,83 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.deleteRestaurantByName = function (restaurantName) {
+    EmployeeRepository.prototype.getEmployeeById = function (employeeId) {
         return __awaiter(this, void 0, Promise, function () {
+            var employee;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel
-                                .deleteOne({ name: restaurantName })
-                                .then(function () {
-                                console.log("Restaurant " + restaurantName + " has been deleted!");
-                            })["catch"](function (err) {
-                                console.log(err);
-                            })];
+                        return [4 /*yield*/, this.EmployeeModel.findOne({ employeeId: employeeId })];
                     case 2:
-                        _a.sent();
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    RestaurantRepository.prototype.getRestaurantByName = function (restaurantName) {
-        return __awaiter(this, void 0, Promise, function () {
-            var restaurant;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
-                    case 1:
-                        _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel.findOne({ name: restaurantName })];
-                    case 2:
-                        restaurant = _a.sent();
-                        if (restaurant)
-                            return [2 /*return*/, restaurant];
-                        else
+                        employee = _a.sent();
+                        if (employee) {
+                            return [2 /*return*/, employee];
+                        }
+                        else {
                             return [2 /*return*/, null];
+                        }
                         return [2 /*return*/];
                 }
             });
         });
     };
-    RestaurantRepository.prototype.getRestaurants = function () {
+    EmployeeRepository.prototype.getEmployees = function () {
         return __awaiter(this, void 0, Promise, function () {
+            var employees;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel.find({})];
-                    case 2: return [2 /*return*/, _a.sent()];
+                        return [4 /*yield*/, this.EmployeeModel.find()];
+                    case 2:
+                        employees = _a.sent();
+                        if (employees) {
+                            return [2 /*return*/, employees];
+                        }
+                        else {
+                            return [2 /*return*/, null];
+                        }
+                        return [2 /*return*/];
                 }
             });
         });
     };
-    RestaurantRepository.prototype.updateRestaurant = function (restaurant) {
+    EmployeeRepository.prototype.getEmployeesByRestaurantName = function (restaurantName) {
+        return __awaiter(this, void 0, Promise, function () {
+            var employees;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.EmployeeModel.find({ restaurantName: restaurantName })];
+                    case 2:
+                        employees = _a.sent();
+                        if (employees) {
+                            return [2 /*return*/, employees];
+                        }
+                        else {
+                            return [2 /*return*/, null];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    EmployeeRepository.prototype.updateEmployee = function (employee) {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel
-                                .updateOne({ name: restaurant.name }, restaurant)
+                        return [4 /*yield*/, this.EmployeeModel
+                                .updateOne({ employeeId: employee.employeeId }, employee)
                                 .then(function () {
-                                console.log("Restaurant " + restaurant.name + " has been updated!");
+                                console.log("Employee " + employee.employeeId + " has been updated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -187,26 +241,6 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.CheckIfRestaurantExists = function (restaurantName) {
-        return __awaiter(this, void 0, Promise, function () {
-            var restaurant;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
-                    case 1:
-                        _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel.findOne({ name: restaurantName })];
-                    case 2:
-                        restaurant = _a.sent();
-                        if (restaurant)
-                            return [2 /*return*/, true];
-                        else
-                            return [2 /*return*/, false];
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    return RestaurantRepository;
+    return EmployeeRepository;
 }());
-exports.RestaurantRepository = RestaurantRepository;
+exports.EmployeeRepository = EmployeeRepository;

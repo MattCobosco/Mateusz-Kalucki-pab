@@ -1,11 +1,12 @@
 "use strict";
 exports.__esModule = true;
 var Employee = /** @class */ (function () {
-    function Employee(name, surname, position, restaurant) {
+    function Employee(employeeId, name, surname, position, restaurantName) {
+        this.employeeId = employeeId;
         this.name = name;
         this.surname = surname;
         this.position = position;
-        this.restaurant = restaurant;
+        this.restaurantName = restaurantName;
     }
     return Employee;
 }());
