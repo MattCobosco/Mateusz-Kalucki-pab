@@ -111,5 +111,15 @@ export class RestaurantRepository
             console.log(err);
         });
     }
+
+    async CheckIfRestaurantExists(restaurantName: string) : Promise<boolean>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+        let restaurant = await this.RestaurantModel.findOne({name: restaurantName});
+        if (restaurant)
+            return true;
+        else
+            return false;
+    }
 }
 
