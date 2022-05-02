@@ -1,3 +1,4 @@
+import { table } from 'console';
 import {Schema, model, connect} from 'mongoose';
 import Reservation from '../CoreBusiness/ReservationModel';
 
@@ -73,8 +74,7 @@ export class ReservationRepository
         .then(function()
         {
             console.log("Reservation of ID " + reservationId + " has been deleted!");
-        }
-        ).catch(function(err)
+        }).catch(function(err)
         {
             console.log(err);
         });
@@ -112,5 +112,12 @@ export class ReservationRepository
         {
             console.log(err);
         });
+    }
+
+    async reservationPerCustomer(customerId: Number) : Promise<Reservation[]>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        return await this.ReservationModel.find({customerId: customerId});
     }
 }
