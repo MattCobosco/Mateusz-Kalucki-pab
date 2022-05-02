@@ -1,5 +1,6 @@
 import {Schema, model, connect} from 'mongoose';
 import Table from '../CoreBusiness/TableModel';
+import {ReservationRepository} from './ReservationRepository';
 
 export class TableRepository
 {
@@ -114,5 +115,57 @@ export class TableRepository
         {
             console.log(err);
         });
+    }
+
+    async getFreeTables(startDateTime : Date, endDateTime: Date, numberOfPeople: number) : Promise<Table[]>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        // get list of all reservations
+        let reservationRepository = new ReservationRepository();
+        let reservations = await reservationRepository.getReservations();
+
+        // get list of all tables
+        let tables = await this.getTables();
+
+        // get list of tables that are free
+        let freeTables: Table[] = [];
+        for (let table of tables)
+        {
+            let isFree = true;
+            for (let reservation of reservations)
+            {
+                if (reservation.tableNumber == table.tableNumber)
+                {
+                    if (reservation.startDateTime <= startDateTime && reservation.endDateTime >= endDateTime)
+                    {
+                        isFree = false;
+                        break;
+                    }
+                    else if (reservation.startDateTime <= startDateTime && reservation.startDateTime >= endDateTime)
+                    {
+                        isFree = false;
+                        break;
+                    }
+                    else if (reservation.endDateTime <= endDateTime && reservation.endDateTime >= startDateTime)
+                    {
+                        isFree = false;
+                        break;
+                    }
+                }
+            }
+            if (isFree)
+                freeTables.push(table);
+        }
+
+        // get list of tables that have enough seats
+        let freeTablesWithEnoughSeats: Table[] = [];
+        for (let table of freeTables)
+        {
+            if (table.seats >= numberOfPeople)
+                freeTablesWithEnoughSeats.push(table);
+        }
+
+        return freeTablesWithEnoughSeats;
     }
 }
