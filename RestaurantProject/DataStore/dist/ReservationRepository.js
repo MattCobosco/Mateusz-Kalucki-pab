@@ -183,6 +183,19 @@ var ReservationRepository = /** @class */ (function () {
             });
         });
     };
+    ReservationRepository.prototype.reservationPerCustomer = function (customerId) {
+        return __awaiter(this, void 0, Promise, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.ReservationModel.find({ customerId: customerId })];
+                    case 2: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
     return ReservationRepository;
 }());
 exports.ReservationRepository = ReservationRepository;

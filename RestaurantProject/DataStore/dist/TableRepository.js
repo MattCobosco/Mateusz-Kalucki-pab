@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.TableRepository = void 0;
 var mongoose_1 = require("mongoose");
+var ReservationRepository_1 = require("./ReservationRepository");
 var TableRepository = /** @class */ (function () {
     function TableRepository() {
         this.tableSchema = new mongoose_1.Schema({
@@ -183,6 +184,56 @@ var TableRepository = /** @class */ (function () {
                     case 2:
                         _a.sent();
                         return [2 /*return*/];
+                }
+            });
+        });
+    };
+    TableRepository.prototype.getFreeTables = function (startDateTime, endDateTime, numberOfPeople) {
+        return __awaiter(this, void 0, Promise, function () {
+            var reservationRepository, reservations, tables, freeTables, _i, tables_1, table, isFree, _a, reservations_1, reservation, freeTablesWithEnoughSeats, _b, freeTables_1, table;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 1:
+                        _c.sent();
+                        reservationRepository = new ReservationRepository_1.ReservationRepository();
+                        return [4 /*yield*/, reservationRepository.getReservations()];
+                    case 2:
+                        reservations = _c.sent();
+                        return [4 /*yield*/, this.getTables()];
+                    case 3:
+                        tables = _c.sent();
+                        freeTables = [];
+                        for (_i = 0, tables_1 = tables; _i < tables_1.length; _i++) {
+                            table = tables_1[_i];
+                            isFree = true;
+                            for (_a = 0, reservations_1 = reservations; _a < reservations_1.length; _a++) {
+                                reservation = reservations_1[_a];
+                                if (reservation.tableNumber == table.tableNumber) {
+                                    if (reservation.startDateTime <= startDateTime && reservation.endDateTime >= endDateTime) {
+                                        isFree = false;
+                                        break;
+                                    }
+                                    else if (reservation.startDateTime <= startDateTime && reservation.startDateTime >= endDateTime) {
+                                        isFree = false;
+                                        break;
+                                    }
+                                    else if (reservation.endDateTime <= endDateTime && reservation.endDateTime >= startDateTime) {
+                                        isFree = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (isFree)
+                                freeTables.push(table);
+                        }
+                        freeTablesWithEnoughSeats = [];
+                        for (_b = 0, freeTables_1 = freeTables; _b < freeTables_1.length; _b++) {
+                            table = freeTables_1[_b];
+                            if (table.seats >= numberOfPeople)
+                                freeTablesWithEnoughSeats.push(table);
+                        }
+                        return [2 /*return*/, freeTablesWithEnoughSeats];
                 }
             });
         });
