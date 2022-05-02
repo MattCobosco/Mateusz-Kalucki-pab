@@ -1,4 +1,3 @@
-import { table } from 'console';
 import {Schema, model, connect} from 'mongoose';
 import Reservation from '../CoreBusiness/ReservationModel';
 
