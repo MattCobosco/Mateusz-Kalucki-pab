@@ -11,14 +11,16 @@ enum Type
 
 class MenuItem
 {
+    menuItemId: number,
     name: string;
     price: number;
     type: Type;
     description: string;
     products: Product[];
 
-    constructor(name: string, price: number, type: Type, description: string, products: Product[])
+    constructor(menuItemId: number, name: string, price: number, type: Type, description: string, products: Product[])
     {
+        this.menuItemId = menuItemId;
         this.name = name;
         this.price = price;
         this.type = type;
