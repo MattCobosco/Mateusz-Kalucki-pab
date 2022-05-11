@@ -50,7 +50,7 @@ router.get('/customers', async (req: Request, res: Response) => {
 });
 
 // get customer by name
-router.get('/customers/:name', async (req: Request, res: Response) => {
+router.get('/customer/:name', async (req: Request, res: Response) => {
     const customer = await customerRepository.getCustomerByName(req.params.name);
     if (customer)
         res.status(200).json(customer);
@@ -59,27 +59,92 @@ router.get('/customers/:name', async (req: Request, res: Response) => {
 });
 
 // delete customer by name
-router.delete('/customers/:name', async (req: Request, res: Response) => {
+router.delete('/customer/:name', async (req: Request, res: Response) => {
     const customer = await customerRepository.deleteCustomerByName(req.params.name);
     res.status(200).json('Restaurant ' + req.params.name + ' deleted');
 });
 
 // add customer from body
-router.post('/customers', async (req: Request, res: Response) => {
+router.post('/customer', async (req: Request, res: Response) => {
     const customer = await customerRepository.addCustomer(req.body);
     res.status(200).json(customer);
 });
 
 // update customer from body
-router.put('/customers/', async (req: Request, res: Response) => {
+router.put('/customer/', async (req: Request, res: Response) => {
     const customer = await customerRepository.updateCustomer(req.body);
     res.status(200).json(customer);
 });
 
 // add loyalty points to customer
-router.put('/customers/:name/loyaltyPoints', async (req: Request, res: Response) => {
-    const customer = await customerRepository.addLoyaltyPoints(req.params.name, req.body.points);
+router.put('/customer/:name/:loyaltyPoints', async (req: Request, res: Response) => {
+    const customer = await customerRepository.addLoyaltyPoints(req.params.name, req.params.points);
     res.status(200).json(customer);
+});
+
+// REST API for Employee
+// get all employees
+router.get('/employees', async (req: Request, res: Response) => {
+    const employees = await employeeRepository.getEmployees();
+    if (employees.length > 0)
+        res.status(200).json(employees);
+    else if(employees.length === 0)
+        res.status(404).json({message: 'Employees list is empty'});
+    else
+        res.status(404).json({message: 'No employee list found'});
+});
+
+// get employee by id
+router.get('/employee/:id', async (req: Request, res: Response) => {
+    const employee = await employeeRepository.getEmployeeById(req.params.id);
+    if (employee)
+        res.status(200).json(employee);
+    else
+        res.status(404).json({message: 'Employee if id: ' + req.params.id + ' not found'});
+});
+
+// get employee by name
+router.get('/employee/:name', async (req: Request, res: Response) => {
+    const employee = await employeeRepository.getEmployeeByName(req.params.name);
+    if (employee)
+        res.status(200).json(employee);
+    else
+        res.status(404).json({message: 'Employee ' + req.params.name + ' not found'});
+});
+
+// delete employee by id
+router.delete('/employee/:id', async (req: Request, res: Response) => {
+    const employee = await employeeRepository.deleteEmployeeById(req.params.id);
+    res.status(200).json('Employee ' + req.params.id + ' deleted');
+});
+
+// delete employee by name
+router.delete('/employee/:name', async (req: Request, res: Response) => {
+    const employee = await employeeRepository.deleteEmployeeByName(req.params.name);
+    res.status(200).json('Employee ' + req.params.name + ' deleted');
+});
+
+// add employee from body
+router.post('/employee', async (req: Request, res: Response) => {
+    const employee = await employeeRepository.addEmployee(req.body);
+    res.status(200).json(employee);
+});
+
+// update employee from body
+router.put('/employee/', async (req: Request, res: Response) => {
+    const employee = await employeeRepository.updateEmployee(req.body);
+    res.status(200).json(employee);
+});
+
+// get employees by restaurant name
+router.get('/employees/:restaurantName', async (req: Request, res: Response) => {
+    const employees = await employeeRepository.getEmployeesByRestaurantName(req.params.restaurantName);
+    if (employees.length > 0)
+        res.status(200).json(employees);
+    else if(employees.length === 0)
+        res.status(404).json({message: 'Employees list is empty'});
+    else
+        res.status(404).json({message: 'No employee list found'});
 });
 
 // REST API for Restaurant
