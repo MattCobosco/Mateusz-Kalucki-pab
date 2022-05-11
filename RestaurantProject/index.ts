@@ -33,6 +33,7 @@ app.use('/', router);
 const customerRepository = new CustomerRepository();
 const employeeRepository = new EmployeeRepository();
 const menuItemRepository = new MenuItemRepository();
+const orderRepository = new OrderRepository();
 const productRepository = new ProductRepository();
 const reservationRepository = new ReservationRepository();
 const restaurantRepository = new RestaurantRepository();
@@ -151,6 +152,8 @@ router.get('/employees/:restaurantName', async (req: Request, res: Response) => 
 // REST API for MenuItem
 // get all menu items
 
+// REST API for Order
+
 
 // REST API for Product
 // get all products
@@ -191,6 +194,56 @@ router.put('/product/', async (req: Request, res: Response) => {
     res.status(200).json(product);
 });
 
+// REST API for Reservation
+// get all reservations
+router.get('/reservations', async (req: Request, res: Response) => {
+    const reservations = await reservationRepository.getReservations();
+    if (reservations.length > 0)
+        res.status(200).json(reservations);
+    else if(reservations.length === 0)
+        res.status(404).json({message: 'Reservations list is empty'});
+    else
+        res.status(404).json({message: 'No reservation list found'});
+});
+
+// get reservation by id
+router.get('/reservation/:id', async (req: Request, res: Response) => {
+    const reservation = await reservationRepository.getReservationById(req.params.id);
+    if (reservation)
+        res.status(200).json(reservation);
+    else
+        res.status(404).json({message: 'Reservation if id: ' + req.params.id + ' not found'});
+});
+
+// delete reservation by id
+router.delete('/reservation/:id', async (req: Request, res: Response) => {
+    const reservation = await reservationRepository.deleteReservationById(req.params.id);
+    res.status(200).json('Reservation ' + req.params.id + ' deleted');
+});
+
+// add reservation from body
+router.post('/reservation', async (req: Request, res: Response) => {
+    const reservation = await reservationRepository.addReservation(req.body);
+    res.status(200).json(reservation);
+});
+
+// update reservation from body
+router.put('/reservation/', async (req: Request, res: Response) => {
+    const reservation = await reservationRepository.updateReservation(req.body);
+    res.status(200).json(reservation);
+});
+
+// get reservations by customer ID
+router.get('/reservations/:customerId', async (req: Request, res: Response) => {
+    const reservations = await reservationRepository.getReservationsPerCustomer(req.params.customerId);
+    if (reservations.length > 0)
+        res.status(200).json(reservations);
+    else if(reservations.length === 0)
+        res.status(404).json({message: 'Reservations list is empty'});
+    else
+        res.status(404).json({message: 'No reservation list found'});
+});
+
 // REST API for Restaurant
 // get all restaurants
 router.get('/restaurants', async (req: Request, res: Response) => {
@@ -198,9 +251,9 @@ router.get('/restaurants', async (req: Request, res: Response) => {
     if (restaurants.length > 0)
         res.json(restaurants);
     else if (restaurants.length === 0)
-        res.status(200).send('Restaurant list is empty');
+        res.status(200).json('Restaurant list is empty');
     else
-        res.status(404).send('No restaurants found');
+        res.status(404).json('No restaurants found');
 });
 
 // get restaurant by name
@@ -209,20 +262,20 @@ router.get('/restaurant/:name', async (req: Request, res: Response) => {
     if (restaurant)
         res.json(restaurant);
     else
-        res.status(404).send('Restaurant not found');
+        res.status(404).json('Restaurant not found');
 });
 
 // delete restaurant by name
 router.delete('/restaurant/:name', async (req: Request, res: Response) => {
     await restaurantRepository.deleteRestaurantByName(req.params.name);
-    res.status(200).send('Restaurant deleted');
+    res.status(200).json('Restaurant deleted');
 });
 
 // add a restaurant from body
 router.post('/restaurant', async (req: Request, res: Response) => {
     const restaurant = req.body;
     await restaurantRepository.addRestaurant(restaurant);
-    res.status(200).send('Restaurant added');
+    res.status(200).json('Restaurant added');
 });
 
 // update restaurant from body
