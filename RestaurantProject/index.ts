@@ -284,4 +284,54 @@ router.put('/restaurant/', async (req: Request, res: Response) => {
     res.status(200).json(restaurant);
 });
 
+// REST API for Table
+// get all tables
+router.get('/tables', async (req: Request, res: Response) => {
+    const tables = await tableRepository.getTables();
+    if (tables.length > 0)
+        res.status(200).json(tables);
+    else if(tables.length === 0)
+        res.status(404).json({message: 'Tables list is empty'});
+    else
+        res.status(404).json({message: 'No table list found'});
+});
+
+// get table by number
+router.get('/table/:number', async (req: Request, res: Response) => {
+    const table = await tableRepository.getTableByNumber(req.params.number);
+    if (table)
+        res.status(200).json(table);
+    else
+        res.status(404).json({message: 'Table number: ' + req.params.number + ' not found'});
+});
+
+// delete table by number
+router.delete('/table/:number', async (req: Request, res: Response) => {
+    const table = await tableRepository.deleteTableByNumber(req.params.number);
+    res.status(200).json('Table ' + req.params.number + ' deleted');
+});
+
+// add table from body
+router.post('/table', async (req: Request, res: Response) => {
+    const table = await tableRepository.addTable(req.body);
+    res.status(200).json(table);
+});
+
+// update table from body
+router.put('/table/', async (req: Request, res: Response) => {
+    const table = await tableRepository.updateTable(req.body);
+    res.status(200).json(table);
+});
+
+// get free tables by start date, end date, number of people
+router.get('/tables/:startDate/:endDate/:people', async (req: Request, res: Response) => {
+    const tables = await tableRepository.getFreeTables(req.params.startDate, req.params.endDate, req.params.people);
+    if (tables.length > 0)
+        res.status(200).json(tables);
+    else if(tables.length === 0)
+        res.status(404).json({message: 'Tables list is empty'});
+    else
+        res.status(404).json({message: 'No table list found'});
+});
+
 app.listen(3000);
