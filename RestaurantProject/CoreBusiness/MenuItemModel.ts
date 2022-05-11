@@ -11,7 +11,7 @@ enum Type
 
 class MenuItem
 {
-    menuItemId: number,
+    menuItemId: number;
     name: string;
     price: number;
     type: Type;
