@@ -16,6 +16,7 @@ import {Request, Response} from 'express';
 import { CustomerRepository } from './DataStore/CustomerRepository';
 import { EmployeeRepository } from './DataStore/EmployeeRepository';
 import { MenuItemRepository } from './DataStore/MenuItemRepository';
+import { OrderRepository } from './DataStore/OrderRepository';
 import { ProductRepository } from './DataStore/ProductRepository';
 import { ReservationRepository } from './DataStore/ReservationRepository';
 import { RestaurantRepository } from './DataStore/RestaurantRepository';
@@ -145,6 +146,49 @@ router.get('/employees/:restaurantName', async (req: Request, res: Response) => 
         res.status(404).json({message: 'Employees list is empty'});
     else
         res.status(404).json({message: 'No employee list found'});
+});
+
+// REST API for MenuItem
+// get all menu items
+
+
+// REST API for Product
+// get all products
+router.get('/products', async (req: Request, res: Response) => {
+    const products = await productRepository.getProducts();
+    if (products.length > 0)
+        res.status(200).json(products);
+    else if(products.length === 0)
+        res.status(404).json({message: 'Products list is empty'});
+    else
+        res.status(404).json({message: 'No product list found'});
+});
+
+// get product by id
+router.get('/product/:id', async (req: Request, res: Response) => {
+    const product = await productRepository.getProductById(req.params.id);
+    if (product)
+        res.status(200).json(product);
+    else
+        res.status(404).json({message: 'Product if id: ' + req.params.id + ' not found'});
+});
+
+// delete product by id
+router.delete('/product/:id', async (req: Request, res: Response) => {
+    const product = await productRepository.deleteProductById(req.params.id);
+    res.status(200).json('Product ' + req.params.id + ' deleted');
+});
+
+// add product from body
+router.post('/product', async (req: Request, res: Response) => {
+    const product = await productRepository.addProduct(req.body);
+    res.status(200).json(product);
+});
+
+// update product from body
+router.put('/product/', async (req: Request, res: Response) => {
+    const product = await productRepository.updateProduct(req.body);
+    res.status(200).json(product);
 });
 
 // REST API for Restaurant
