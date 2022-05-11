@@ -83,7 +83,7 @@ export class ProductRepository
         .then(function()
         {
             console.log("Products have been populated!")
-        }).catch(function(err)
+        }).catch(function(err: any)
         {
             console.log(err);
         });
@@ -98,13 +98,13 @@ export class ProductRepository
         .then(function()
         {
             console.log("Product " + product.productId + " has been added!");
-        }).catch(function(err)
+        }).catch(function(err: any)
         {
             console.log(err);
         });
     }
 
-    async deleteProductByNumber(productId: number) : Promise<void>
+    async deleteProductById(productId: number) : Promise<void>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
@@ -113,13 +113,13 @@ export class ProductRepository
         .then(function()
         {
             console.log("Product " + productId + " has been deleted!");
-        }).catch(function(err)
+        }).catch(function(err: any)
         {
             console.log(err);
         });
     }
 
-    async getProductByNumber(productId: number) : Promise<Product>
+    async getProductById(productId: number) : Promise<Product>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
@@ -146,7 +146,7 @@ export class ProductRepository
         .then(function()
         {
             console.log("Product " + product.productId + " has been updated!");
-        }).catch(function(err)
+        }).catch(function(err: any)
         {
             console.log(err);
         });
