@@ -41,7 +41,7 @@ export class ReservationRepository
         .then(function()
         {
             console.log("Reservations have been populated!")
-        }).catch(function(err)
+        }).catch(function(err: any)
         {
             console.log(err);
         });       
@@ -57,7 +57,7 @@ export class ReservationRepository
         {
             console.log("Reservation of ID " + reservation.reservationId + " has been added!");
         }
-        ).catch(function(err)
+        ).catch(function(err: any)
         {
             console.log(err);
         });
@@ -72,7 +72,7 @@ export class ReservationRepository
         .then(function()
         {
             console.log("Reservation of ID " + reservationId + " has been deleted!");
-        }).catch(function(err)
+        }).catch(function(err: any)
         {
             console.log(err);
         });
@@ -106,13 +106,13 @@ export class ReservationRepository
         {
             console.log("Reservation of ID " + reservation.reservationId + " has been updated!");
         }
-        ).catch(function(err)
+        ).catch(function(err: any)
         {
             console.log(err);
         });
     }
 
-    async reservationPerCustomer(customerId: Number) : Promise<Reservation[]>
+    async getReservationsPerCustomer(customerId: Number) : Promise<Reservation[]>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
