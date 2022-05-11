@@ -76,6 +76,12 @@ router.put('/customers/:name', async (req: Request, res: Response) => {
     res.status(200).json(customer);
 });
 
+// add loyalty points to customer
+router.put('/customers/:name/loyaltyPoints', async (req: Request, res: Response) => {
+    const customer = await customerRepository.addLoyaltyPoints(req.params.name, req.body.points);
+    res.status(200).json(customer);
+});
+
 // REST API for Restaurant
 // get all restaurants
 router.get('/restaurants', async (req: Request, res: Response) => {
