@@ -56,7 +56,7 @@ export class EmployeeRepository
         .then(function()
         {
             console.log("Employees have been populated!")
-        }).catch(function(err)
+        }).catch(function(err: any)
         {
             console.log(err);
         });
@@ -77,7 +77,7 @@ export class EmployeeRepository
             .then(function()
             {
                 console.log("Employee " + employee.name + " has been added!");
-            }).catch(function(err)
+            }).catch(function(err: any)
             {
                 console.log(err);
             });
@@ -97,7 +97,23 @@ export class EmployeeRepository
         .then(function()
         {
             console.log("Employee " + employeeId + " has been deleted!");
-        }).catch(function(err)
+        }).catch(function(err: any)
+        {
+            console.log(err);
+        });
+    }
+
+    async deleteEmployeeByName(employeeName: string) : Promise<void>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+
+        await this.EmployeeModel
+        .deleteOne({name: employeeName})
+        .then(function()
+        {
+            console.log("Employee " + employeeName + " has been deleted!");
+        }).catch(function(err: any)
         {
             console.log(err);
         });
@@ -108,6 +124,21 @@ export class EmployeeRepository
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
         let employee = await this.EmployeeModel.findOne({employeeId: employeeId});
+        if(employee)
+        {
+            return employee;
+        }
+        else
+        {
+            return null as any;
+        }
+    }
+
+    async getEmployeeByName(employeeName: string) : Promise<Employee>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        let employee = await this.EmployeeModel.findOne({name: employeeName});
         if(employee)
         {
             return employee;
@@ -157,7 +188,7 @@ export class EmployeeRepository
         .then(function()
         {
             console.log("Employee " + employee.employeeId + " has been updated!");
-        }).catch(function(err)
+        }).catch(function(err: any)
         {
             console.log(err);
         });
