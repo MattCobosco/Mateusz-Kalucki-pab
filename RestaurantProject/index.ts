@@ -14,8 +14,9 @@ import {Request, Response} from 'express';
 
 
 import { CustomerRepository } from './DataStore/CustomerRepository';
-/*
+
 import { EmployeeRepository } from './DataStore/EmployeeRepository';
+/*
 import { MenuItemRepository } from './DataStore/MenuItemRepository';
 import { OrderRepository } from './DataStore/OrderRepository';
 import { ProductRepository } from './DataStore/ProductRepository';
@@ -34,8 +35,8 @@ app.use('/', router);
 
 
 const customerRepository = new CustomerRepository();
-/*
 const employeeRepository = new EmployeeRepository();
+/*
 const menuItemRepository = new MenuItemRepository();
 const orderRepository = new OrderRepository();
 const productRepository = new ProductRepository();
@@ -44,8 +45,10 @@ const reservationRepository = new ReservationRepository();
 const restaurantRepository = new RestaurantRepository();
 // const tableRepository = new TableRepository();
 
-// restaurantRepository.populateRestaurants();
+// DATABASE POPULATION:
 // customerRepository.populateCustomers();
+// employeeRepository.populateEmployees();
+// restaurantRepository.populateRestaurants();
 
 // REST API for Customer
 // get all customers
@@ -114,6 +117,68 @@ router.put('/customer/:name/', async (req: Request, res: Response) => {
     .then(function()
     {
         res.send(req.body.loyaltyPoints + " loyalty points for " + req.params.name + "!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// REST API for Employee
+// get all employees
+router.get('/employees', async (req: Request, res: Response) => {
+    await employeeRepository.getEmployees()
+    .then(function(employees: any)
+    {
+        res.send(employees);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// get employee by surname
+router.get('/employee/:name', async (req: Request, res: Response) => {
+    await employeeRepository.getEmployeeBySurname(req.params.name)
+    .then(function(employee: any)
+    {
+        res.send(employee);
+    }
+    ).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// delete employee by surname
+router.delete('/employee/:name', async (req: Request, res: Response) => {
+    await employeeRepository.deleteEmployeeBySurname(req.params.name)
+    .then(function()
+    {
+        res.send("Employee " + req.params.name + " has been deleted!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// add employee from request body
+router.post('/employee', async (req: Request, res: Response) => {
+    await employeeRepository.addEmployee(req.body)
+    .then(function()
+    {
+        res.send("Employee " + req.body.name + " has been added!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// update employee from request body
+router.put('/employee', async (req: Request, res: Response) => {
+    await employeeRepository.updateEmployee(req.body)
+    .then(function()
+    {
+        res.send("Employee " + req.body.name + " has been updated!");
     }).catch(function(err: any)
     {
         res.send(err);
