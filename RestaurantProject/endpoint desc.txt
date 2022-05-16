@@ -1,0 +1,56 @@
+CUSTOMER:
+
+GET http://localhost:3000/customers => pobiera listę wszystkich klientów
+
+GET http://localhost:3000/customer/CustomerX => pobiera klienta o imieniu CustomerX
+
+DELETE http://localhost:3000/customer/CustomerX => kasuje klienta o imieniu CustomerX
+
+POST http://localhost:3000/customer => dodaje nowego klienta z body requestu
+x-www-form-urlencoded
+{
+name Customer2
+email customer2@gmail.com
+phone 123456789
+address someCustomerAddress
+}
+
+PUT http://localhost:3000/customer => update'uje klienta z body requestu
+x-www-form-urlencoded
+{
+name Customer2
+address someCustomerAddressUpdated
+}
+
+
+PUT http://localhost:3000/customer/CustomerX => dodaje klientowi ilość loyaltyPoints określoną w body requestu
+x-www-form-urlencoded
+{
+loyaltyPoints 8
+}
+
+
+EMPLOYEE:
+
+GET http://localhost:3000/employees => pobiera listę wszystkich restauracji
+
+GET http://localhost:3000/employee/EmployeeX => pobiera pracownika o nazwisku EmployeeX
+
+DELETE http://localhost:3000/employee/EmployeeX => kasuje pracownika o nazwisku EmployeeX
+
+POST http://localhost:3000/employee => dodaje nowego pracownika z body requestu
+x-www-form-urlencoded
+{
+name Employee4
+surname Employee4
+position Chef
+restaurant 62825d046e2b74b56f5ccc77
+}
+
+PUT http://localhost:3000/employee => update'uje pracownika z body requestu
+x-www-form-urlencoded
+{
+surname Employee4
+name Employee4 updated
+}
+
