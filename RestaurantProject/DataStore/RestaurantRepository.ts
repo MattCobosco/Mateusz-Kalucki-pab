@@ -99,20 +99,40 @@ export class RestaurantRepository
         return await this.RestaurantModel.find({});
     }
 
-    async updateRestaurant(restaurant: Restaurant) : Promise<void>
+    async updateRestaurant(restaurantName: string, restaurant: Restaurant) : Promise<void>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        await this.RestaurantModel
-        .updateOne({name: restaurant.name}, restaurant)
-        .then(function()
+        let restaurantToUpdate = await this.RestaurantModel.findOne({name: restaurantName});
+        if (restaurantToUpdate)
         {
-            console.log("Restaurant " + restaurant.name + " has been updated!")
+            if(restaurant.name)
+                restaurantToUpdate.name = restaurant.name;
+            if(restaurant.address)
+                restaurantToUpdate.address = restaurant.address;
+            if(restaurant.phone)
+                restaurantToUpdate.phone = restaurant.phone;
+            if(restaurant.nip)
+                restaurantToUpdate.nip = restaurant.nip;
+            if(restaurant.email)
+                restaurantToUpdate.email = restaurant.email;
+            if(restaurant.website)
+                restaurantToUpdate.website = restaurant.website;
+            if(restaurant.description)
+                restaurantToUpdate.description = restaurant.description;
+
+            await this.RestaurantModel
+            .updateOne({name: restaurantName}, restaurantToUpdate)
+            .then(function()
+            {
+                console.log("Restaurant " + restaurantName + " has been updated!");
+            }).catch(function(err)
+            {
+                console.log(err);
+            });
         }
-        ).catch(function(err)
-        {
-            console.log(err);
-        });
+        else
+            console.log("Restaurant " + restaurantName + " does not exist!");
     }
 
     async CheckIfRestaurantExists(restaurantName: string) : Promise<boolean>

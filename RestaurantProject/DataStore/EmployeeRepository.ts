@@ -136,18 +136,35 @@ export class EmployeeRepository
         }
     }
 
-    async updateEmployee(employee: Employee) : Promise<void>
+    async updateEmployee(employeeSurname: string, employee: Employee) : Promise<void>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        await this.EmployeeModel
-        .updateOne(employee)
-        .then(function()
+        let employeeToUpdate = await this.EmployeeModel.findOne({surname: employee.surname});
+
+        if(employeeToUpdate)
         {
-            console.log("Employee " + employee.surname + " has been updated!");
-        }).catch(function(err: any)
+            if(employee.name)
+             employeeToUpdate.name = employee.name;
+            if(employee.surname)
+                employeeToUpdate.surname = employee.surname;
+            if(employee.position)
+                employeeToUpdate.position = employee.position;
+            if(employee.restaurant)
+                employeeToUpdate.restaurant = employee.restaurant;
+    
+            await employeeToUpdate.save()
+            .then(function()
+            {
+                console.log("Employee " + employee.surname + " has been updated!");
+            }).catch(function(err: any)
+            {
+                console.log(err);
+            });
+        }
+        else 
         {
-            console.log(err);
-        });
+            console.log("Employee " + employee.surname + " does not exist!");
+        }
     }
 }
