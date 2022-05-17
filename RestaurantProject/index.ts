@@ -41,7 +41,7 @@ const restaurantRepository = new RestaurantRepository();
 // DATABASE POPULATION:
 customerRepository.populateCustomers();
 employeeRepository.populateEmployees();
-menuItemRepository.populateMenuItems();
+// menuItemRepository.populateMenuItems();
 productRepository.populateProducts();
 restaurantRepository.populateRestaurants();
 
@@ -137,8 +137,7 @@ router.get('/employee/:name', async (req: Request, res: Response) => {
     .then(function(employee: any)
     {
         res.send(employee);
-    }
-    ).catch(function(err: any)
+    }).catch(function(err: any)
     {
         res.send(err);
     });
@@ -307,39 +306,39 @@ router.put('/product/:name', async (req: Request, res: Response) => {
 router.get('/restaurants', async (req: Request, res: Response) => {
     let restaurants = await restaurantRepository.getRestaurants();
     if (restaurants.length > 0)
-        res.json(restaurants);
+        res.send(restaurants);
     else if (restaurants.length === 0)
-        res.status(200).json('Restaurant list is empty');
+        res.status(200).send('Restaurant list is empty');
     else
-        res.status(404).json('No restaurants found');
+        res.status(404).send('No restaurants found');
 });
 
 // get restaurant by name
 router.get('/restaurant/:name', async (req: Request, res: Response) => {
     const restaurant = await restaurantRepository.getRestaurantByName(req.params.name);
     if (restaurant)
-        res.json(restaurant);
+        res.send(restaurant);
     else
-        res.status(404).json('Restaurant not found');
+        res.status(404).send('Restaurant not found');
 });
 
 // delete restaurant by name
 router.delete('/restaurant/:name', async (req: Request, res: Response) => {
     await restaurantRepository.deleteRestaurantByName(req.params.name);
-    res.status(200).json('Restaurant deleted');
+    res.status(200).send('Restaurant deleted');
 });
 
 // add a restaurant from request body
 router.post('/restaurant', async (req: Request, res: Response) => {
     const restaurant = req.body;
     await restaurantRepository.addRestaurant(restaurant);
-    res.status(200).json('Restaurant added');
+    res.status(200).send('Restaurant added');
 });
 
 // update restaurant from request body
 router.put('/restaurant/:name', async (req: Request, res: Response) => {
     const restaurant = await restaurantRepository.updateRestaurant(req.params.name, req.body);
-    res.status(200).json(restaurant);
+    res.status(200).send(restaurant);
 });
 
 app.listen(3000);
