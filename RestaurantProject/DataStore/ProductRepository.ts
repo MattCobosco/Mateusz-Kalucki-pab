@@ -137,9 +137,18 @@ export class ProductRepository
             if(product.quantity)
                 productToUpdate.quantity = product.quantity;
 
-            await productToUpdate.save();
-
-            console.log("Product " + productName + " has been updated!");
+            await productToUpdate.save()
+            .then(function()
+            {
+                console.log("Product " + productName + " has been updated!");
+            }).catch(function(err: any)
+            {
+                console.log(err);
+            });
+        }
+        else    
+        {
+            console.log("Product " + productName + " does not exist!");
         }
     }
 }
