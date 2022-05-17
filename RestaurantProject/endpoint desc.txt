@@ -55,13 +55,43 @@ name Employee4 updated
 }
 
 
+MENU ITEM:
+
+GET http://localhost:3000/menuItems => pobiera listę wszystkich pozycji w menu w wersji raw
+
+GET http://localhost:3000/menuItem/Coca_Cola => pobiera pozycję w menu o nazwie Coca_Cola
+
+DELETE http://localhost:3000/menuItem/Coca_Cola => usuwa pozycję w menu o nazwie Coca_Cola
+
+POST http://localhost:3000/menuItem => dodaje nową pozycję w menu z body requestu
+application/json
+{
+  "name": "TestowaPuszka",
+  "price": "4",
+  "type": "3",
+  "description": "BlaBlaBla",
+  "products": [
+    "6282601eb18137f01f157f6f",
+    "6282601eb18137f01f157f6f"
+  ]
+}
+
+PUT http://localhost:3000/menuItem/TestowaPuszka
+application/json
+{
+    "description": "zmienione BlaBlaBla"
+}
+
+GET http:localhost:3000/menu => pobiera menu - uproszczoną listę pozycji w menu (nazwa, cena, opis) pogrupowanych ze względu na typ (kategorię)
+
+
 PRODUCT:
 
 GET http://localhost:3000/products => pobiera listę wszystkich produktów w magazynie
 
-GET http://localhost:3000/product/productName => pobiera produkt o nazwie productName
+GET http://localhost:3000/product/Fanta => pobiera produkt o nazwie Fanta
 
-DELETE http://localhost:3000/product/productName => usuwa produkt o nazwie productName
+DELETE http://localhost:3000/product/Fanta => usuwa produkt o nazwie Fanta
 
 POST http://localhost:3000/product => dodaje nowy produkt z body requestu
 x-www-form-urlencoded
