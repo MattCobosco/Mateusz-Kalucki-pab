@@ -40,15 +40,18 @@ export class RestaurantRepository
             }
         ];
 
-        await this.RestaurantModel
-        .insertMany(restaurants)
-        .then(function()
+        if(await this.RestaurantModel.countDocuments() === 0)
         {
-            console.log("Restaurants have been populated!")
-        }).catch(function(err)
-        {
-            console.log(err);
-        });
+            await this.RestaurantModel
+            .insertMany(restaurants)
+            .then(function()
+            {
+                console.log("Restaurants have been populated!")
+            }).catch(function(err)
+            {
+                console.log(err);
+            });
+        }
     }
 
     async addRestaurant(restaurant: Restaurant) : Promise<void>

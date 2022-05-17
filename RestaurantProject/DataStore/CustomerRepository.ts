@@ -33,17 +33,20 @@ export class CustomerRepository
                 address: 'CustomerAddress2',
                 loyaltyPoints: 0
             }];
-
-        await this.CustomerModel
-        .insertMany(customers)
-        .then(function()
+        
+        if (await this.CustomerModel.countDocuments() === 0)
         {
-            console.log("Customers have been populated!")
+            await this.CustomerModel
+            .insertMany(customers)
+            .then(function()
+            {
+                console.log("Customers have been populated!")
+            }
+            ).catch(function(err: any)
+            {
+                console.log(err);
+            });
         }
-        ).catch(function(err: any)
-        {
-            console.log(err);
-        });
     }
 
     async addCustomer(customer: Customer) : Promise<void>

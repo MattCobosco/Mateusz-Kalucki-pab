@@ -12,18 +12,14 @@ import express = require ('express');
 import bodyParser = require('body-parser');
 import {Request, Response} from 'express';
 
-
 import { CustomerRepository } from './DataStore/CustomerRepository';
-
 import { EmployeeRepository } from './DataStore/EmployeeRepository';
-/*
-import { MenuItemRepository } from './DataStore/MenuItemRepository';
-import { OrderRepository } from './DataStore/OrderRepository';
+// import { MenuItemRepository } from './DataStore/MenuItemRepository';
+// import { OrderRepository } from './DataStore/OrderRepository';
 import { ProductRepository } from './DataStore/ProductRepository';
-import { ReservationRepository } from './DataStore/ReservationRepository';
-*/
+// import { ReservationRepository } from './DataStore/ReservationRepository';
 import { RestaurantRepository } from './DataStore/RestaurantRepository';
-//import { TableRepository } from './DataStore/TableRepository';
+// import { TableRepository } from './DataStore/TableRepository';
 
 
 const app = express();
@@ -33,22 +29,20 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use('/', router);
 
-
 const customerRepository = new CustomerRepository();
 const employeeRepository = new EmployeeRepository();
-/*
-const menuItemRepository = new MenuItemRepository();
-const orderRepository = new OrderRepository();
+// const menuItemRepository = new MenuItemRepository();
+// const orderRepository = new OrderRepository();
 const productRepository = new ProductRepository();
-const reservationRepository = new ReservationRepository();
-*/
+// const reservationRepository = new ReservationRepository();
 const restaurantRepository = new RestaurantRepository();
 // const tableRepository = new TableRepository();
 
 // DATABASE POPULATION:
-// customerRepository.populateCustomers();
-// employeeRepository.populateEmployees();
-// restaurantRepository.populateRestaurants();
+customerRepository.populateCustomers();
+employeeRepository.populateEmployees();
+productRepository.populateProducts();
+restaurantRepository.populateRestaurants();
 
 // REST API for Customer
 // get all customers
@@ -179,6 +173,67 @@ router.put('/employee', async (req: Request, res: Response) => {
     .then(function()
     {
         res.send("Employee " + req.body.name + " has been updated!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// REST API for Product in Storage
+// get all products
+router.get('/products', async (req: Request, res: Response) => {
+    await productRepository.getProducts()
+    .then(function(products: any)
+    {
+        res.send(products);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// get product by name
+router.get('/product/:name', async (req: Request, res: Response) => {
+    await productRepository.getProductByName(req.params.name)
+    .then(function(product: any)
+    {
+        res.send(product);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// delete product by name
+router.delete('/product/:name', async (req: Request, res: Response) => {
+    await productRepository.deleteProductByName(req.params.name)
+    .then(function()
+    {
+        res.send("Product " + req.params.name + " has been deleted!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// add product from request body
+router.post('/product', async (req: Request, res: Response) => {
+    await productRepository.addProduct(req.body)
+    .then(function()
+    {
+        res.send("Product " + req.body.name + " has been added!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// update product from request body
+router.put('/product/:name', async (req: Request, res: Response) => {
+    await productRepository.updateProduct(req.params.name, req.body)
+    .then(function()
+    {
+        res.send("Product " + req.body.name + " has been updated!");
     }).catch(function(err: any)
     {
         res.send(err);

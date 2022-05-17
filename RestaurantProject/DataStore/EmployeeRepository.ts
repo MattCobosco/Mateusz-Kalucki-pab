@@ -46,15 +46,18 @@ export class EmployeeRepository
             }
         ];
 
-        await this.EmployeeModel
-        .insertMany(employees)
-        .then(function()
+        if(await this.EmployeeModel.countDocuments() === 0)
         {
-            console.log("Employees have been populated!")
-        }).catch(function(err: any)
-        {
-            console.log(err);
-        });
+            await this.EmployeeModel
+            .insertMany(employees)
+            .then(function()
+            {
+                console.log("Employees have been populated!")
+            }).catch(function(err: any)
+            {
+                console.log(err);
+            });
+        }
     }
 
     async addEmployee(employee: Employee) : Promise<void>
