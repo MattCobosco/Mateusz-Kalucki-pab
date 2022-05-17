@@ -140,7 +140,7 @@ export class EmployeeRepository
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        let employeeToUpdate = await this.EmployeeModel.findOne({surname: employee.surname});
+        let employeeToUpdate = await this.EmployeeModel.findOne({surname: employeeSurname});
 
         if(employeeToUpdate)
         {
