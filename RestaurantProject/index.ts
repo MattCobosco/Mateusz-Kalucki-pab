@@ -14,7 +14,7 @@ import {Request, Response} from 'express';
 
 import { CustomerRepository } from './DataStore/CustomerRepository';
 import { EmployeeRepository } from './DataStore/EmployeeRepository';
-// import { MenuItemRepository } from './DataStore/MenuItemRepository';
+import { MenuItemRepository } from './DataStore/MenuItemRepository';
 // import { OrderRepository } from './DataStore/OrderRepository';
 import { ProductRepository } from './DataStore/ProductRepository';
 // import { ReservationRepository } from './DataStore/ReservationRepository';
@@ -31,7 +31,7 @@ app.use('/', router);
 
 const customerRepository = new CustomerRepository();
 const employeeRepository = new EmployeeRepository();
-// const menuItemRepository = new MenuItemRepository();
+const menuItemRepository = new MenuItemRepository();
 // const orderRepository = new OrderRepository();
 const productRepository = new ProductRepository();
 // const reservationRepository = new ReservationRepository();
@@ -41,6 +41,7 @@ const restaurantRepository = new RestaurantRepository();
 // DATABASE POPULATION:
 customerRepository.populateCustomers();
 employeeRepository.populateEmployees();
+menuItemRepository.populateMenuItems();
 productRepository.populateProducts();
 restaurantRepository.populateRestaurants();
 
@@ -173,6 +174,67 @@ router.put('/employee/:name', async (req: Request, res: Response) => {
     .then(function()
     {
         res.send("Employee " + req.body.name + " has been updated!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// REST API for Menu Item
+// get all menu items
+router.get('/menu', async (req: Request, res: Response) => {
+    await menuItemRepository.getMenuItems()
+    .then(function(menuItems: any)
+    {
+        res.send(menuItems);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// get menu item by name
+router.get('/menu/:name', async (req: Request, res: Response) => {
+    await menuItemRepository.getMenuItemByName(req.params.name)
+    .then(function(menuItem: any)
+    {
+        res.send(menuItem);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// delete menu item by name
+router.delete('/menu/:name', async (req: Request, res: Response) => {
+    await menuItemRepository.deleteMenuItemByName(req.params.name)
+    .then(function()
+    {
+        res.send("Menu Item " + req.params.name + " has been deleted!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// add menu item from request body
+router.post('/menu', async (req: Request, res: Response) => {
+    await menuItemRepository.addMenuItem(req.body)
+    .then(function()
+    {
+        res.send("Menu Item " + req.body.name + " has been added!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// update menu item from request body
+router.put('/menu/:name', async (req: Request, res: Response) => {
+    await menuItemRepository.updateMenuItem(req.params.name, req.body)
+    .then(function()
+    {
+        res.send("Menu Item " + req.body.name + " has been updated!");
     }).catch(function(err: any)
     {
         res.send(err);
