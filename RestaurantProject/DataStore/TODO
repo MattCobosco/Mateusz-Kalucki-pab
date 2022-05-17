@@ -3,3 +3,7 @@ Reservation Model + Repo test and fix
 Order Model + Repo test and fix
 
 !!! Product Demand List REST API !!! 
+
+* report of orders per waiter
+* report of orders in a given time period
+* report of income in a given time period
