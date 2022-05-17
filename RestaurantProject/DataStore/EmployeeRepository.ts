@@ -79,7 +79,6 @@ export class EmployeeRepository
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-
         await this.EmployeeModel
         .deleteOne({surname: employeeSurname})
         .then(function()
