@@ -240,6 +240,18 @@ router.put('/menuItem/:name', async (req: Request, res: Response) => {
     });
 });
 
+// get menu grouped by type
+router.get('/menu', async (req: Request, res: Response) => {
+    await menuItemRepository.getMenu()
+    .then(function(menu: any)
+    {
+        res.send(menu);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
 // REST API for Product in Storage
 // get all products
 router.get('/products', async (req: Request, res: Response) => {
