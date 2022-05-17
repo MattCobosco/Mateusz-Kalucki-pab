@@ -1,6 +1,13 @@
 Menu Item Model + Repo test and fix
-Product Model + Repo test and fix
 Reservation Model + Repo test and fix
 Order Model + Repo test and fix
+
+Customer Update fix
+Employee Update fix
+Restaurant Update fix
+
+Customer pupulation fix => add db content check, uncomment pop order in index
+Employee population fix => add db content check, uncomment pop order in index
+Restaurant population fix => add db content check, uncomment pop order in index
 
 !!! Product Demand List REST API !!! 
