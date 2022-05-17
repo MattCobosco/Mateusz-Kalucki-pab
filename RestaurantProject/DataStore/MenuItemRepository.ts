@@ -27,41 +27,55 @@ export class MenuItemRepository
                 description: 'Coca Cola can',
                 products: 
                 [
-                        '6283c1db0ff7f2140b54e984'
+                        '6283f1ac7309e224f7c500ee'
                 ]
             },
             {
-                name: 'Fanta',
-                price: 5,
-                type: 3,
-                description: 'Fanta can',
-                products: 
-                [
-                    '6283c1db0ff7f2140b54e985'
-                ]
-            },
-            {
-                name: 'Vegetable soup',
+                name: 'Vegetable_Soup',
                 price: 15,
                 type: 2,
                 description: 'Vegetable soup made of carrot, parsley, onion, tomato and cucumber',
                 products: 
                 [
-                    '6283c1db0ff7f2140b54e986',
-                    '6283c1db0ff7f2140b54e987',
-                    '6283c1db0ff7f2140b54e988',
-                    '6283c1db0ff7f2140b54e989',
-                    '6283c1db0ff7f2140b54e98a'
+                    '6283f1ac7309e224f7c500f0',
+                    '6283f1ac7309e224f7c500f1',
+                    '6283f1ac7309e224f7c500f2',
+                    '6283f1ac7309e224f7c500f3',
+                    '6283f1ac7309e224f7c500f4'
                 ]
             },
             {
-                name: 'Red Wine',
+                name: 'Red_Wine',
                 price: 15,
-                type: 4,
-                description: 'Red wine',
+                type: 3,
+                description: 'Red wine bottle',
                 products: 
                 [
-                    '6283c2b5ed64cb8ae6973cdb'
+                    '6283f1ac7309e224f7c500f5'
+                ]
+            },
+            {
+                name: 'Springrolls',
+                price: 25,
+                type: 0,
+                description: 'Springrolls made of chicken, cabbage, onion, carrot and mushroom',
+                products:
+                [
+                    '6283f1ac7309e224f7c500f6',
+                    '6283f1ac7309e224f7c500f8',
+                    '6283f1ac7309e224f7c500f2',
+                    '6283f1ac7309e224f7c500f0',
+                    '6283f1ac7309e224f7c500f7'
+                ]
+            },
+            {
+                name: 'Chicken_Nuggets',
+                price: 30,
+                type: 1,
+                description: 'Chicken nuggets',
+                products:
+                [
+                    '6283f1ac7309e224f7c500f6'
                 ]
             }
         ];
@@ -166,5 +180,73 @@ export class MenuItemRepository
         else {
             console.log('Menu item ' + menuItemName + ' does not exist!');
         }
+    }
+
+    async getMenu() : Promise<MenuCategory[]>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        // gets all menu items
+        let menuItems = await this.MenuItemModel.find();
+        let menu: MenuCategory[] = [];
+        let starters: MenuPosition[] = [];
+        menu.push({name: 'Starters', menuPositions: starters});
+        let mains: MenuPosition[] = [];
+        menu.push({name: 'Mains', menuPositions: mains});
+        let sides: MenuPosition[] = [];
+        menu.push({name: 'Sides', menuPositions: sides});
+        let drinks: MenuPosition[] = [];
+        menu.push({name: 'Drinks', menuPositions: drinks});
+        let desserts: MenuPosition[] = [];
+        menu.push({name: 'Desserts', menuPositions: desserts});
+
+        // iterates through all menu items
+        for(let i = 0; i < menuItems.length; i++)
+        {
+            // gets menu item
+            let menuItem = menuItems[i];
+            // gets menu item type
+            let menuItemCategory = menuItem.type;
+            // maps menu item to menu position (name, price, description)
+            let menuPosition : MenuPosition = {
+                name: menuItem.name,
+                price: menuItem.price,
+                description: menuItem.description
+            };
+            
+            // puts menu item in the correct menu category based on type
+            menu[menuItemCategory].menuPositions.push(menuPosition);
+        }
+
+        // returns menu
+        return menu;
+    }
+}
+
+// support class to build menu
+export class MenuCategory
+{
+    name: string;
+    menuPositions: MenuPosition[];
+
+    constructor(name: string, menuPositions: MenuItem[])
+    {
+        this.name = name;
+        this.menuPositions = menuPositions;
+    }
+}
+
+// simplified menu item
+export class MenuPosition
+{
+    name: string;
+    price: number;
+    description: string;
+
+    constructor(name: string, price: number, description: string)
+    {
+        this.name = name;
+        this.price = price;
+        this.description = description;
     }
 }
