@@ -41,7 +41,7 @@ const restaurantRepository = new RestaurantRepository();
 // DATABASE POPULATION:
 customerRepository.populateCustomers();
 employeeRepository.populateEmployees();
-// menuItemRepository.populateMenuItems();
+menuItemRepository.populateMenuItems();
 productRepository.populateProducts();
 restaurantRepository.populateRestaurants();
 
@@ -181,7 +181,7 @@ router.put('/employee/:name', async (req: Request, res: Response) => {
 
 // REST API for Menu Item
 // get all menu items
-router.get('/menu', async (req: Request, res: Response) => {
+router.get('/menuItems', async (req: Request, res: Response) => {
     await menuItemRepository.getMenuItems()
     .then(function(menuItems: any)
     {
@@ -193,7 +193,7 @@ router.get('/menu', async (req: Request, res: Response) => {
 });
 
 // get menu item by name
-router.get('/menu/:name', async (req: Request, res: Response) => {
+router.get('/menuItem/:name', async (req: Request, res: Response) => {
     await menuItemRepository.getMenuItemByName(req.params.name)
     .then(function(menuItem: any)
     {
@@ -205,7 +205,7 @@ router.get('/menu/:name', async (req: Request, res: Response) => {
 });
 
 // delete menu item by name
-router.delete('/menu/:name', async (req: Request, res: Response) => {
+router.delete('/menuItem/:name', async (req: Request, res: Response) => {
     await menuItemRepository.deleteMenuItemByName(req.params.name)
     .then(function()
     {
@@ -217,7 +217,7 @@ router.delete('/menu/:name', async (req: Request, res: Response) => {
 });
 
 // add menu item from request body
-router.post('/menu', async (req: Request, res: Response) => {
+router.post('/menuItem', async (req: Request, res: Response) => {
     await menuItemRepository.addMenuItem(req.body)
     .then(function()
     {
@@ -229,7 +229,7 @@ router.post('/menu', async (req: Request, res: Response) => {
 });
 
 // update menu item from request body
-router.put('/menu/:name', async (req: Request, res: Response) => {
+router.put('/menuItem/:name', async (req: Request, res: Response) => {
     await menuItemRepository.updateMenuItem(req.params.name, req.body)
     .then(function()
     {
