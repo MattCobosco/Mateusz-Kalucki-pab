@@ -71,12 +71,10 @@ price 5
 quantity 50
 }
 
-PUT http://localhost:3000/product/productName => update'uje produkt o nazwie productName z body requestu
+PUT http://localhost:3000/product/Red_Wine_Bottle => update'uje produkt o nazwie productName z body requestu
 x-www-form-urlencoded
 {
-name Red_Wine_Bottle
 price 10
-quantity 50
 }
 
 
