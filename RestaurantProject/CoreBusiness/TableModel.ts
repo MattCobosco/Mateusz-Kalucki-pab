@@ -8,13 +8,13 @@ enum TableStatus
 
 class Table
 {
-    tableNumber: number;
+    number: number;
     seats: number;
     status: TableStatus;
 
-    constructor(tableNumber: number, seats: number, status: TableStatus)
+    constructor(number: number, seats: number, status: TableStatus)
     {
-        this.tableNumber = tableNumber;
+        this.number = number;
         this.seats = seats;
         this.status = status;
     }
