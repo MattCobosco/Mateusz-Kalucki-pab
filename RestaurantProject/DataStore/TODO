@@ -1,4 +1,3 @@
-Reservation Model + Repo test and fix
 Order Model + Repo test and fix
 fix get free tables => works only once, then requires app restart to work again, check if it works with reservations
 
