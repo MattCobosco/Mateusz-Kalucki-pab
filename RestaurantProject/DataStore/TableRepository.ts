@@ -1,5 +1,6 @@
 import {Schema, model, connect} from 'mongoose';
 import Table from '../CoreBusiness/TableModel';
+import Reservation from '../CoreBusiness/ReservationModel';
 import {ReservationRepository} from './ReservationRepository';
 
 export class TableRepository
@@ -97,6 +98,17 @@ export class TableRepository
             return null as any;
     }
 
+    async getTableById(tableId: string) : Promise<Table>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+    
+        let table = await this.TableModel.findById(tableId);
+        if (table)
+            return table;
+        else
+            return null as any;
+    }
+
     async getTables() : Promise<Table[]>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
@@ -130,55 +142,35 @@ export class TableRepository
         }
     }
 
-    async getFreeTables(startDateTime : Date, endDateTime: Date, numberOfPeople: number) : Promise<Table[]>
+    // TODO: fix this crap
+    async getFreeTables(startDateTime : Date, endDateTime: Date, numberOfPeople: number) : Promise<string>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        // get list of all reservations
         let reservationRepository = new ReservationRepository();
-        let reservations = await reservationRepository.getReservations();
-
-        // get list of all tables
-        let tables = await this.getTables();
-
-        // get list of tables that are free
+        let tables = await this.TableModel.find({seats: {$gte: numberOfPeople}});
         let freeTables: Table[] = [];
-        for (let table of tables)
+
+        for(let i = 0; i < tables.length; i++)
         {
+            let table = tables[i];
+            let reservations = await reservationRepository.getReservationsByTableId(table._id.toString());
+
             let isFree = true;
-            for (let reservation of reservations)
+
+            for(let j = 0; j < reservations.length; j++)
             {
-                if (reservation.table.number == table.number)
-                {
-                    if (reservation.startDateTime <= startDateTime && reservation.endDateTime >= endDateTime)
-                    {
-                        isFree = false;
-                        break;
-                    }
-                    else if (reservation.startDateTime <= startDateTime && reservation.startDateTime >= endDateTime)
-                    {
-                        isFree = false;
-                        break;
-                    }
-                    else if (reservation.endDateTime <= endDateTime && reservation.endDateTime >= startDateTime)
-                    {
-                        isFree = false;
-                        break;
-                    }
-                }
+                let reservation = reservations[j];
+
+                if(reservation.startDateTime < endDateTime && reservation.endDateTime > startDateTime)
+
+                    isFree = false;
             }
-            if (isFree)
+
+            if(isFree)
                 freeTables.push(table);
         }
 
-        // get list of tables that have enough seats
-        let freeTablesWithEnoughSeats: Table[] = [];
-        for (let table of freeTables)
-        {
-            if (table.seats >= numberOfPeople && table.status != 3)
-                freeTablesWithEnoughSeats.push(table);
-        }
-
-        return freeTablesWithEnoughSeats;
+        return "przeszło";
     }
 }
