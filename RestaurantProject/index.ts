@@ -17,7 +17,7 @@ import { EmployeeRepository } from './DataStore/EmployeeRepository';
 import { MenuItemRepository } from './DataStore/MenuItemRepository';
 // import { OrderRepository } from './DataStore/OrderRepository';
 import { ProductRepository } from './DataStore/ProductRepository';
-// import { ReservationRepository } from './DataStore/ReservationRepository';
+import { ReservationRepository } from './DataStore/ReservationRepository';
 import { RestaurantRepository } from './DataStore/RestaurantRepository';
 import { TableRepository } from './DataStore/TableRepository';
 
@@ -34,7 +34,7 @@ const employeeRepository = new EmployeeRepository();
 const menuItemRepository = new MenuItemRepository();
 // const orderRepository = new OrderRepository();
 const productRepository = new ProductRepository();
-// const reservationRepository = new ReservationRepository();
+const reservationRepository = new ReservationRepository();
 const restaurantRepository = new RestaurantRepository();
 const tableRepository = new TableRepository();
 
@@ -43,6 +43,7 @@ customerRepository.populateCustomers();
 employeeRepository.populateEmployees();
 menuItemRepository.populateMenuItems();
 productRepository.populateProducts();
+reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
 tableRepository.populateTables();
 
@@ -314,25 +315,115 @@ router.put('/product/:name', async (req: Request, res: Response) => {
     });
 });
 
+// REST API for Reservation
+// get all reservations
+router.get('/reservations', async (req: Request, res: Response) => {
+    await reservationRepository.getReservations()
+    .then(function(reservations: any)
+    {
+        res.send(reservations);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// get reservation by id
+router.get('/reservation/:id', async (req: Request, res: Response) => {
+    await reservationRepository.getReservationById(req.params.id)
+    .then(function(reservation: any)
+    {
+        res.send(reservation);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// delete reservation by id
+router.delete('/reservation/:id', async (req: Request, res: Response) => {
+    await reservationRepository.deleteReservationById(req.params.id)
+    .then(function()
+    {
+        res.send("Reservation " + req.params.id + " has been deleted!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// add reservation from request body
+router.post('/reservation', async (req: Request, res: Response) => {
+    await reservationRepository.addReservation(req.body)
+    .then(function()
+    {
+        res.send("Reservation " + req.body.id + " has been added!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// update reservation from request body
+router.put('/reservation/:id', async (req: Request, res: Response) => {
+    await reservationRepository.updateReservationById(req.params.id, req.body)
+    .then(function()
+    {
+        res.send("Reservation " + req.params.id + " has been updated!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// get reservations by customer id
+router.get('/reservations/customer/:id', async (req: Request, res: Response) => {
+    await reservationRepository.getReservationsByCustomerId(req.params.id)
+    .then(function(reservations: any)
+    {
+        res.send(reservations);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// get reservations by table id
+router.get('/reservations/table/:id', async (req: Request, res: Response) => {
+    await reservationRepository.getReservationsByTableId(req.params.id)
+    .then(function(reservations: any)
+    {
+        res.send(reservations);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+
 // REST API for Restaurant
 // get all restaurants
 router.get('/restaurants', async (req: Request, res: Response) => {
-    let restaurants = await restaurantRepository.getRestaurants();
-    if (restaurants.length > 0)
+    await restaurantRepository.getRestaurants()
+    .then(function(restaurants: any)
+    {
         res.send(restaurants);
-    else if (restaurants.length === 0)
-        res.status(200).send('Restaurant list is empty');
-    else
-        res.status(404).send('No restaurants found');
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
 });
 
 // get restaurant by name
 router.get('/restaurant/:name', async (req: Request, res: Response) => {
-    const restaurant = await restaurantRepository.getRestaurantByName(req.params.name);
-    if (restaurant)
+    await restaurantRepository.getRestaurantByName(req.params.name)
+    .then(function(restaurant: any)
+    {
         res.send(restaurant);
-    else
-        res.status(404).send('Restaurant not found');
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
 });
 
 // delete restaurant by name
@@ -353,8 +444,6 @@ router.put('/restaurant/:name', async (req: Request, res: Response) => {
     const restaurant = await restaurantRepository.updateRestaurant(req.params.name, req.body);
     res.status(200).send(restaurant);
 });
-
-app.listen(3000);
 
 // REST API for Table
 // get all tables
@@ -431,3 +520,5 @@ router.post('/tables/free', async (req: Request, res: Response) => {
         res.send(err);
     });
 });
+
+app.listen(3000);
