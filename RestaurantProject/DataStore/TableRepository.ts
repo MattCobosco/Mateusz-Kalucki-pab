@@ -108,15 +108,26 @@ export class TableRepository
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        await this.TableModel
-        .updateOne({number: tableNumber}, table)
-        .then(function()
+        let tableToUpdate = await this.TableModel.findOne({number: tableNumber});
+
+        if (tableToUpdate)
         {
-            console.log("Table " + tableNumber + " has been updated!");
-        }).catch(function(err: any)
-        {
-            console.log(err);
-        });
+            if(table.number)
+                tableToUpdate.number = table.number;
+            if(table.seats)
+                tableToUpdate.seats = table.seats;
+            if(table.status)
+                tableToUpdate.status = table.status;
+
+            await tableToUpdate.save()
+            .then(function()
+            {
+                console.log("Table " + tableNumber + " has been updated!");
+            }).catch(function(err: any)
+            {
+                console.log(err);
+            });
+        }
     }
 
     async getFreeTables(startDateTime : Date, endDateTime: Date, numberOfPeople: number) : Promise<Table[]>
