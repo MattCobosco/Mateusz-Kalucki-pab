@@ -5,11 +5,10 @@ export class ReservationRepository
 {
     reservationSchema = new Schema<Reservation>(
         {
-            reservationId: {type: Number, required: true},
-            tableNumber: {type: Number, required: false},
+            table: {type: Schema.Types.ObjectId, ref: 'Table'},
             startDateTime: {type: Date, required: true},
             endDateTime: {type: Date, required: true},
-            customerId: {type: Number, required: true}
+            customer: {type: Schema.Types.ObjectId, ref: 'Customer'}
         });
 
     ReservationModel = model<Reservation>('Reservation', this.reservationSchema);
@@ -21,30 +20,31 @@ export class ReservationRepository
         const reservations = 
         [
             {
-                reservationId: 1,
-                tableNumber: 1,
+                table: '6284ab720b1b925fc9c801fe',
                 startDateTime: new Date(2020, 1, 1, 10, 0, 0, 0),
                 endDateTime: new Date(2020, 1, 1, 11, 0, 0, 0),
-                customerId: 1
+                customer: '6282601eb18137f01f157f6f'
             },
             {
-                reservationId: 2,
-                tableNumber: 2,
+                table: '6284ab720b1b925fc9c801ff',
                 startDateTime: new Date(2020, 1, 1, 11, 0, 0, 0),
                 endDateTime: new Date(2020, 1, 1, 12, 0, 0, 0),
-                customerId: 2
+                customer: '62826610ec4736a45905ecae'
             }
         ];
 
-        await this.ReservationModel
-        .insertMany(reservations)
-        .then(function()
+        if(await this.ReservationModel.countDocuments() === 0)
         {
-            console.log("Reservations have been populated!")
-        }).catch(function(err: any)
-        {
-            console.log(err);
-        });       
+            await this.ReservationModel
+            .insertMany(reservations)
+            .then(function()
+            {
+                console.log("Reservations have been populated!")
+            }).catch(function(err: any)
+            {
+                console.log(err);
+            }); 
+        }
     }
 
     async addReservation(reservation: Reservation) : Promise<void>
@@ -55,20 +55,19 @@ export class ReservationRepository
         .create(reservation)
         .then(function()
         {
-            console.log("Reservation of ID " + reservation.reservationId + " has been added!");
-        }
-        ).catch(function(err: any)
+            console.log("Reservation for table " + reservation.table.number + " has been added!");
+        }).catch(function(err: any)
         {
             console.log(err);
         });
     }
 
-    async deleteReservationById(reservationId: Number) : Promise<void>
+    async deleteReservationById(reservationId: string) : Promise<void>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
         await this.ReservationModel
-        .deleteOne({reservationId: reservationId})
+        .deleteOne({_id: reservationId})
         .then(function()
         {
             console.log("Reservation of ID " + reservationId + " has been deleted!");
@@ -78,17 +77,6 @@ export class ReservationRepository
         });
     }
 
-    async getReservationById(reservationId: Number) : Promise<Reservation>
-    {
-        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
-
-        let reservation = await this.ReservationModel.findOne({reservationId: reservationId});
-        if (reservation)
-            return reservation;
-        else
-            return null as any;
-    }
-
     async getReservations() : Promise<Reservation[]>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
@@ -96,26 +84,57 @@ export class ReservationRepository
         return await this.ReservationModel.find({});
     }
 
-    async updateReservation(reservation: Reservation) : Promise<void>
+    async getReservationById(reservationId: string) : Promise<Reservation>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        await this.ReservationModel
-        .updateOne({reservationId: reservation.reservationId}, reservation)
-        .then(function()
-        {
-            console.log("Reservation of ID " + reservation.reservationId + " has been updated!");
-        }
-        ).catch(function(err: any)
-        {
-            console.log(err);
-        });
+        let reservation = await this.ReservationModel.findById(reservationId);
+
+        if(reservation)
+            return reservation;
+        else
+            return null as any;
     }
 
-    async getReservationsPerCustomer(customerId: Number) : Promise<Reservation[]>
+    async updateReservationById(reservationId: string, reservation: Reservation) : Promise<void>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        return await this.ReservationModel.find({customerId: customerId});
+        let reservationToUpdate = await this.ReservationModel.findById(reservationId);
+
+        if(reservationToUpdate)
+        {
+            if(reservation.table)
+                reservationToUpdate.table = reservation.table;
+            if(reservation.startDateTime)
+                reservationToUpdate.startDateTime = reservation.startDateTime;
+            if(reservation.endDateTime)
+                reservationToUpdate.endDateTime = reservation.endDateTime;
+            if(reservation.customer)
+                reservationToUpdate.customer = reservation.customer;
+
+            await reservationToUpdate.save().
+            then(function()
+            {
+                console.log("Reservation of ID " + reservationId + " has been updated!");
+            }).catch(function(err: any)
+            {
+                console.log(err);
+            });
+        }
+    }
+
+    async getReservationsByCustomerId(customerId: string) : Promise<Reservation[]>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        return await this.ReservationModel.find({customer: customerId});
+    }
+
+    async getReservationsByTableId(tableId: string) : Promise<Reservation[]>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        return await this.ReservationModel.find({table: tableId});
     }
 }
