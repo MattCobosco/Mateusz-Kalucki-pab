@@ -88,6 +88,7 @@ GET http:localhost:3000/menu => pobiera menu - uproszczoną listę pozycji w men
 ORDER:
 TODO
 
+
 PRODUCT:
 
 GET http://localhost:3000/products => pobiera listę wszystkich produktów w magazynie
@@ -142,6 +143,7 @@ GET http://localhost:3000/reservations/customer/62826610ec4736a45905ecae => pobi
 RESTAURANT:
 TODO
 
+
 TABLE:
 
 GET http://localhost:3000/tables => pobiera listę wszystkich stołów
@@ -170,4 +172,3 @@ application/json
   "endTime": "2012-12-31T23:00:00.000Z",
   "people": "6"
 }
-
