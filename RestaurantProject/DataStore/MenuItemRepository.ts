@@ -142,6 +142,22 @@ export class MenuItemRepository
         }
     }
 
+    async getMenuItemById(id: string) : Promise<MenuItem>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        let menuItem = await this.MenuItemModel.findById(id);
+
+        if(menuItem)
+        {
+            return menuItem;
+        }
+        else
+        {
+            return null as any;
+        }
+    }
+
     async getMenuItems() : Promise<MenuItem[]>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
