@@ -85,6 +85,9 @@ application/json
 GET http:localhost:3000/menu => pobiera menu - uproszczoną listę pozycji w menu (nazwa, cena, opis) pogrupowanych ze względu na typ (kategorię)
 
 
+ORDER:
+TODO
+
 PRODUCT:
 
 GET http://localhost:3000/products => pobiera listę wszystkich produktów w magazynie
@@ -110,9 +113,34 @@ price 10
 
 RESERVATION:
 
+GET http://localhost:3000/reservations => pobiera listę wszystkich rezerwacji
+
+GET http://localhost:3000/reservation/6284c0a1def9ae319af3a571 => pobiera rezerwację o id 6284c0a1def9ae319af3a571'
+
+DELETE http://localhost:3000/reservation/id => usuwa rezerwację o id id
+
+POST http://localhost:3000/reservation/
+application/json
+{
+  "table": "6284ab720b1b925fc9c801fe",
+  "startDateTime": "2020-02-01T11:00:00.000Z",
+  "endDateTime": "2020-02-01T12:00:00.000Z",
+  "customer": "6282601eb18137f01f157f6f"
+}
+
+PUT http://localhost:3000/reservation/6284cbc0323bc54e99611585
+application/json
+{
+"endDateTime": "2020-02-01T13:00:00.000Z"
+}
+
+GET http://localhost:3000/reservations/table/6284ab720b1b925fc9c801ff => pobiera listę rezerwacji dla stolika 6284ab720b1b925fc9c801ff
+
+GET http://localhost:3000/reservations/customer/62826610ec4736a45905ecae => pobiera listę rezerwacji dla klienta 62826610ec4736a45905ecae
+
 
 RESTAURANT:
-
+TODO
 
 TABLE:
 
