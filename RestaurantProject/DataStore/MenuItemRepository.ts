@@ -193,8 +193,8 @@ export class MenuItemRepository
         menu.push({name: 'Starters', menuPositions: starters});
         let mains: MenuPosition[] = [];
         menu.push({name: 'Mains', menuPositions: mains});
-        let sides: MenuPosition[] = [];
-        menu.push({name: 'Sides', menuPositions: sides});
+        let soups: MenuPosition[] = [];
+        menu.push({name: 'Soups', menuPositions: soups});
         let drinks: MenuPosition[] = [];
         menu.push({name: 'Drinks', menuPositions: drinks});
         let desserts: MenuPosition[] = [];

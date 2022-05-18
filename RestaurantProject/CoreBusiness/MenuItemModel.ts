@@ -4,7 +4,7 @@ enum Type
 {
     Starter,
     MainDish,
-    SideDish,
+    Soup,
     Drink,
     Dessert
 }
