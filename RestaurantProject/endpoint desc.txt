@@ -108,3 +108,37 @@ price 10
 }
 
 
+RESERVATION:
+
+
+RESTAURANT:
+
+
+TABLE:
+
+GET http://localhost:3000/tables => pobiera listę wszystkich stołów
+
+GET http://localhost:3000/table/1 => pobiera stół o nr 1
+
+DELETE http://localhost:3000/table/5 => usuwa stół nr 5
+
+POST http://localhost:3000/table => dodaje nowy stół z body requestu
+application/json
+{
+  "number": 5,
+  "seats": 4,
+  "status": 1
+}
+
+PUT http://localhost:3000/table/4
+application/json
+{"status":0}
+
+
+POST http://localhost:3000/tables/free => pobiera listę wolnych stolików dla okresu czasu i ilości osób podanych w body requescie
+application/json{
+  "startTime": "2012-12-31T22:00:00.000Z",
+  "endTime": "2012-12-31T23:00:00.000Z",
+  "people": "6"
+}
+
