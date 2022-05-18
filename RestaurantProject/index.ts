@@ -508,13 +508,10 @@ router.put('/table/:number', async (req: Request, res: Response) => {
 
 // get free tables in a given time period for a given number of people from body request
 router.post('/tables/free', async (req: Request, res: Response) => {
-    await tableRepository.getFreeTables(new Date(req.body.startTime), new Date(req.body.endTime), req.body.people)
+    await tableRepository.getFreeTables(new Date(req.body.startDateTime), new Date(req.body.endDateTime), req.body.people)
     .then(function(tables: any)
     {
-        if(tables.length > 0)
-            res.send(tables);
-        else if(tables.length === 0)
-            res.send("No tables match the given criteria");
+        res.send(tables);
     }).catch(function(err: any)
     {
         res.send(err);
