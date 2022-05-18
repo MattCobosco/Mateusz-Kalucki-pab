@@ -77,6 +77,9 @@ var RestaurantRepository = /** @class */ (function () {
                                 website: 'someOtherWebsite.com'
                             }
                         ];
+                        return [4 /*yield*/, this.RestaurantModel.countDocuments()];
+                    case 2:
+                        if (!((_a.sent()) === 0)) return [3 /*break*/, 4];
                         return [4 /*yield*/, this.RestaurantModel
                                 .insertMany(restaurants)
                                 .then(function () {
@@ -84,9 +87,10 @@ var RestaurantRepository = /** @class */ (function () {
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
-                        return [2 /*return*/];
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
                 }
             });
         });
@@ -166,23 +170,46 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.updateRestaurant = function (restaurant) {
+    RestaurantRepository.prototype.updateRestaurant = function (restaurantName, restaurant) {
         return __awaiter(this, void 0, Promise, function () {
+            var restaurantToUpdate;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.RestaurantModel.findOne({ name: restaurantName })];
+                    case 2:
+                        restaurantToUpdate = _a.sent();
+                        if (!restaurantToUpdate) return [3 /*break*/, 4];
+                        if (restaurant.name)
+                            restaurantToUpdate.name = restaurant.name;
+                        if (restaurant.address)
+                            restaurantToUpdate.address = restaurant.address;
+                        if (restaurant.phone)
+                            restaurantToUpdate.phone = restaurant.phone;
+                        if (restaurant.nip)
+                            restaurantToUpdate.nip = restaurant.nip;
+                        if (restaurant.email)
+                            restaurantToUpdate.email = restaurant.email;
+                        if (restaurant.website)
+                            restaurantToUpdate.website = restaurant.website;
+                        if (restaurant.description)
+                            restaurantToUpdate.description = restaurant.description;
                         return [4 /*yield*/, this.RestaurantModel
-                                .updateOne({ name: restaurant.name }, restaurant)
+                                .updateOne({ name: restaurantName }, restaurantToUpdate)
                                 .then(function () {
-                                console.log("Restaurant " + restaurant.name + " has been updated!");
+                                console.log("Restaurant " + restaurantName + " has been updated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
-                        return [2 /*return*/];
+                        return [3 /*break*/, 5];
+                    case 4:
+                        console.log("Restaurant " + restaurantName + " does not exist!");
+                        _a.label = 5;
+                    case 5: return [2 /*return*/];
                 }
             });
         });

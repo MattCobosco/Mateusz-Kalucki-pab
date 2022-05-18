@@ -41,7 +41,6 @@ var mongoose_1 = require("mongoose");
 var CustomerRepository = /** @class */ (function () {
     function CustomerRepository() {
         this.customerSchema = new mongoose_1.Schema({
-            customerId: { type: Number, required: true },
             name: { type: String, required: true },
             email: { type: String, required: true },
             phone: { type: String, required: true },
@@ -60,7 +59,6 @@ var CustomerRepository = /** @class */ (function () {
                         _a.sent();
                         customers = [
                             {
-                                customerId: 1,
                                 name: 'Customer1',
                                 email: 'customer1@gmail.com',
                                 phone: '123456789',
@@ -68,7 +66,6 @@ var CustomerRepository = /** @class */ (function () {
                                 loyaltyPoints: 0
                             },
                             {
-                                customerId: 2,
                                 name: 'Customer2',
                                 email: 'customer2@gmail.com',
                                 phone: '987654321',
@@ -76,6 +73,9 @@ var CustomerRepository = /** @class */ (function () {
                                 loyaltyPoints: 0
                             }
                         ];
+                        return [4 /*yield*/, this.CustomerModel.countDocuments()];
+                    case 2:
+                        if (!((_a.sent()) === 0)) return [3 /*break*/, 4];
                         return [4 /*yield*/, this.CustomerModel
                                 .insertMany(customers)
                                 .then(function () {
@@ -83,9 +83,10 @@ var CustomerRepository = /** @class */ (function () {
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
-                        return [2 /*return*/];
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
                 }
             });
         });
@@ -97,6 +98,7 @@ var CustomerRepository = /** @class */ (function () {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        customer.loyaltyPoints = 0; // set default value for loyalty points before saving => loyaltyPoints are required in the schema
                         return [4 /*yield*/, this.CustomerModel
                                 .create(customer)
                                 .then(function () {
@@ -165,30 +167,48 @@ var CustomerRepository = /** @class */ (function () {
             });
         });
     };
-    CustomerRepository.prototype.updateCustomer = function (customer) {
+    CustomerRepository.prototype.updateCustomer = function (customerName, customer) {
         return __awaiter(this, void 0, Promise, function () {
+            var customerToUpdate;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.CustomerModel
-                                .updateOne({ name: customer.name }, customer)
+                        return [4 /*yield*/, this.CustomerModel.findOne({ name: customerName })];
+                    case 2:
+                        customerToUpdate = _a.sent();
+                        if (!customerToUpdate) return [3 /*break*/, 4];
+                        if (customer.name)
+                            customerToUpdate.name = customer.name;
+                        if (customer.email)
+                            customerToUpdate.email = customer.email;
+                        if (customer.phone)
+                            customerToUpdate.phone = customer.phone;
+                        if (customer.address)
+                            customerToUpdate.address = customer.address;
+                        if (customer.loyaltyPoints)
+                            customerToUpdate.loyaltyPoints = customer.loyaltyPoints;
+                        return [4 /*yield*/, customerToUpdate.save()
                                 .then(function () {
-                                console.log("Customer " + customer.name + " has been updated!");
+                                console.log("Customer " + customerName + " has been updated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
-                        return [2 /*return*/];
+                        return [3 /*break*/, 5];
+                    case 4:
+                        console.log("Customer " + customerName + " does not exist!");
+                        _a.label = 5;
+                    case 5: return [2 /*return*/];
                 }
             });
         });
     };
     CustomerRepository.prototype.addLoyaltyPoints = function (customerName, loyaltyPoints) {
         return __awaiter(this, void 0, Promise, function () {
-            var customer;
+            var customer, newLoyaltyPoints;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
@@ -198,7 +218,8 @@ var CustomerRepository = /** @class */ (function () {
                     case 2:
                         customer = _a.sent();
                         if (!customer) return [3 /*break*/, 4];
-                        customer.loyaltyPoints += loyaltyPoints;
+                        newLoyaltyPoints = +customer.loyaltyPoints + +loyaltyPoints;
+                        customer.loyaltyPoints = newLoyaltyPoints;
                         return [4 /*yield*/, this.CustomerModel
                                 .updateOne({ name: customerName }, customer)
                                 .then(function () {

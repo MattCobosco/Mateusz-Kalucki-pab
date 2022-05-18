@@ -42,7 +42,7 @@ var ReservationRepository_1 = require("./ReservationRepository");
 var TableRepository = /** @class */ (function () {
     function TableRepository() {
         this.tableSchema = new mongoose_1.Schema({
-            tableNumber: { type: Number, required: true },
+            number: { type: Number, required: true },
             seats: { type: Number, required: true },
             status: { type: Number, required: true }
         });
@@ -58,26 +58,29 @@ var TableRepository = /** @class */ (function () {
                         _a.sent();
                         tables = [
                             {
-                                tableNumber: 1,
+                                number: 1,
                                 seats: 4,
                                 status: 0
                             },
                             {
-                                tableNumber: 2,
+                                number: 2,
                                 seats: 4,
                                 status: 1
                             },
                             {
-                                tableNumber: 3,
+                                number: 3,
                                 seats: 6,
                                 status: 2
                             },
                             {
-                                tableNumber: 4,
+                                number: 4,
                                 seats: 8,
                                 status: 3
                             }
                         ];
+                        return [4 /*yield*/, this.TableModel.countDocuments()];
+                    case 2:
+                        if (!((_a.sent()) === 0)) return [3 /*break*/, 4];
                         return [4 /*yield*/, this.TableModel
                                 .insertMany(tables)
                                 .then(function () {
@@ -85,9 +88,10 @@ var TableRepository = /** @class */ (function () {
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
-                        return [2 /*return*/];
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
                 }
             });
         });
@@ -102,7 +106,7 @@ var TableRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.TableModel
                                 .create(table)
                                 .then(function () {
-                                console.log("Table " + table.tableNumber + " has been added!");
+                                console.log("Table " + table.number + " has been added!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -121,9 +125,9 @@ var TableRepository = /** @class */ (function () {
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, this.TableModel
-                                .deleteOne({ tableNumber: tableNumber })
+                                .deleteOne({ number: tableNumber })
                                 .then(function () {
-                                console.log("Table " + { tableNumber: tableNumber } + " has been deleted!");
+                                console.log("Table " + tableNumber + " has been deleted!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -142,7 +146,27 @@ var TableRepository = /** @class */ (function () {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.TableModel.findOne({ tableNumber: tableNumber })];
+                        return [4 /*yield*/, this.TableModel.findOne({ number: tableNumber })];
+                    case 2:
+                        table = _a.sent();
+                        if (table)
+                            return [2 /*return*/, table];
+                        else
+                            return [2 /*return*/, null];
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    TableRepository.prototype.getTableById = function (tableId) {
+        return __awaiter(this, void 0, Promise, function () {
+            var table;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.TableModel.findById(tableId)];
                     case 2:
                         table = _a.sent();
                         if (table)
@@ -167,73 +191,73 @@ var TableRepository = /** @class */ (function () {
             });
         });
     };
-    TableRepository.prototype.updateTable = function (table) {
+    TableRepository.prototype.updateTableByNumber = function (tableNumber, table) {
         return __awaiter(this, void 0, Promise, function () {
+            var tableToUpdate;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.TableModel
-                                .updateOne({ tableNumber: table.tableNumber }, table)
+                        return [4 /*yield*/, this.TableModel.findOne({ number: tableNumber })];
+                    case 2:
+                        tableToUpdate = _a.sent();
+                        if (!tableToUpdate) return [3 /*break*/, 4];
+                        if (table.number)
+                            tableToUpdate.number = table.number;
+                        if (table.seats)
+                            tableToUpdate.seats = table.seats;
+                        if (table.status)
+                            tableToUpdate.status = table.status;
+                        return [4 /*yield*/, tableToUpdate.save()
                                 .then(function () {
-                                console.log("Table " + table.tableNumber + " has been updated!");
+                                console.log("Table " + tableNumber + " has been updated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
-                        return [2 /*return*/];
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
                 }
             });
         });
     };
+    // TODO: fix this crap
     TableRepository.prototype.getFreeTables = function (startDateTime, endDateTime, numberOfPeople) {
         return __awaiter(this, void 0, Promise, function () {
-            var reservationRepository, reservations, tables, freeTables, _i, tables_1, table, isFree, _a, reservations_1, reservation, freeTablesWithEnoughSeats, _b, freeTables_1, table;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var reservationRepository, tables, freeTables, i, table, reservations, isFree, j, reservation;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
-                        _c.sent();
+                        _a.sent();
                         reservationRepository = new ReservationRepository_1.ReservationRepository();
-                        return [4 /*yield*/, reservationRepository.getReservations()];
+                        return [4 /*yield*/, this.TableModel.find({ seats: { $gte: numberOfPeople } })];
                     case 2:
-                        reservations = _c.sent();
-                        return [4 /*yield*/, this.getTables()];
-                    case 3:
-                        tables = _c.sent();
+                        tables = _a.sent();
                         freeTables = [];
-                        for (_i = 0, tables_1 = tables; _i < tables_1.length; _i++) {
-                            table = tables_1[_i];
-                            isFree = true;
-                            for (_a = 0, reservations_1 = reservations; _a < reservations_1.length; _a++) {
-                                reservation = reservations_1[_a];
-                                if (reservation.tableNumber == table.tableNumber) {
-                                    if (reservation.startDateTime <= startDateTime && reservation.endDateTime >= endDateTime) {
-                                        isFree = false;
-                                        break;
-                                    }
-                                    else if (reservation.startDateTime <= startDateTime && reservation.startDateTime >= endDateTime) {
-                                        isFree = false;
-                                        break;
-                                    }
-                                    else if (reservation.endDateTime <= endDateTime && reservation.endDateTime >= startDateTime) {
-                                        isFree = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (isFree)
-                                freeTables.push(table);
+                        i = 0;
+                        _a.label = 3;
+                    case 3:
+                        if (!(i < tables.length)) return [3 /*break*/, 6];
+                        table = tables[i];
+                        return [4 /*yield*/, reservationRepository.getReservationsByTableId(table._id.toString())];
+                    case 4:
+                        reservations = _a.sent();
+                        isFree = true;
+                        for (j = 0; j < reservations.length; j++) {
+                            reservation = reservations[j];
+                            if (reservation.startDateTime < endDateTime && reservation.endDateTime > startDateTime)
+                                isFree = false;
                         }
-                        freeTablesWithEnoughSeats = [];
-                        for (_b = 0, freeTables_1 = freeTables; _b < freeTables_1.length; _b++) {
-                            table = freeTables_1[_b];
-                            if (table.seats >= numberOfPeople)
-                                freeTablesWithEnoughSeats.push(table);
-                        }
-                        return [2 /*return*/, freeTablesWithEnoughSeats];
+                        if (isFree)
+                            freeTables.push(table);
+                        _a.label = 5;
+                    case 5:
+                        i++;
+                        return [3 /*break*/, 3];
+                    case 6: return [2 /*return*/, "przeszło"];
                 }
             });
         });
