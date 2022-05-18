@@ -1,8 +1,8 @@
-Order Model + Repo test and fix
-fix get free tables => works only once, then requires app restart to work again, check if it works with reservations
+Order Model + Repo test
+fix get free tables => doesn't work at all
 
 !!! Product Demand List REST API !!! 
 
-* report of orders per waiter
-* report of orders in a given time period
-* report of income in a given time period
+* report of orders per waiter - done, untested
+* report of orders in a given time period - done, untested
+* report of income in a given time period - done, untested
