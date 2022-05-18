@@ -15,7 +15,7 @@ import {Request, Response} from 'express';
 import { CustomerRepository } from './DataStore/CustomerRepository';
 import { EmployeeRepository } from './DataStore/EmployeeRepository';
 import { MenuItemRepository } from './DataStore/MenuItemRepository';
-// import { OrderRepository } from './DataStore/OrderRepository';
+import { OrderRepository } from './DataStore/OrderRepository';
 import { ProductRepository } from './DataStore/ProductRepository';
 import { ReservationRepository } from './DataStore/ReservationRepository';
 import { RestaurantRepository } from './DataStore/RestaurantRepository';
@@ -32,7 +32,7 @@ app.use('/', router);
 const customerRepository = new CustomerRepository();
 const employeeRepository = new EmployeeRepository();
 const menuItemRepository = new MenuItemRepository();
-// const orderRepository = new OrderRepository();
+const orderRepository = new OrderRepository();
 const productRepository = new ProductRepository();
 const reservationRepository = new ReservationRepository();
 const restaurantRepository = new RestaurantRepository();
@@ -42,6 +42,7 @@ const tableRepository = new TableRepository();
 customerRepository.populateCustomers();
 employeeRepository.populateEmployees();
 menuItemRepository.populateMenuItems();
+// orderRepository.populateOrders();
 productRepository.populateProducts();
 reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
@@ -253,6 +254,104 @@ router.get('/menu', async (req: Request, res: Response) => {
         res.send(err);
     });
 });
+
+// REST API for Order
+// get all orders
+router.get('/orders', async (req: Request, res: Response) => {
+    await orderRepository.getOrders()
+    .then(function(orders: any)
+    {
+        res.send(orders);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// get order by id
+router.get('/order/:id', async (req: Request, res: Response) => {
+    await orderRepository.getOrderById(req.params.id)
+    .then(function(order: any)
+    {
+        res.send(order);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// delete order by id
+router.delete('/order/:id', async (req: Request, res: Response) => {
+    await orderRepository.deleteOrderById(req.params.id)
+    .then(function()
+    {
+        res.send("Order " + req.params.id + " has been deleted!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// add order from request body
+router.post('/order', async (req: Request, res: Response) => {
+    await orderRepository.addOrder(req.body)
+    .then(function()
+    {
+        res.send("Order " + req.body.id + " has been added!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// update order from request body
+router.put('/order/:id', async (req: Request, res: Response) => {
+    await orderRepository.updateOrderById(req.params.id, req.body)
+    .then(function()
+    {
+        res.send("Order " + req.body.id + " has been updated!");
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// get orders by employee id
+router.get('/orders/employee/:id', async (req: Request, res: Response) => {
+    await orderRepository.getOrdersByEmployeeId(req.params.id)
+    .then(function(orders: any)
+    {
+        res.send(orders);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// get orders in a given time period
+router.get('/orders/time/:start/:end', async (req: Request, res: Response) => {
+    await orderRepository.getOrdersByTimePeriod(new Date(req.params.start), new Date(req.params.end))
+    .then(function(orders: any)
+    {
+        res.send(orders);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// get income in a given time period
+router.get('/income/time/:start/:end', async (req: Request, res: Response) => {
+    await orderRepository.getIncomeByTimePeriod(new Date(req.params.start), new Date(req.params.end))
+    .then(function(income: any)
+    {
+        res.send(income);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
 
 // REST API for Product in Storage
 // get all products
