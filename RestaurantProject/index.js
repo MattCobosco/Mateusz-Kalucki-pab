@@ -395,7 +395,7 @@ router["delete"]('/product/:name', function (req, res) { return __awaiter(void 0
             case 1:
                 productDeleted = _a.sent();
                 if (productDeleted)
-                    res.send('Product ' + req.params.name + ' has been deleted.');
+                    res.send('Product ' + req.params.name + ' has been successfully deleted.');
                 else
                     res.status(404).send('Product ' + req.params.name + ' could not be found.');
                 return [2 /*return*/];
@@ -413,7 +413,7 @@ router.post('/product', function (req, res) { return __awaiter(void 0, void 0, v
             case 1:
                 productAdded = _a.sent();
                 if (productAdded)
-                    res.status(201).send('Product ' + product.name + ' has been added.');
+                    res.status(201).send('Product ' + product.name + ' has been successfully added.');
                 else
                     res.status(400).send('Product ' + product.name + ' already exists.');
                 return [2 /*return*/];
@@ -429,7 +429,7 @@ router.put('/product/:name', function (req, res) { return __awaiter(void 0, void
             case 1:
                 productUpdated = _a.sent();
                 if (productUpdated)
-                    res.status(200).send('Product ' + req.params.name + ' has been updated.');
+                    res.status(200).send('Product ' + req.params.name + ' has been successfully updated.');
                 else
                     res.status(404).send('Product ' + req.params.name + ' could not be found.');
                 return [2 /*return*/];
@@ -562,7 +562,7 @@ router["delete"]('/restaurant/:name', function (req, res) { return __awaiter(voi
             case 1:
                 restaurantDeleted = _a.sent();
                 if (restaurantDeleted)
-                    res.status(200).send('Restaurant ' + req.params.name + ' has been deleted.');
+                    res.status(200).send('Restaurant ' + req.params.name + ' has been successfully deleted.');
                 else
                     res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
                 return [2 /*return*/];
@@ -580,7 +580,7 @@ router.post('/restaurant', function (req, res) { return __awaiter(void 0, void 0
             case 1:
                 restaurantAdded = _a.sent();
                 if (restaurantAdded)
-                    res.status(201).send('Restaurant ' + restaurant.name + ' has been added.');
+                    res.status(201).send('Restaurant ' + restaurant.name + ' has been successfully added.');
                 else
                     res.status(400).send('Restaurant ' + restaurant.name + ' already exists.');
                 return [2 /*return*/];
@@ -596,7 +596,7 @@ router.put('/restaurant/:name', function (req, res) { return __awaiter(void 0, v
             case 1:
                 restaurantUpdated = _a.sent();
                 if (restaurantUpdated)
-                    res.status(200).send('Restaurant ' + req.params.name + ' has been updated.');
+                    res.status(200).send('Restaurant ' + req.params.name + ' has been successfully updated.');
                 else
                     res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
                 return [2 /*return*/];
