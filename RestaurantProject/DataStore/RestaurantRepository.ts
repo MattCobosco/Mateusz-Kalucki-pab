@@ -1,5 +1,4 @@
 import {Schema, model, connect} from 'mongoose';
-import { transpileModule } from 'typescript';
 import Restaurant from '../CoreBusiness/RestaurantModel';
 
 export class RestaurantRepository
@@ -12,7 +11,7 @@ export class RestaurantRepository
             nip: {type: String, required: true},
             email: {type: String, required: true},
             website: {type: String, required: true},
-            description: String
+            description: {type: String, required: false}
         });
 
     RestaurantModel = model<Restaurant>('Restaurant', this.restaurantSchema);
@@ -39,7 +38,7 @@ export class RestaurantRepository
             .insertMany(restaurants)
             .then(function()
             {
-                console.log("Restaurants have been populated!")
+                console.log('Restaurants have been populated!')
             }).catch(function(err)
             {
                 console.log(err);
@@ -51,6 +50,10 @@ export class RestaurantRepository
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
+        const alreadyExists = await this.RestaurantModel.findOne({name: restaurant.name});
+        if(alreadyExists)
+            return false;
+
         await this.RestaurantModel
         .create(restaurant)
         .then(function()
@@ -61,14 +64,11 @@ export class RestaurantRepository
             console.log(err);
         });
 
-        // check if restaurant has been added
-        const result = await this.RestaurantModel.findOne({name: restaurant.name});
-        
-        if (result)
+        const existsAfter = await this.RestaurantModel.findOne({name: restaurant.name});
+        if (existsAfter)
             return true;
         else
             return false;
-        
     }
 
     async deleteRestaurantByName(restaurantName: string) : Promise<boolean>
@@ -77,38 +77,45 @@ export class RestaurantRepository
 
         const exists = await this.RestaurantModel.exists({name: restaurantName});
         if (!exists)
-        {
-            console.log('Restaurant ' + restaurantName + ' does not exist!');
             return false;
-        }
 
         await this.RestaurantModel
         .deleteOne({name: restaurantName})
         .then(function()
         {
-            console.log("Restaurant " + restaurantName + " has been deleted!");
+            console.log('Restaurant ' + restaurantName + ' has been deleted!');
         }).catch(function(err)
         {
             console.log(err);
         });
 
-        return true;
+        const existsAfter = await this.RestaurantModel.findOne({name: restaurantName});
+        if (!existsAfter)
+            return true;
+        else
+            return false;
     }
     
-    async getRestaurantByName(restaurantName: string) : Promise<Restaurant>
+    async getRestaurantByName(restaurantName: string) : Promise<Restaurant | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
-        let restaurant = await this.RestaurantModel.findOne({name: restaurantName});
+        
+        const restaurant = await this.RestaurantModel.findOne({name: restaurantName});
         if (restaurant)
             return restaurant;
         else
-            return null as any;
+            return false;
     }
 
-    async getRestaurants() : Promise<Restaurant[]>
+    async getRestaurants() : Promise<Restaurant[] | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
-        return await this.RestaurantModel.find({});
+        
+        const restaurants = await this.RestaurantModel.find({});
+        if(restaurants)
+            return restaurants;
+        else
+            return false;
     }
 
     async updateRestaurant(restaurantName: string, restaurant: Restaurant) : Promise<boolean>
@@ -137,7 +144,7 @@ export class RestaurantRepository
             .updateOne({name: restaurantName}, restaurantToUpdate)
             .then(function()
             {
-                console.log("Restaurant " + restaurantName + " has been updated!");
+                console.log('Restaurant ' + restaurantName + ' has been updated!');
             }).catch(function(err)
             {
                 console.log(err);
@@ -146,7 +153,6 @@ export class RestaurantRepository
         }
         else
         {
-            console.log("Restaurant " + restaurantName + " does not exist!");
             return false;
         }
     }
