@@ -5,6 +5,7 @@ export class CustomerRepository
 {
     customerSchema = new Schema<Customer>(
         {
+            id: {type: Schema.Types.ObjectId, required: false},
             name: {type: String, required: true},
             email: {type: String, required: true},
             phone: {type: String, required: true},
@@ -84,6 +85,16 @@ export class CustomerRepository
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
         let customer = await this.CustomerModel.findOne({name: customerName});
+        if (customer)
+            return customer;
+        else
+            return null as any;
+    }
+
+    async getCustomerById(customerId: string) : Promise<Customer>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+        let customer = await this.CustomerModel.findById(customerId);
         if (customer)
             return customer;
         else

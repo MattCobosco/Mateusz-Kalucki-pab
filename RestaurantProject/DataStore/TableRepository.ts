@@ -7,6 +7,7 @@ export class TableRepository
 {
     tableSchema = new Schema<Table>(
         {
+            id: {type: Schema.Types.ObjectId, required: false},
             number: {type: Number, required: true},
             seats: {type: Number, required: true},
             status: {type: Number, required: true}
