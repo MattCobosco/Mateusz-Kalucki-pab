@@ -81,7 +81,7 @@ export class ProductRepository
             .insertMany(products)
             .then(function()
             {
-                console.log("Products have been populated!")
+                console.log('Products have been populated!')
             }).catch(function(err: any)
             {
                 console.log(err);
@@ -89,60 +89,83 @@ export class ProductRepository
         }
     }
 
-    async addProduct(product: Product) : Promise<void>
+    async addProduct(product: Product) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
         
+        const alreadyExists = await this.ProductModel.exists({name: product.name});
+        if (alreadyExists)
+            return false;
+
         await this.ProductModel
         .create(product)
         .then(function()
         {
-            console.log("Product " + product.name + " has been added!");
+            console.log('Product ' + product.name + ' has been added!');
         }).catch(function(err: any)
         {
             console.log(err);
         });
+
+        const existsAfter = await this.ProductModel.findOne({name: product.name});
+        if (existsAfter)
+            return true;
+        else
+            return false;
     }
 
-    async deleteProductByName(productName: string) : Promise<void>
+    async deleteProductByName(productName: string) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
         
+        const exists = await this.ProductModel.exists({name: productName});
+        if (!exists)
+            return false;
+
         await this.ProductModel
         .deleteOne({name: productName})
         .then(function()
         {
-            console.log("Product " + productName + " has been deleted!");
+            console.log('Product ' + productName + ' has been deleted!');
         }).catch(function(err: any)
         {
             console.log(err);
         });
+
+        const existsAfter = await this.ProductModel.findOne({name: productName});
+        if (!existsAfter)
+            return true;
+        else
+            return false;
     }
 
-    async getProductByName(productName: string) : Promise<Product>
+    async getProductByName(productName: string) : Promise<Product | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        let product = await this.ProductModel.findOne({name: productName});
-        
+        const product = await this.ProductModel.findOne({name: productName});
         if(product)
             return product;
         else
-            return null as any;
+            return false;
     }
 
-    async getProducts() : Promise<Product[]>
+    async getProducts() : Promise<Product[] | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
-        return this.ProductModel.find({});
+        
+        const products =  this.ProductModel.find({});
+        if(products)
+            return products;
+        else
+            return false;
     }
 
-    async updateProduct(productName:string, product: Product) : Promise<void>
+    async updateProduct(productName:string, product: Product) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
         let productToUpdate = await this.ProductModel.findOne({name: productName});
-
         if(productToUpdate)
         {
             if(product.name)
@@ -155,15 +178,17 @@ export class ProductRepository
             await productToUpdate.save()
             .then(function()
             {
-                console.log("Product " + productName + " has been updated!");
+                console.log('Product ' + productName + ' has been updated!');
             }).catch(function(err: any)
             {
                 console.log(err);
             });
+
+            return true;
         }
         else    
         {
-            console.log("Product " + productName + " does not exist!");
+            return false;
         }
     }
 }
