@@ -38,14 +38,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.OrderRepository = void 0;
 var mongoose_1 = require("mongoose");
-var MenuItemRepository_1 = require("./MenuItemRepository");
+var EmployeeModel_1 = require("../CoreBusiness/EmployeeModel");
+var MenuItemModel_1 = require("../CoreBusiness/MenuItemModel");
+var TableModel_1 = require("../CoreBusiness/TableModel");
 var OrderRepository = /** @class */ (function () {
     function OrderRepository() {
         this.orderSchema = new mongoose_1.Schema({
-            employee: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Employee' },
-            items: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'MenuItem' }],
+            employee: { type: EmployeeModel_1["default"], ref: 'Employee' },
+            items: [{ type: MenuItemModel_1["default"], ref: 'MenuItem' }],
             status: { type: Number, required: true },
-            table: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Table' },
+            table: { type: TableModel_1["default"], ref: 'Table' },
             price: { type: Number, required: true }
         });
         this.orderModel = (0, mongoose_1.model)('Order', this.orderSchema);
@@ -91,39 +93,28 @@ var OrderRepository = /** @class */ (function () {
     ;
     OrderRepository.prototype.addOrder = function (order) {
         return __awaiter(this, void 0, void 0, function () {
-            var menuItemRepository, price, i, orderMenuItem, itemPrice;
+            var price, i, item;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
-                        if (!!order.price) return [3 /*break*/, 6];
-                        price = 0;
-                        i = 0;
-                        _a.label = 2;
+                        if (!order.price) {
+                            price = 0;
+                            for (i = 0; i < order.items.length; i++) {
+                                item = order.items[i];
+                                price += item.price;
+                            }
+                            order.price = price;
+                        }
+                        return [4 /*yield*/, this.orderModel
+                                .create(order)
+                                .then(function () {
+                                console.log("Order has been added!");
+                            })["catch"](function (err) {
+                                console.log(err);
+                            })];
                     case 2:
-                        if (!(i < order.items.length)) return [3 /*break*/, 5];
-                        orderMenuItem = order.items[i];
-                        return [4 /*yield*/, menuItemRepository.getMenuItemById(orderMenuItem._id)];
-                    case 3:
-                        itemPrice = (_a.sent()).price;
-                        price += +itemPrice;
-                        _a.label = 4;
-                    case 4:
-                        i++;
-                        return [3 /*break*/, 2];
-                    case 5:
-                        order.price = price;
-                        _a.label = 6;
-                    case 6: return [4 /*yield*/, this.orderModel
-                            .create(order)
-                            .then(function () {
-                            console.log("Order has been added!");
-                        })["catch"](function (err) {
-                            console.log(err);
-                        })];
-                    case 7:
                         _a.sent();
                         return [2 /*return*/];
                 }
@@ -132,11 +123,15 @@ var OrderRepository = /** @class */ (function () {
     };
     OrderRepository.prototype.deleteOrderById = function (id) {
         return __awaiter(this, void 0, void 0, function () {
+            var exists;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.orderModel.exists({ _id: id })];
+                    case 2:
+                        exists = _a.sent();
                         return [4 /*yield*/, this.orderModel
                                 .findByIdAndDelete(id)
                                 .then(function () {
@@ -144,7 +139,7 @@ var OrderRepository = /** @class */ (function () {
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
                         return [2 /*return*/];
                 }
@@ -184,7 +179,7 @@ var OrderRepository = /** @class */ (function () {
     ;
     OrderRepository.prototype.updateOrderById = function (id, order) {
         return __awaiter(this, void 0, void 0, function () {
-            var orderToUpdate, menuItemRepository, price, i, item, itemPrice;
+            var orderToUpdate, price, i, itemPrice;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
@@ -193,8 +188,7 @@ var OrderRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.orderModel.findById(id)];
                     case 2:
                         orderToUpdate = _a.sent();
-                        menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
-                        if (!orderToUpdate) return [3 /*break*/, 8];
+                        if (!orderToUpdate) return [3 /*break*/, 4];
                         if (order.employee)
                             orderToUpdate.employee = order.employee;
                         if (order.items)
@@ -203,36 +197,26 @@ var OrderRepository = /** @class */ (function () {
                             orderToUpdate.status = order.status;
                         if (order.table)
                             orderToUpdate.table = order.table;
-                        if (!order.price) return [3 /*break*/, 3];
-                        orderToUpdate.price = order.price;
-                        return [3 /*break*/, 8];
+                        if (order.price)
+                            orderToUpdate.price = order.price;
+                        else {
+                            price = 0;
+                            for (i = 0; i < orderToUpdate.items.length; i++) {
+                                itemPrice = orderToUpdate.items[i].price;
+                                price += +itemPrice;
+                            }
+                            orderToUpdate.price = price;
+                        }
+                        return [4 /*yield*/, orderToUpdate.save()
+                                .then(function () {
+                                console.log("Order has been updated!");
+                            })["catch"](function (err) {
+                                console.log(err);
+                            })];
                     case 3:
-                        price = 0;
-                        i = 0;
-                        _a.label = 4;
-                    case 4:
-                        if (!(i < orderToUpdate.items.length)) return [3 /*break*/, 7];
-                        item = orderToUpdate.items[i];
-                        return [4 /*yield*/, menuItemRepository.getMenuItemById(item._id)];
-                    case 5:
-                        itemPrice = (_a.sent()).price;
-                        price += +itemPrice;
-                        _a.label = 6;
-                    case 6:
-                        i++;
-                        return [3 /*break*/, 4];
-                    case 7:
-                        orderToUpdate.price = price;
-                        _a.label = 8;
-                    case 8: return [4 /*yield*/, orderToUpdate.save()
-                            .then(function () {
-                            console.log("Order has been updated!");
-                        })["catch"](function (err) {
-                            console.log(err);
-                        })];
-                    case 9:
                         _a.sent();
-                        return [2 /*return*/];
+                        return [2 /*return*/, true];
+                    case 4: return [2 /*return*/, false];
                 }
             });
         });

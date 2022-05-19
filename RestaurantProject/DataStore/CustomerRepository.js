@@ -41,7 +41,6 @@ var mongoose_1 = require("mongoose");
 var CustomerRepository = /** @class */ (function () {
     function CustomerRepository() {
         this.customerSchema = new mongoose_1.Schema({
-            id: { type: mongoose_1.Schema.Types.ObjectId, required: false },
             name: { type: String, required: true },
             email: { type: String, required: true },
             phone: { type: String, required: true },
@@ -148,6 +147,26 @@ var CustomerRepository = /** @class */ (function () {
                         customer = _a.sent();
                         if (customer)
                             return [2 /*return*/, customer];
+                        else
+                            return [2 /*return*/, null];
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    CustomerRepository.prototype.getCustomerIdByName = function (customerName) {
+        return __awaiter(this, void 0, void 0, function () {
+            var customer;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.CustomerModel.findOne({ name: customerName })];
+                    case 2:
+                        customer = _a.sent();
+                        if (customer)
+                            return [2 /*return*/, customer.id];
                         else
                             return [2 /*return*/, null];
                         return [2 /*return*/];

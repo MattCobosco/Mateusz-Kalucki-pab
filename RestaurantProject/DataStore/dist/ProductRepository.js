@@ -118,7 +118,7 @@ var ProductRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.ProductModel
                                 .insertMany(products)
                                 .then(function () {
-                                console.log("Products have been populated!");
+                                console.log('Products have been populated!');
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -132,20 +132,33 @@ var ProductRepository = /** @class */ (function () {
     };
     ProductRepository.prototype.addProduct = function (product) {
         return __awaiter(this, void 0, Promise, function () {
+            var alreadyExists, existsAfter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.ProductModel.exists({ name: product.name })];
+                    case 2:
+                        alreadyExists = _a.sent();
+                        if (alreadyExists)
+                            return [2 /*return*/, false];
                         return [4 /*yield*/, this.ProductModel
                                 .create(product)
                                 .then(function () {
-                                console.log("Product " + product.name + " has been added!");
+                                console.log('Product ' + product.name + ' has been added!');
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
+                        return [4 /*yield*/, this.ProductModel.findOne({ name: product.name })];
+                    case 4:
+                        existsAfter = _a.sent();
+                        if (existsAfter)
+                            return [2 /*return*/, true];
+                        else
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -153,20 +166,33 @@ var ProductRepository = /** @class */ (function () {
     };
     ProductRepository.prototype.deleteProductByName = function (productName) {
         return __awaiter(this, void 0, Promise, function () {
+            var exists, existsAfter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.ProductModel.exists({ name: productName })];
+                    case 2:
+                        exists = _a.sent();
+                        if (!exists)
+                            return [2 /*return*/, false];
                         return [4 /*yield*/, this.ProductModel
                                 .deleteOne({ name: productName })
                                 .then(function () {
-                                console.log("Product " + productName + " has been deleted!");
+                                console.log('Product ' + productName + ' has been deleted!');
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
+                        return [4 /*yield*/, this.ProductModel.findOne({ name: productName })];
+                    case 4:
+                        existsAfter = _a.sent();
+                        if (!existsAfter)
+                            return [2 /*return*/, true];
+                        else
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -186,7 +212,7 @@ var ProductRepository = /** @class */ (function () {
                         if (product)
                             return [2 /*return*/, product];
                         else
-                            return [2 /*return*/, null];
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -194,12 +220,18 @@ var ProductRepository = /** @class */ (function () {
     };
     ProductRepository.prototype.getProducts = function () {
         return __awaiter(this, void 0, Promise, function () {
+            var products;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/, this.ProductModel.find({})];
+                        products = this.ProductModel.find({});
+                        if (products)
+                            return [2 /*return*/, products];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
                 }
             });
         });
@@ -224,17 +256,14 @@ var ProductRepository = /** @class */ (function () {
                             productToUpdate.quantity = product.quantity;
                         return [4 /*yield*/, productToUpdate.save()
                                 .then(function () {
-                                console.log("Product " + productName + " has been updated!");
+                                console.log('Product ' + productName + ' has been updated!');
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
                     case 3:
                         _a.sent();
-                        return [3 /*break*/, 5];
-                    case 4:
-                        console.log("Product " + productName + " does not exist!");
-                        _a.label = 5;
-                    case 5: return [2 /*return*/];
+                        return [2 /*return*/, true];
+                    case 4: return [2 /*return*/, false];
                 }
             });
         });

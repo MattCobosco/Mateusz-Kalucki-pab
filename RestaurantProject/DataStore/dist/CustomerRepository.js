@@ -154,6 +154,26 @@ var CustomerRepository = /** @class */ (function () {
             });
         });
     };
+    CustomerRepository.prototype.getCustomerById = function (customerId) {
+        return __awaiter(this, void 0, Promise, function () {
+            var customer;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.CustomerModel.findById(customerId)];
+                    case 2:
+                        customer = _a.sent();
+                        if (customer)
+                            return [2 /*return*/, customer];
+                        else
+                            return [2 /*return*/, null];
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     CustomerRepository.prototype.getCustomers = function () {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {

@@ -8,8 +8,7 @@ var TableStatus;
     TableStatus[TableStatus["OutOfOrder"] = 3] = "OutOfOrder";
 })(TableStatus || (TableStatus = {}));
 var Table = /** @class */ (function () {
-    function Table(id, number, seats, status) {
-        this.id = id;
+    function Table(number, seats, status) {
         this.number = number;
         this.seats = seats;
         this.status = status;

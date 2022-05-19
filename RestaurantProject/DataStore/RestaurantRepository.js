@@ -47,7 +47,7 @@ var RestaurantRepository = /** @class */ (function () {
             nip: { type: String, required: true },
             email: { type: String, required: true },
             website: { type: String, required: true },
-            description: String
+            description: { type: String, required: false }
         });
         this.RestaurantModel = (0, mongoose_1.model)('Restaurant', this.restaurantSchema);
     }
@@ -75,7 +75,7 @@ var RestaurantRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.RestaurantModel
                                 .insertMany(restaurants)
                                 .then(function () {
-                                console.log("Restaurants have been populated!");
+                                console.log('Restaurants have been populated!');
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -89,12 +89,17 @@ var RestaurantRepository = /** @class */ (function () {
     };
     RestaurantRepository.prototype.addRestaurant = function (restaurant) {
         return __awaiter(this, void 0, void 0, function () {
-            var result;
+            var alreadyExists, existsAfter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.RestaurantModel.findOne({ name: restaurant.name })];
+                    case 2:
+                        alreadyExists = _a.sent();
+                        if (alreadyExists)
+                            return [2 /*return*/, false];
                         return [4 /*yield*/, this.RestaurantModel
                                 .create(restaurant)
                                 .then(function () {
@@ -102,12 +107,12 @@ var RestaurantRepository = /** @class */ (function () {
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
                         return [4 /*yield*/, this.RestaurantModel.findOne({ name: restaurant.name })];
-                    case 3:
-                        result = _a.sent();
-                        if (result)
+                    case 4:
+                        existsAfter = _a.sent();
+                        if (existsAfter)
                             return [2 /*return*/, true];
                         else
                             return [2 /*return*/, false];
@@ -118,7 +123,7 @@ var RestaurantRepository = /** @class */ (function () {
     };
     RestaurantRepository.prototype.deleteRestaurantByName = function (restaurantName) {
         return __awaiter(this, void 0, void 0, function () {
-            var exists;
+            var exists, existsAfter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
@@ -128,19 +133,25 @@ var RestaurantRepository = /** @class */ (function () {
                     case 2:
                         exists = _a.sent();
                         if (!exists) {
-                            console.log('Restaurant ' + restaurantName + ' does not exist!');
                             return [2 /*return*/, false];
                         }
                         return [4 /*yield*/, this.RestaurantModel
                                 .deleteOne({ name: restaurantName })
                                 .then(function () {
-                                console.log("Restaurant " + restaurantName + " has been deleted!");
+                                console.log('Restaurant ' + restaurantName + ' has been deleted!');
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
                     case 3:
                         _a.sent();
-                        return [2 /*return*/, true];
+                        return [4 /*yield*/, this.RestaurantModel.findOne({ name: restaurantName })];
+                    case 4:
+                        existsAfter = _a.sent();
+                        if (!existsAfter)
+                            return [2 /*return*/, true];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
                 }
             });
         });
@@ -159,7 +170,7 @@ var RestaurantRepository = /** @class */ (function () {
                         if (restaurant)
                             return [2 /*return*/, restaurant];
                         else
-                            return [2 /*return*/, null];
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -207,16 +218,14 @@ var RestaurantRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.RestaurantModel
                                 .updateOne({ name: restaurantName }, restaurantToUpdate)
                                 .then(function () {
-                                console.log("Restaurant " + restaurantName + " has been updated!");
+                                console.log('Restaurant ' + restaurantName + ' has been updated!');
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
                     case 3:
                         _a.sent();
                         return [2 /*return*/, true];
-                    case 4:
-                        console.log("Restaurant " + restaurantName + " does not exist!");
-                        return [2 /*return*/, false];
+                    case 4: return [2 /*return*/, false];
                 }
             });
         });
