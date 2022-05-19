@@ -41,6 +41,7 @@ var mongoose_1 = require("mongoose");
 var ReservationRepository = /** @class */ (function () {
     function ReservationRepository() {
         this.reservationSchema = new mongoose_1.Schema({
+            id: { type: mongoose_1.Schema.Types.ObjectId, required: false },
             table: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Table' },
             startDateTime: { type: Date, required: true },
             endDateTime: { type: Date, required: true },
@@ -58,13 +59,13 @@ var ReservationRepository = /** @class */ (function () {
                         _a.sent();
                         reservations = [
                             {
-                                table: '6284ab720b1b925fc9c801fe',
+                                table: '628616ee7bf995e24d0d7681',
                                 startDateTime: new Date(2020, 1, 1, 10, 0, 0, 0),
                                 endDateTime: new Date(2020, 1, 1, 11, 0, 0, 0),
                                 customer: '6282601eb18137f01f157f6f'
                             },
                             {
-                                table: '6284ab720b1b925fc9c801ff',
+                                table: '628616ee7bf995e24d0d7682',
                                 startDateTime: new Date(2020, 1, 1, 11, 0, 0, 0),
                                 endDateTime: new Date(2020, 1, 1, 12, 0, 0, 0),
                                 customer: '62826610ec4736a45905ecae'

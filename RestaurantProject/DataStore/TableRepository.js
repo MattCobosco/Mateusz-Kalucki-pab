@@ -42,6 +42,7 @@ var ReservationRepository_1 = require("./ReservationRepository");
 var TableRepository = /** @class */ (function () {
     function TableRepository() {
         this.tableSchema = new mongoose_1.Schema({
+            id: { type: mongoose_1.Schema.Types.ObjectId, required: false },
             number: { type: Number, required: true },
             seats: { type: Number, required: true },
             status: { type: Number, required: true }

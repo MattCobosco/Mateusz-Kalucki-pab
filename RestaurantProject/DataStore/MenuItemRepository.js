@@ -195,6 +195,28 @@ var MenuItemRepository = /** @class */ (function () {
             });
         });
     };
+    MenuItemRepository.prototype.getMenuItemById = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var menuItem;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.MenuItemModel.findById(id)];
+                    case 2:
+                        menuItem = _a.sent();
+                        if (menuItem) {
+                            return [2 /*return*/, menuItem];
+                        }
+                        else {
+                            return [2 /*return*/, null];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     MenuItemRepository.prototype.getMenuItems = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
