@@ -212,7 +212,7 @@ var ProductRepository = /** @class */ (function () {
                         if (product)
                             return [2 /*return*/, product];
                         else
-                            return [2 /*return*/, null];
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -220,12 +220,18 @@ var ProductRepository = /** @class */ (function () {
     };
     ProductRepository.prototype.getProducts = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var products;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/, this.ProductModel.find({})];
+                        products = this.ProductModel.find({});
+                        if (products)
+                            return [2 /*return*/, products];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
                 }
             });
         });

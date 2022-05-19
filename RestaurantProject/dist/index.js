@@ -69,7 +69,7 @@ restaurantRepository.populateRestaurants();
 //     await customerRepository.deleteCustomerByName(req.params.name)
 //     .then(function()
 //     {
-//         res.send("Customer " + req.params.name + " has been deleted!");
+//         res.send('Customer ' + req.params.name + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -80,7 +80,7 @@ restaurantRepository.populateRestaurants();
 //     await customerRepository.addCustomer(req.body)
 //     .then(function()
 //     {
-//         res.send("Customer " + req.body.name + " has been added!");
+//         res.send('Customer ' + req.body.name + ' has been added!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -91,7 +91,7 @@ restaurantRepository.populateRestaurants();
 //     await customerRepository.updateCustomer(req.params.name, req.body)
 //     .then(function()
 //     {
-//         res.send("Customer " + req.body.name + " has been updated!");
+//         res.send('Customer ' + req.body.name + ' has been updated!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -102,7 +102,7 @@ restaurantRepository.populateRestaurants();
 //     await customerRepository.addLoyaltyPoints(req.params.name, req.body.loyaltyPoints)
 //     .then(function()
 //     {
-//         res.send(req.body.loyaltyPoints + " loyalty points for " + req.params.name + "!");
+//         res.send(req.body.loyaltyPoints + ' loyalty points for ' + req.params.name + '!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -136,7 +136,7 @@ restaurantRepository.populateRestaurants();
 //     await employeeRepository.deleteEmployeeBySurname(req.params.name)
 //     .then(function()
 //     {
-//         res.send("Employee " + req.params.name + " has been deleted!");
+//         res.send('Employee ' + req.params.name + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -147,7 +147,7 @@ restaurantRepository.populateRestaurants();
 //     await employeeRepository.addEmployee(req.body)
 //     .then(function()
 //     {
-//         res.send("Employee " + req.body.name + " has been added!");
+//         res.send('Employee ' + req.body.name + ' has been added!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -158,7 +158,7 @@ restaurantRepository.populateRestaurants();
 //     await employeeRepository.updateEmployee(req.params.name, req.body)
 //     .then(function()
 //     {
-//         res.send("Employee " + req.body.name + " has been updated!");
+//         res.send('Employee ' + req.body.name + ' has been updated!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -192,7 +192,7 @@ restaurantRepository.populateRestaurants();
 //     await menuItemRepository.deleteMenuItemByName(req.params.name)
 //     .then(function()
 //     {
-//         res.send("Menu Item " + req.params.name + " has been deleted!");
+//         res.send('Menu Item ' + req.params.name + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -203,7 +203,7 @@ restaurantRepository.populateRestaurants();
 //     await menuItemRepository.addMenuItem(req.body)
 //     .then(function()
 //     {
-//         res.send("Menu Item " + req.body.name + " has been added!");
+//         res.send('Menu Item ' + req.body.name + ' has been added!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -214,7 +214,7 @@ restaurantRepository.populateRestaurants();
 //     await menuItemRepository.updateMenuItem(req.params.name, req.body)
 //     .then(function()
 //     {
-//         res.send("Menu Item " + req.body.name + " has been updated!");
+//         res.send('Menu Item ' + req.body.name + ' has been updated!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -259,7 +259,7 @@ restaurantRepository.populateRestaurants();
 //     await orderRepository.deleteOrderById(req.params.id)
 //     .then(function()
 //     {
-//         res.send("Order " + req.params.id + " has been deleted!");
+//         res.send('Order ' + req.params.id + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -270,7 +270,7 @@ restaurantRepository.populateRestaurants();
 //     await orderRepository.addOrder(req.body)
 //     .then(function()
 //     {
-//         res.send("Order " + req.body.id + " has been added!");
+//         res.send('Order ' + req.body.id + ' has been added!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -281,7 +281,7 @@ restaurantRepository.populateRestaurants();
 //     await orderRepository.updateOrderById(req.params.id, req.body)
 //     .then(function()
 //     {
-//         res.send("Order " + req.body.id + " has been updated!");
+//         res.send('Order ' + req.body.id + ' has been updated!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -325,46 +325,50 @@ restaurantRepository.populateRestaurants();
 router.get('/products', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield productRepository.getProducts()
         .then(function (products) {
-        res.send(products);
+        if (products)
+            res.status(200).send(products);
+        else
+            res.status(404).send('Products could not be found.');
     }).catch(function (err) {
-        res.send(err);
+        res.status(500).send(err);
     });
 }));
 // get product by name
 router.get('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield productRepository.getProductByName(req.params.name)
         .then(function (product) {
-        res.send(product);
+        if (product)
+            res.status(200).send(product);
+        else
+            res.status(404).send('Product ' + req.params.name + ' could not be found.');
     }).catch(function (err) {
-        res.send(err);
+        res.status(500).send(err);
     });
 }));
 // delete product by name
 router.delete('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield productRepository.deleteProductByName(req.params.name)
-        .then(function () {
-        res.send("Product " + req.params.name + " has been deleted!");
-    }).catch(function (err) {
-        res.send(err);
-    });
+    const productDeleted = yield productRepository.deleteProductByName(req.params.name);
+    if (productDeleted)
+        res.send('Product ' + req.params.name + ' has been successfully deleted.');
+    else
+        res.status(404).send('Product ' + req.params.name + ' could not be found.');
 }));
 // add product from request body
 router.post('/product', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield productRepository.addProduct(req.body)
-        .then(function () {
-        res.send("Product " + req.body.name + " has been added!");
-    }).catch(function (err) {
-        res.send(err);
-    });
+    const product = req.body;
+    const productAdded = yield productRepository.addProduct(product);
+    if (productAdded)
+        res.status(201).send('Product ' + product.name + ' has been successfully added.');
+    else
+        res.status(400).send('Product ' + product.name + ' already exists.');
 }));
 // update product from request body
 router.put('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield productRepository.updateProduct(req.params.name, req.body)
-        .then(function () {
-        res.send("Product " + req.body.name + " has been updated!");
-    }).catch(function (err) {
-        res.send(err);
-    });
+    const productUpdated = yield productRepository.updateProduct(req.params.name, req.body);
+    if (productUpdated)
+        res.status(200).send('Product ' + req.params.name + ' has been successfully updated.');
+    else
+        res.status(404).send('Product ' + req.params.name + ' could not be found.');
 }));
 // // REST API for Reservation
 // // get all reservations
@@ -394,7 +398,7 @@ router.put('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, fun
 //     await reservationRepository.deleteReservationById(req.params.id)
 //     .then(function()
 //     {
-//         res.send("Reservation " + req.params.id + " has been deleted!");
+//         res.send('Reservation ' + req.params.id + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -405,7 +409,7 @@ router.put('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, fun
 //     await reservationRepository.addReservation(req.body)
 //     .then(function()
 //     {
-//         res.send("Reservation " + req.body.id + " has been added!");
+//         res.send('Reservation ' + req.body.id + ' has been added!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -416,7 +420,7 @@ router.put('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, fun
 //     await reservationRepository.updateReservationById(req.params.id, req.body)
 //     .then(function()
 //     {
-//         res.send("Reservation " + req.params.id + " has been updated!");
+//         res.send('Reservation ' + req.params.id + ' has been updated!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -452,7 +456,7 @@ router.get('/restaurants', (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (restaurants)
             res.status(200).send(restaurants);
         else
-            res.status(404).send("Restaurants not found!");
+            res.status(404).send('Restaurants could not be found.');
     }).catch(function (err) {
         res.status(500).send(err);
     });
@@ -464,7 +468,7 @@ router.get('/restaurant/:name', (req, res) => __awaiter(void 0, void 0, void 0, 
         if (restaurant)
             res.status(200).send(restaurant);
         else
-            res.status(404).send("Restaurant not found!");
+            res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
     }).catch(function (err) {
         res.status(500).send(err);
     });
@@ -473,26 +477,26 @@ router.get('/restaurant/:name', (req, res) => __awaiter(void 0, void 0, void 0, 
 router.delete('/restaurant/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const restaurantDeleted = yield restaurantRepository.deleteRestaurantByName(req.params.name);
     if (restaurantDeleted)
-        res.status(200).send("Restaurant " + req.params.name + " has been deleted.");
+        res.status(200).send('Restaurant ' + req.params.name + ' has been successfully deleted.');
     else
-        res.status(404).send("Restaurant " + req.params.name + " does not exist.");
+        res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
 }));
 // add a restaurant from request body
 router.post('/restaurant', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const restaurant = req.body;
     const restaurantAdded = yield restaurantRepository.addRestaurant(restaurant);
     if (restaurantAdded)
-        res.status(200).send('Restaurant ' + restaurant.name + ' added.');
+        res.status(201).send('Restaurant ' + restaurant.name + ' has been successfully added.');
     else
-        res.status(400).send('Restaurant ' + restaurant.name + ' not added.');
+        res.status(400).send('Restaurant ' + restaurant.name + ' already exists.');
 }));
 // update restaurant from request body
 router.put('/restaurant/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const restaurant = yield restaurantRepository.updateRestaurant(req.params.name, req.body);
-    if (restaurant)
-        res.status(200).send('Restaurant ' + req.params.name + ' updated.');
+    const restaurantUpdated = yield restaurantRepository.updateRestaurant(req.params.name, req.body);
+    if (restaurantUpdated)
+        res.status(200).send('Restaurant ' + req.params.name + ' has been successfully updated.');
     else
-        res.status(404).send('Restaurant ' + req.params.name + ' not found.');
+        res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
 }));
 // // REST API for Table
 // // get all tables
@@ -522,7 +526,7 @@ router.put('/restaurant/:name', (req, res) => __awaiter(void 0, void 0, void 0, 
 //     await tableRepository.deleteTableByNumber(+req.params.number)
 //     .then(function()
 //     {
-//         res.send("Table " + +req.params.number + " has been deleted!");
+//         res.send('Table ' + +req.params.number + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -533,7 +537,7 @@ router.put('/restaurant/:name', (req, res) => __awaiter(void 0, void 0, void 0, 
 //     await tableRepository.addTable(req.body)
 //     .then(function()
 //     {
-//         res.send("Table " + req.body.number + " has been added!");
+//         res.send('Table ' + req.body.number + ' has been added!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -544,7 +548,7 @@ router.put('/restaurant/:name', (req, res) => __awaiter(void 0, void 0, void 0, 
 //     await tableRepository.updateTableByNumber(+req.params.number, req.body)
 //     .then(function()
 //     {
-//         res.send("Table " + req.params.number + " has been updated!");
+//         res.send('Table ' + req.params.number + ' has been updated!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);

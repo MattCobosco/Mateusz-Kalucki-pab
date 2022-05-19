@@ -96,7 +96,7 @@ restaurantRepository.populateRestaurants();
 //     await customerRepository.deleteCustomerByName(req.params.name)
 //     .then(function()
 //     {
-//         res.send("Customer " + req.params.name + " has been deleted!");
+//         res.send('Customer ' + req.params.name + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -107,7 +107,7 @@ restaurantRepository.populateRestaurants();
 //     await customerRepository.addCustomer(req.body)
 //     .then(function()
 //     {
-//         res.send("Customer " + req.body.name + " has been added!");
+//         res.send('Customer ' + req.body.name + ' has been added!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -118,7 +118,7 @@ restaurantRepository.populateRestaurants();
 //     await customerRepository.updateCustomer(req.params.name, req.body)
 //     .then(function()
 //     {
-//         res.send("Customer " + req.body.name + " has been updated!");
+//         res.send('Customer ' + req.body.name + ' has been updated!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -129,7 +129,7 @@ restaurantRepository.populateRestaurants();
 //     await customerRepository.addLoyaltyPoints(req.params.name, req.body.loyaltyPoints)
 //     .then(function()
 //     {
-//         res.send(req.body.loyaltyPoints + " loyalty points for " + req.params.name + "!");
+//         res.send(req.body.loyaltyPoints + ' loyalty points for ' + req.params.name + '!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -163,7 +163,7 @@ restaurantRepository.populateRestaurants();
 //     await employeeRepository.deleteEmployeeBySurname(req.params.name)
 //     .then(function()
 //     {
-//         res.send("Employee " + req.params.name + " has been deleted!");
+//         res.send('Employee ' + req.params.name + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -174,7 +174,7 @@ restaurantRepository.populateRestaurants();
 //     await employeeRepository.addEmployee(req.body)
 //     .then(function()
 //     {
-//         res.send("Employee " + req.body.name + " has been added!");
+//         res.send('Employee ' + req.body.name + ' has been added!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -185,7 +185,7 @@ restaurantRepository.populateRestaurants();
 //     await employeeRepository.updateEmployee(req.params.name, req.body)
 //     .then(function()
 //     {
-//         res.send("Employee " + req.body.name + " has been updated!");
+//         res.send('Employee ' + req.body.name + ' has been updated!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -219,7 +219,7 @@ restaurantRepository.populateRestaurants();
 //     await menuItemRepository.deleteMenuItemByName(req.params.name)
 //     .then(function()
 //     {
-//         res.send("Menu Item " + req.params.name + " has been deleted!");
+//         res.send('Menu Item ' + req.params.name + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -230,7 +230,7 @@ restaurantRepository.populateRestaurants();
 //     await menuItemRepository.addMenuItem(req.body)
 //     .then(function()
 //     {
-//         res.send("Menu Item " + req.body.name + " has been added!");
+//         res.send('Menu Item ' + req.body.name + ' has been added!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -241,7 +241,7 @@ restaurantRepository.populateRestaurants();
 //     await menuItemRepository.updateMenuItem(req.params.name, req.body)
 //     .then(function()
 //     {
-//         res.send("Menu Item " + req.body.name + " has been updated!");
+//         res.send('Menu Item ' + req.body.name + ' has been updated!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -286,7 +286,7 @@ restaurantRepository.populateRestaurants();
 //     await orderRepository.deleteOrderById(req.params.id)
 //     .then(function()
 //     {
-//         res.send("Order " + req.params.id + " has been deleted!");
+//         res.send('Order ' + req.params.id + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -297,7 +297,7 @@ restaurantRepository.populateRestaurants();
 //     await orderRepository.addOrder(req.body)
 //     .then(function()
 //     {
-//         res.send("Order " + req.body.id + " has been added!");
+//         res.send('Order ' + req.body.id + ' has been added!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -308,7 +308,7 @@ restaurantRepository.populateRestaurants();
 //     await orderRepository.updateOrderById(req.params.id, req.body)
 //     .then(function()
 //     {
-//         res.send("Order " + req.body.id + " has been updated!");
+//         res.send('Order ' + req.body.id + ' has been updated!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -354,9 +354,12 @@ router.get('/products', function (req, res) { return __awaiter(void 0, void 0, v
         switch (_a.label) {
             case 0: return [4 /*yield*/, productRepository.getProducts()
                     .then(function (products) {
-                    res.send(products);
+                    if (products)
+                        res.status(200).send(products);
+                    else
+                        res.status(404).send('Products could not be found.');
                 })["catch"](function (err) {
-                    res.send(err);
+                    res.status(500).send(err);
                 })];
             case 1:
                 _a.sent();
@@ -370,9 +373,12 @@ router.get('/product/:name', function (req, res) { return __awaiter(void 0, void
         switch (_a.label) {
             case 0: return [4 /*yield*/, productRepository.getProductByName(req.params.name)
                     .then(function (product) {
-                    res.send(product);
+                    if (product)
+                        res.status(200).send(product);
+                    else
+                        res.status(404).send('Product ' + req.params.name + ' could not be found.');
                 })["catch"](function (err) {
-                    res.send(err);
+                    res.status(500).send(err);
                 })];
             case 1:
                 _a.sent();
@@ -382,48 +388,50 @@ router.get('/product/:name', function (req, res) { return __awaiter(void 0, void
 }); });
 // delete product by name
 router["delete"]('/product/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var productDeleted;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, productRepository.deleteProductByName(req.params.name)
-                    .then(function () {
-                    res.send("Product " + req.params.name + " has been deleted!");
-                })["catch"](function (err) {
-                    res.send(err);
-                })];
+            case 0: return [4 /*yield*/, productRepository.deleteProductByName(req.params.name)];
             case 1:
-                _a.sent();
+                productDeleted = _a.sent();
+                if (productDeleted)
+                    res.send('Product ' + req.params.name + ' has been deleted.');
+                else
+                    res.status(404).send('Product ' + req.params.name + ' could not be found.');
                 return [2 /*return*/];
         }
     });
 }); });
 // add product from request body
 router.post('/product', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var product, productAdded;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, productRepository.addProduct(req.body)
-                    .then(function () {
-                    res.send("Product " + req.body.name + " has been added!");
-                })["catch"](function (err) {
-                    res.send(err);
-                })];
+            case 0:
+                product = req.body;
+                return [4 /*yield*/, productRepository.addProduct(product)];
             case 1:
-                _a.sent();
+                productAdded = _a.sent();
+                if (productAdded)
+                    res.status(201).send('Product ' + product.name + ' has been added.');
+                else
+                    res.status(400).send('Product ' + product.name + ' already exists.');
                 return [2 /*return*/];
         }
     });
 }); });
 // update product from request body
 router.put('/product/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var productUpdated;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, productRepository.updateProduct(req.params.name, req.body)
-                    .then(function () {
-                    res.status(200).send("Product " + req.body.name + " has been updated!");
-                })["catch"](function (err) {
-                    res.send(err);
-                })];
+            case 0: return [4 /*yield*/, productRepository.updateProduct(req.params.name, req.body)];
             case 1:
-                _a.sent();
+                productUpdated = _a.sent();
+                if (productUpdated)
+                    res.status(200).send('Product ' + req.params.name + ' has been updated.');
+                else
+                    res.status(404).send('Product ' + req.params.name + ' could not be found.');
                 return [2 /*return*/];
         }
     });
@@ -456,7 +464,7 @@ router.put('/product/:name', function (req, res) { return __awaiter(void 0, void
 //     await reservationRepository.deleteReservationById(req.params.id)
 //     .then(function()
 //     {
-//         res.send("Reservation " + req.params.id + " has been deleted!");
+//         res.send('Reservation ' + req.params.id + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -467,7 +475,7 @@ router.put('/product/:name', function (req, res) { return __awaiter(void 0, void
 //     await reservationRepository.addReservation(req.body)
 //     .then(function()
 //     {
-//         res.send("Reservation " + req.body.id + " has been added!");
+//         res.send('Reservation ' + req.body.id + ' has been added!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -478,7 +486,7 @@ router.put('/product/:name', function (req, res) { return __awaiter(void 0, void
 //     await reservationRepository.updateReservationById(req.params.id, req.body)
 //     .then(function()
 //     {
-//         res.send("Reservation " + req.params.id + " has been updated!");
+//         res.send('Reservation ' + req.params.id + ' has been updated!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -516,7 +524,7 @@ router.get('/restaurants', function (req, res) { return __awaiter(void 0, void 0
                     if (restaurants)
                         res.status(200).send(restaurants);
                     else
-                        res.status(404).send("Restaurants not found!");
+                        res.status(404).send('Restaurants could not be found.');
                 })["catch"](function (err) {
                     res.status(500).send(err);
                 })];
@@ -535,7 +543,7 @@ router.get('/restaurant/:name', function (req, res) { return __awaiter(void 0, v
                     if (restaurant)
                         res.status(200).send(restaurant);
                     else
-                        res.status(404).send("Restaurant not found!");
+                        res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
                 })["catch"](function (err) {
                     res.status(500).send(err);
                 })];
@@ -554,9 +562,9 @@ router["delete"]('/restaurant/:name', function (req, res) { return __awaiter(voi
             case 1:
                 restaurantDeleted = _a.sent();
                 if (restaurantDeleted)
-                    res.status(200).send("Restaurant " + req.params.name + " has been deleted.");
+                    res.status(200).send('Restaurant ' + req.params.name + ' has been deleted.');
                 else
-                    res.status(404).send("Restaurant " + req.params.name + " does not exist.");
+                    res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
                 return [2 /*return*/];
         }
     });
@@ -572,25 +580,25 @@ router.post('/restaurant', function (req, res) { return __awaiter(void 0, void 0
             case 1:
                 restaurantAdded = _a.sent();
                 if (restaurantAdded)
-                    res.status(200).send('Restaurant ' + restaurant.name + ' added.');
+                    res.status(201).send('Restaurant ' + restaurant.name + ' has been added.');
                 else
-                    res.status(400).send('Restaurant ' + restaurant.name + ' not added.');
+                    res.status(400).send('Restaurant ' + restaurant.name + ' already exists.');
                 return [2 /*return*/];
         }
     });
 }); });
 // update restaurant from request body
 router.put('/restaurant/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var restaurant;
+    var restaurantUpdated;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, restaurantRepository.updateRestaurant(req.params.name, req.body)];
             case 1:
-                restaurant = _a.sent();
-                if (restaurant)
-                    res.status(200).send('Restaurant ' + req.params.name + ' updated.');
+                restaurantUpdated = _a.sent();
+                if (restaurantUpdated)
+                    res.status(200).send('Restaurant ' + req.params.name + ' has been updated.');
                 else
-                    res.status(404).send('Restaurant ' + req.params.name + ' not found.');
+                    res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
                 return [2 /*return*/];
         }
     });
@@ -623,7 +631,7 @@ router.put('/restaurant/:name', function (req, res) { return __awaiter(void 0, v
 //     await tableRepository.deleteTableByNumber(+req.params.number)
 //     .then(function()
 //     {
-//         res.send("Table " + +req.params.number + " has been deleted!");
+//         res.send('Table ' + +req.params.number + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -634,7 +642,7 @@ router.put('/restaurant/:name', function (req, res) { return __awaiter(void 0, v
 //     await tableRepository.addTable(req.body)
 //     .then(function()
 //     {
-//         res.send("Table " + req.body.number + " has been added!");
+//         res.send('Table ' + req.body.number + ' has been added!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -645,7 +653,7 @@ router.put('/restaurant/:name', function (req, res) { return __awaiter(void 0, v
 //     await tableRepository.updateTableByNumber(+req.params.number, req.body)
 //     .then(function()
 //     {
-//         res.send("Table " + req.params.number + " has been updated!");
+//         res.send('Table ' + req.params.number + ' has been updated!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);

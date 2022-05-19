@@ -132,9 +132,8 @@ var RestaurantRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.RestaurantModel.exists({ name: restaurantName })];
                     case 2:
                         exists = _a.sent();
-                        if (!exists) {
+                        if (!exists)
                             return [2 /*return*/, false];
-                        }
                         return [4 /*yield*/, this.RestaurantModel
                                 .deleteOne({ name: restaurantName })
                                 .then(function () {
@@ -178,13 +177,20 @@ var RestaurantRepository = /** @class */ (function () {
     };
     RestaurantRepository.prototype.getRestaurants = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var restaurants;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, this.RestaurantModel.find({})];
-                    case 2: return [2 /*return*/, _a.sent()];
+                    case 2:
+                        restaurants = _a.sent();
+                        if (restaurants)
+                            return [2 /*return*/, restaurants];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
                 }
             });
         });
