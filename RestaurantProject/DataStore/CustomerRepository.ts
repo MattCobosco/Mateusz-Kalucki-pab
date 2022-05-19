@@ -5,7 +5,6 @@ export class CustomerRepository
 {
     customerSchema = new Schema<Customer>(
         {
-            id: {type: Schema.Types.ObjectId, required: false},
             name: {type: String, required: true},
             email: {type: String, required: true},
             phone: {type: String, required: true},

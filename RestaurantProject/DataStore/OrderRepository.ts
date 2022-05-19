@@ -1,15 +1,18 @@
 import {Schema, model, connect} from 'mongoose';
+import Employee from '../CoreBusiness/EmployeeModel';
+import MenuItem from '../CoreBusiness/MenuItemModel';
 import Order from '../CoreBusiness/OrderModel';
+import Table from '../CoreBusiness/TableModel';
 import { MenuItemRepository } from './MenuItemRepository';
 
 export class OrderRepository
 {
     orderSchema = new Schema<Order>(
         {
-            employee: {type: Schema.Types.ObjectId, ref: 'Employee'},
-            items: [{type: Schema.Types.ObjectId, ref: 'MenuItem'}],
+            employee: {type: Employee, ref: 'Employee'},
+            items: [{type: MenuItem, ref: 'MenuItem'}],
             status: {type: Number, required: true},
-            table: {type: Schema.Types.ObjectId, ref: 'Table'},
+            table: {type: Table, ref: 'Table'},
             price: {type: Number, required: true}
         });
 
@@ -49,17 +52,14 @@ export class OrderRepository
     async addOrder(order: Order) : Promise<void>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
-        
-        let menuItemRepository = new MenuItemRepository();
 
         if(!order.price)
         {
             let price = 0;
             for(let i = 0; i < order.items.length; i++)
             {
-                let orderMenuItem = order.items[i];
-                let itemPrice = (await menuItemRepository.getMenuItemById(orderMenuItem._id)).price;
-                price += +itemPrice;
+                let item = order.items[i];
+                price += item.price;
             }
             order.price = price;
         }
@@ -75,10 +75,11 @@ export class OrderRepository
         });
     }
 
-    async deleteOrderById(id: string) : Promise<void>
+    async deleteOrderById(id: string) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
+        const exists = await this.orderModel.exists({_id: id});
         await this.orderModel
         .findByIdAndDelete(id)
         .then(function()
@@ -106,12 +107,11 @@ export class OrderRepository
         return await this.orderModel.find();
     };
 
-    async updateOrderById(id: string, order: Order) : Promise<void>
+    async updateOrderById(id: string, order: Order) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
         let orderToUpdate = await this.orderModel.findById(id);
-        let menuItemRepository = new MenuItemRepository();
 
         if (orderToUpdate)
         {
@@ -129,22 +129,25 @@ export class OrderRepository
                 let price = 0;
                 for (let i = 0; i < orderToUpdate.items.length; i++)
                 {
-                    let item = orderToUpdate.items[i];
-                    let itemPrice = (await menuItemRepository.getMenuItemById(item._id)).price;
+                    let itemPrice = orderToUpdate.items[i].price;
                     price += +itemPrice;
                 }
                 orderToUpdate.price = price;
             }
-        }
 
-        await orderToUpdate.save()
-        .then(function()
-        {
-            console.log("Order has been updated!")
-        }).catch(function(err: any)
-        {
-            console.log(err);
-        });
+            await orderToUpdate.save()
+            .then(function()
+            {
+                console.log("Order has been updated!")
+            }).catch(function(err: any)
+            {
+                console.log(err);
+            });
+
+            return true;
+        }
+        else
+            return false;
     }
 
     // get orders by employee id
