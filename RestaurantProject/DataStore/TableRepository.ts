@@ -99,7 +99,7 @@ export class TableRepository
         });
 
         const existsAfter = await this.TableModel.exists({number: tableNumber});
-        if (existsAfter)
+        if (!existsAfter)
             return true;
         else
             return false;
