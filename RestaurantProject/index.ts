@@ -351,7 +351,7 @@ router.get('/products', async (req: Request, res: Response) => {
         if(products)
             res.status(200).send(products);
         else
-            res.status(404).send('Products could not be found.');
+            res.status(404).send("Products could not be found.");
     }).catch(function(err: any)
     {
         res.status(500).send(err);
@@ -366,7 +366,7 @@ router.get('/product/:name', async (req: Request, res: Response) => {
         if(product)
             res.status(200).send(product);
         else
-            res.status(404).send('Product ' + req.params.name + ' could not be found.');
+            res.status(404).send("Product " + req.params.name + " could not be found.");
     }).catch(function(err: any)
     {
         res.status(500).send(err);
@@ -377,9 +377,9 @@ router.get('/product/:name', async (req: Request, res: Response) => {
 router.delete('/product/:name', async (req: Request, res: Response) => {
     const productDeleted = await productRepository.deleteProductByName(req.params.name);
     if(productDeleted)
-        res.send('Product ' + req.params.name + ' has been successfully deleted.');
+        res.send("Product " + req.params.name + " has been successfully deleted.");
     else
-        res.status(404).send('Product ' + req.params.name + ' could not be found.');
+        res.status(404).send("Product " + req.params.name + " could not be found.");
 });
 
 // add product from request body
@@ -387,18 +387,18 @@ router.post('/product', async (req: Request, res: Response) => {
     const product = req.body;
     const productAdded = await productRepository.addProduct(product);
     if(productAdded)
-        res.status(201).send('Product ' + product.name + ' has been successfully added.');
+        res.status(201).send("Product " + product.name + " has been successfully added.");
     else
-        res.status(400).send('Product ' + product.name + ' already exists.');
+        res.status(400).send("Product " + product.name + " already exists.");
 });
 
 // update product from request body
 router.put('/product/:name', async (req: Request, res: Response) => {
     const productUpdated = await productRepository.updateProduct(req.params.name, req.body)
     if(productUpdated)
-        res.status(200).send('Product ' + req.params.name + ' has been successfully updated.');
+        res.status(200).send("Product " + req.params.name + " has been successfully updated.");
     else
-        res.status(404).send('Product ' + req.params.name + ' could not be found.');
+        res.status(404).send("Product " + req.params.name + " could not be found.");
 });
 
 // // REST API for Reservation
@@ -496,7 +496,7 @@ router.get('/restaurants', async (req: Request, res: Response) => {
         if(restaurants)
             res.status(200).send(restaurants);
         else
-            res.status(404).send('Restaurants could not be found.');
+            res.status(404).send("Restaurants could not be found.");
     }).catch(function(err: any)
     {
         res.status(500).send(err);
@@ -511,7 +511,7 @@ router.get('/restaurant/:name', async (req: Request, res: Response) => {
         if(restaurant)
             res.status(200).send(restaurant);
         else
-            res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
+            res.status(404).send("Restaurant " + req.params.name + " could not be found.");
     }).catch(function(err: any)
     {
         res.status(500).send(err);
@@ -522,9 +522,9 @@ router.get('/restaurant/:name', async (req: Request, res: Response) => {
 router.delete('/restaurant/:name', async (req: Request, res: Response) => {
     const restaurantDeleted = await restaurantRepository.deleteRestaurantByName(req.params.name);
     if (restaurantDeleted)
-        res.status(200).send('Restaurant ' + req.params.name + ' has been successfully deleted.');
+        res.status(200).send("Restaurant " + req.params.name + " has been successfully deleted.");
     else
-        res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
+        res.status(404).send("Restaurant " + req.params.name + " could not be found.");
 });
 
 // add a restaurant from request body
@@ -532,18 +532,18 @@ router.post('/restaurant', async (req: Request, res: Response) => {
     const restaurant = req.body;
     const restaurantAdded = await restaurantRepository.addRestaurant(restaurant);
     if (restaurantAdded)
-        res.status(201).send('Restaurant ' + restaurant.name + ' has been successfully added.');
+        res.status(201).send("Restaurant " + restaurant.name + " has been successfully added.");
     else
-        res.status(400).send('Restaurant ' + restaurant.name + ' already exists.');
+        res.status(400).send("Restaurant " + restaurant.name + " already exists.");
 });
 
 // update restaurant from request body
 router.put('/restaurant/:name', async (req: Request, res: Response) => {
     const restaurantUpdated = await restaurantRepository.updateRestaurant(req.params.name, req.body);
     if (restaurantUpdated)
-        res.status(200).send('Restaurant ' + req.params.name +' has been successfully updated.');
+        res.status(200).send("Restaurant " + req.params.name + " has been successfully updated.");
     else 
-        res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
+        res.status(404).send("Restaurant " + req.params.name + " could not be found.");
 });
 
 // // REST API for Table
