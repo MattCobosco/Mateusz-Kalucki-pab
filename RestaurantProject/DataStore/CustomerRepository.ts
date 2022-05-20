@@ -1,5 +1,5 @@
 import {Schema, model, connect} from 'mongoose';
-import Customer from '../CoreBusiness/CustomerModel';
+import Customer from '../CoreBusiness/Customer';
 
 export class CustomerRepository
 {
@@ -20,17 +20,17 @@ export class CustomerRepository
     
         const customers = [
             {
-                name: 'Customer1',
-                email: 'customer1@gmail.com',
-                phone: '123456789',
-                address: 'CustomerAddress1',
+                name: "Customer1",
+                email: "customer1@gmail.com",
+                phone: "123456789",
+                address: "CustomerAddress1",
                 loyaltyPoints: 0
             },
             {
-                name: 'Customer2',
-                email: 'customer2@gmail.com',
-                phone: '987654321',
-                address: 'CustomerAddress2',
+                name: "Customer2",
+                email: "customer2@gmail.com",
+                phone: "987654321",
+                address: "CustomerAddress2",
                 loyaltyPoints: 0
             }];
         
@@ -48,11 +48,16 @@ export class CustomerRepository
         }
     }
 
-    async addCustomer(customer: Customer) : Promise<void>
+    async addCustomer(customer: Customer) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
-        
-        customer.loyaltyPoints = 0; // set default value for loyalty points before saving => loyaltyPoints are required in the schema
+
+        const alreadyExists = await this.CustomerModel.findOne({name: customer.name});
+        if(alreadyExists)
+            return false;
+
+        if(!customer.loyaltyPoints)
+            customer.loyaltyPoints = 0; // set default value for loyalty points before saving => loyaltyPoints are required in the schema
 
         await this.CustomerModel
         .create(customer)
@@ -63,11 +68,21 @@ export class CustomerRepository
         {
             console.log(err);
         });
+
+        const existsAfter = await this.CustomerModel.findOne({name: customer.name});
+        if(existsAfter)
+            return true;
+        else
+            return false;
     }
 
-    async deleteCustomerByName(customerName: string) : Promise<void>
+    async deleteCustomerByName(customerName: string) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        const exists = await this.CustomerModel.exists({name: customerName});
+        if(!exists)
+            return false;
 
         await this.CustomerModel
         .deleteOne({name: customerName})
@@ -78,40 +93,41 @@ export class CustomerRepository
         {
             console.log(err);
         });
+
+        const existsAfter = await this.CustomerModel.exists({name: customerName});
+        if(!existsAfter)
+            return true;
+        else
+            return false;
     }
 
-    async getCustomerByName(customerName: string) : Promise<Customer>
+    async getCustomerByName(customerName: string) : Promise<Customer | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
-        let customer = await this.CustomerModel.findOne({name: customerName});
+        
+        const customer = await this.CustomerModel.findOne({name: customerName});
         if (customer)
             return customer;
         else
-            return null as any;
+            return false;
     }
 
-    async getCustomerById(customerId: string) : Promise<Customer>
+    async getCustomers() : Promise<Customer[] | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
-        let customer = await this.CustomerModel.findById(customerId);
-        if (customer)
-            return customer;
+        
+        const customers = await this.CustomerModel.find({});
+        if (customers.length > 0)
+            return customers;
         else
-            return null as any;
+            return false;
     }
 
-    async getCustomers() : Promise<Customer[]>
-    {
-        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
-        return await this.CustomerModel.find({});
-    }
-
-    async updateCustomer(customerName:string, customer: Customer) : Promise<void>
+    async updateCustomer(customerName:string, customer: Customer) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
         let customerToUpdate = await this.CustomerModel.findOne({name: customerName});
-
         if (customerToUpdate)
         {
             if(customer.name)
@@ -133,14 +149,13 @@ export class CustomerRepository
             {
                 console.log(err);
             });
+            return true;
         }
         else
-        {
-            console.log("Customer " + customerName + " does not exist!");
-        }
+            return false;
     }
 
-    async addLoyaltyPoints(customerName: string, loyaltyPoints: number) : Promise<void>
+    async addLoyaltyPoints(customerName: string, loyaltyPoints: number) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
         
@@ -153,14 +168,15 @@ export class CustomerRepository
             .updateOne({name: customerName}, customer)
             .then(function()
             {
-                console.log("Customer loyalty points have been added to " + customerName + "!")
+                console.log(loyaltyPoints + " loyalty points have been added to " + customerName + "!")
             }).catch(function(err: any)
             {
                 console.log(err);
             });
+            return true;
         }
         else
-            console.log("Customer " + customerName + " does not exist!");
+            return false;
     }
 }
 
