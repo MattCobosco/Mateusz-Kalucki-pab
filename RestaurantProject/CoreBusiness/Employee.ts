@@ -1,4 +1,4 @@
-import Restaurant from "./RestaurantModel";
+import Restaurant from "./Restaurant";
 
 class Employee
 {

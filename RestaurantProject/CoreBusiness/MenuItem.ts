@@ -1,4 +1,4 @@
-import Product from './ProductModel';
+import Product from './Product';
 
 enum Type
 {

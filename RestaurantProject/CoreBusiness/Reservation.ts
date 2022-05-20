@@ -1,5 +1,5 @@
-import Table from './TableModel';
-import Customer from './CustomerModel';
+import Table from './Table';
+import Customer from './Customer';
 
 class Reservation
 {

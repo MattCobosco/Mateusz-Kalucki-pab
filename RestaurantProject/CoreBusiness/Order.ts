@@ -1,6 +1,6 @@
-import Employee from "./EmployeeModel";
-import MenuItem from "./MenuItemModel";
-import Table from "./TableModel";
+import Employee from "./Employee";
+import MenuItem from "./MenuItem";
+import Table from "./Table";
 
 enum OrderStatus 
 {
