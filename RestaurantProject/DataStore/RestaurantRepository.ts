@@ -152,8 +152,6 @@ export class RestaurantRepository
             return true;
         }
         else
-        {
             return false;
-        }
     }
 }
