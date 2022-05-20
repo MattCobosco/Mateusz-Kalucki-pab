@@ -1,8 +1,12 @@
-Order Model + Repo test
-fix get free tables => doesn't work at all
+Table - model, repo check and fix + postman requests
+MenuItem - model, repo check and fix + postman requests
+Order - model, repo check and fix + postman requests
+Reservation - model, repo check and fix + postman requests
+
+EXTRA: Find a way to import Schemas to Repos from outside instead of duplicating them inside!
 
 !!! Product Demand List REST API !!! 
 
-* report of orders per waiter - done, untested
-* report of orders in a given time period - done, untested
-* report of income in a given time period - done, untested
+* report of orders per waiter 
+* report of orders in a given time period 
+* report of income in a given time period 
