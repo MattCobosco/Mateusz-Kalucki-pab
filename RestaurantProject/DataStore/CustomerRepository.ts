@@ -41,7 +41,7 @@ export class CustomerRepository
             .then(function()
             {
                 console.log("Customers have been populated!")
-            }).catch(function(err: any)
+            }).catch(function(err)
             {
                 console.log(err);
             });
@@ -64,7 +64,7 @@ export class CustomerRepository
         .then(function()
         {
             console.log("Customer " + customer.name + " has been added!");
-        }).catch(function(err: any)
+        }).catch(function(err)
         {
             console.log(err);
         });
@@ -89,7 +89,7 @@ export class CustomerRepository
         .then(function()
         {
             console.log("Customer " + customerName + " has been deleted!");
-        }).catch(function(err: any)
+        }).catch(function(err)
         {
             console.log(err);
         });
@@ -145,7 +145,7 @@ export class CustomerRepository
             .then(function()
             {
                 console.log("Customer " + customerName + " has been updated!");
-            }).catch(function(err: any)
+            }).catch(function(err)
             {
                 console.log(err);
             });
@@ -169,7 +169,7 @@ export class CustomerRepository
             .then(function()
             {
                 console.log(loyaltyPoints + " loyalty points have been added to " + customerName + "!")
-            }).catch(function(err: any)
+            }).catch(function(err)
             {
                 console.log(err);
             });

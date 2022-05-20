@@ -82,7 +82,7 @@ export class ProductRepository
             .then(function()
             {
                 console.log("Products have been populated!")
-            }).catch(function(err: any)
+            }).catch(function(err)
             {
                 console.log(err);
             });
@@ -102,7 +102,7 @@ export class ProductRepository
         .then(function()
         {
             console.log("Product " + product.name + " has been added!");
-        }).catch(function(err: any)
+        }).catch(function(err)
         {
             console.log(err);
         });
@@ -127,7 +127,7 @@ export class ProductRepository
         .then(function()
         {
             console.log("Product " + productName + " has been deleted!");
-        }).catch(function(err: any)
+        }).catch(function(err)
         {
             console.log(err);
         });
@@ -154,8 +154,8 @@ export class ProductRepository
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
         
-        const products =  this.ProductModel.find({});
-        if(products)
+        const products = await this.ProductModel.find({});
+        if(products.length > 0)
             return products;
         else
             return false;
@@ -179,7 +179,7 @@ export class ProductRepository
             .then(function()
             {
                 console.log("Product " + productName + " has been updated!");
-            }).catch(function(err: any)
+            }).catch(function(err)
             {
                 console.log(err);
             });

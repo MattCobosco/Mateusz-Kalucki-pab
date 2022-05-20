@@ -112,7 +112,7 @@ export class RestaurantRepository
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
         
         const restaurants = await this.RestaurantModel.find({});
-        if(restaurants)
+        if(restaurants.length > 0)
             return restaurants;
         else
             return false;
