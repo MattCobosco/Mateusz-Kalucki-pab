@@ -3,7 +3,7 @@ import bodyParser = require('body-parser');
 import {Request, Response} from 'express';
 
 import { CustomerRepository } from './DataStore/CustomerRepository';
-// import { EmployeeRepository } from './DataStore/EmployeeRepository';
+import { EmployeeRepository } from './DataStore/EmployeeRepository';
 // import { MenuItemRepository } from './DataStore/MenuItemRepository';
 // import { OrderRepository } from './DataStore/OrderRepository';
 import { ProductRepository } from './DataStore/ProductRepository';
@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use('/', router);
 
 const customerRepository = new CustomerRepository();
-// const employeeRepository = new EmployeeRepository();
+const employeeRepository = new EmployeeRepository();
 // const menuItemRepository = new MenuItemRepository();
 // const orderRepository = new OrderRepository();
 const productRepository = new ProductRepository();
@@ -29,7 +29,7 @@ const restaurantRepository = new RestaurantRepository();
 
 // DATABASE POPULATION:
 customerRepository.populateCustomers();
-// employeeRepository.populateEmployees();
+employeeRepository.populateEmployees();
 // menuItemRepository.populateMenuItems();
 // orderRepository.populateOrders();
 productRepository.populateProducts();
@@ -39,7 +39,7 @@ restaurantRepository.populateRestaurants();
 
 // REST API for Customer
 // get all customers
-router.get('/customers', async (req: Request, res: Response) => {
+router.get('/customers', async (_req: Request, res: Response) => {
     await customerRepository.getCustomers()
     .then(function(customers: any)
     {
@@ -129,66 +129,80 @@ router.put('/customer/:name/:loyaltyPoints', async (req: Request, res: Response)
     });
 });
 
-// // REST API for Employee
-// // get all employees
-// router.get('/employees', async (req: Request, res: Response) => {
-//     await employeeRepository.getEmployees()
-//     .then(function(employees: any)
-//     {
-//         res.send(employees);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// REST API for Employee
+// get all employees
+router.get('/employees', async (_req: Request, res: Response) => {
+    await employeeRepository.getEmployees()
+    .then(function(employees: any)
+    {
+        if(employees)
+            res.status(200).send(employees);
+        else
+            res.status(404).send("Employees could not be found.");
+    }).catch(function(err)
+    {
+        res.status(500).send(err);
+    });
+});
 
-// // get employee by surname
-// router.get('/employee/:name', async (req: Request, res: Response) => {
-//     await employeeRepository.getEmployeeBySurname(req.params.name)
-//     .then(function(employee: any)
-//     {
-//         res.send(employee);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// get employees by surname
+router.get('/employees/:surname', async (req: Request, res: Response) => {
+    await employeeRepository.getEmployeesBySurname(req.params.surname)
+    .then(function(employees: any)
+    {
+        if(employees)
+            res.status(200).send(employees);
+        else
+            res.status(404).send("Employees of surname " + req.params.surname + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
 
-// // delete employee by surname
-// router.delete('/employee/:name', async (req: Request, res: Response) => {
-//     await employeeRepository.deleteEmployeeBySurname(req.params.name)
-//     .then(function()
-//     {
-//         res.send('Employee ' + req.params.name + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// delete employee by surname
+router.delete('/employee/:surname/:name', async (req: Request, res: Response) => {
+    await employeeRepository.deleteEmployeeBySurnameAndName(req.params.surname, req.params.name)
+    .then(function(employeeDeleted: boolean)
+    {
+        if(employeeDeleted)
+            res.status(200).send("Employee " + req.params.surname + " " + req.params.name + " has been successfully deleted.");
+        else
+            res.status(404).send("Employee " + req.params.surname + " " + req.params.name + " could not be found.");
+        
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
 
-// // add employee from request body
-// router.post('/employee', async (req: Request, res: Response) => {
-//     await employeeRepository.addEmployee(req.body)
-//     .then(function()
-//     {
-//         res.send('Employee ' + req.body.name + ' has been added!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// add employee from request body
+router.post('/employee', async (req: Request, res: Response) => {
+    const employee = req.body;
+    await employeeRepository.addEmployee(employee)
+    .then(function(employeeAdded: boolean)
+    {
+        if(employeeAdded)
+            res.status(201).send("Employee " + employee.surname + " " + employee.name + " has been successfully added.");
+        else
+            res.status(400).send("Employee " + employee.surname + " " + employee.name + " already exists.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
 
-// // update employee from request body
-// router.put('/employee/:name', async (req: Request, res: Response) => {
-//     await employeeRepository.updateEmployee(req.params.name, req.body)
-//     .then(function()
-//     {
-//         res.send('Employee ' + req.body.name + ' has been updated!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// update employee from request body
+router.put('/employee/:surname/:name', async (req: Request, res: Response) => {
+    await employeeRepository.updateEmployeeBySurnameAndName(req.params.surname, req.params.name, req.body)
+    .then(function()
+    {
+        res.send('Employee ' + req.params.surname + " " + req.params.name + ' has been updated!');
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
 
 // // REST API for Menu Item
 // // get all menu items
@@ -363,7 +377,7 @@ router.put('/customer/:name/:loyaltyPoints', async (req: Request, res: Response)
 
 // REST API for Product in Storage
 // get all products
-router.get('/products', async (req: Request, res: Response) => {
+router.get('/products', async (_req: Request, res: Response) => {
     await productRepository.getProducts()
     .then(function(products: any)
     {
@@ -526,7 +540,7 @@ router.put('/product/:name', async (req: Request, res: Response) => {
 
 // REST API for Restaurant
 // get all restaurants
-router.get('/restaurants', async (req: Request, res: Response) => {
+router.get('/restaurants', async (_req: Request, res: Response) => {
     await restaurantRepository.getRestaurants()
     .then(function(restaurants: any)
     {
