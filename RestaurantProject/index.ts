@@ -9,7 +9,7 @@ import { EmployeeRepository } from './DataStore/EmployeeRepository';
 import { ProductRepository } from './DataStore/ProductRepository';
 // import { ReservationRepository } from './DataStore/ReservationRepository';
 import { RestaurantRepository } from './DataStore/RestaurantRepository';
-// import { TableRepository } from './DataStore/TableRepository';
+import { TableRepository } from './DataStore/TableRepository';
 
 const app = express();
 const router = express.Router();
@@ -25,7 +25,7 @@ const employeeRepository = new EmployeeRepository();
 const productRepository = new ProductRepository();
 // const reservationRepository = new ReservationRepository();
 const restaurantRepository = new RestaurantRepository();
-// const tableRepository = new TableRepository();
+const tableRepository = new TableRepository();
 
 // DATABASE POPULATION:
 customerRepository.populateCustomers();
@@ -35,7 +35,7 @@ employeeRepository.populateEmployees();
 productRepository.populateProducts();
 // reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
-// tableRepository.populateTables();
+tableRepository.populateTables();
 
 // REST API for Customer
 // get all customers
@@ -597,77 +597,82 @@ router.put('/restaurant/:name', async (req: Request, res: Response) => {
         res.status(404).send("Restaurant " + req.params.name + " could not be found.");
 });
 
-// // REST API for Table
-// // get all tables
-// router.get('/tables', async (req: Request, res: Response) => {
-//     await tableRepository.getTables()
-//     .then(function(tables: any)
-//     {
-//         res.send(tables);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// REST API for Table
+// get all tables
+router.get('/tables', async (req: Request, res: Response) => {
+    await tableRepository.getTables()
+    .then(function(tables: any)
+    {
+        if(tables)
+            res.status(200).send(tables);
+        else
+            res.status(404).send("Tables could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
 
-// // get table by number
-// router.get('/table/:number', async (req: Request, res: Response) => {
-//     await tableRepository.getTableByNumber(+req.params.number)
-//     .then(function(table: any)
-//     {
-//         res.send(table);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// get table by number
+router.get('/table/:number', async (req: Request, res: Response) => {
+    await tableRepository.getTableByNumber(+req.params.number)
+    .then(function(table: any)
+    {
+        if(table)
+            res.status(200).send(table);
+        else
+            res.status(404).send("Table " + req.params.number + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
 
-// // delete table by number
-// router.delete('/table/:number', async (req: Request, res: Response) => {
-//     await tableRepository.deleteTableByNumber(+req.params.number)
-//     .then(function()
-//     {
-//         res.send('Table ' + +req.params.number + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// delete table by number
+router.delete('/table/:number', async (req: Request, res: Response) => {
+    await tableRepository.deleteTableByNumber(+req.params.number)
+    .then(function(tableDeleted: any)
+    {
+        if(tableDeleted)
+            res.status(200).send("Table " + req.params.number + " has been successfully deleted.");
+        else
+            res.status(404).send("Table " + req.params.number + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
 
-// // add table from request body
-// router.post('/table', async (req: Request, res: Response) => {
-//     await tableRepository.addTable(req.body)
-//     .then(function()
-//     {
-//         res.send('Table ' + req.body.number + ' has been added!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// add table from request body
+router.post('/table', async (req: Request, res: Response) => {
+    await tableRepository.addTable(req.body)
+    .then(function(tableAdded: any)
+    {
+        if(tableAdded)
+            res.status(201).send("Table " + req.body.number + " has been successfully added.");
+        else
+            res.status(400).send("Table " + req.body.number + " already exists.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
 
-// // update table from request body
-// router.put('/table/:number', async (req: Request, res: Response) => {
-//     await tableRepository.updateTableByNumber(+req.params.number, req.body)
-//     .then(function()
-//     {
-//         res.send('Table ' + req.params.number + ' has been updated!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// update table from request body
+router.put('/table/:number', async (req: Request, res: Response) => {
+    await tableRepository.updateTableByNumber(+req.params.number, req.body)
+    .then(function(tableUpdated: any)
+    {
+        if(tableUpdated)
+            res.status(200).send("Table " + req.params.number + " has been successfully updated.");
+        else
+            res.status(404).send("Table " + req.params.number + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
 
-// // get free tables in a given time period for a given number of people from body request
-// router.post('/tables/free', async (req: Request, res: Response) => {
-//     await tableRepository.getFreeTables(new Date(req.body.startDateTime), new Date(req.body.endDateTime), req.body.people)
-//     .then(function(tables: any)
-//     {
-//         res.send(tables);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// TODO: get free tables in a given time period for a given number of people from body request
 
 app.listen(3000);
