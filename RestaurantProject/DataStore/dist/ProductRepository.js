@@ -57,57 +57,57 @@ var ProductRepository = /** @class */ (function () {
                         _a.sent();
                         products = [
                             {
-                                name: 'Coca_Cola_Can',
+                                name: "Coca_Cola_Can",
                                 price: 2.5,
                                 quantity: 250
                             },
                             {
-                                name: 'Fanta_Can',
+                                name: "Fanta_Can",
                                 price: 2.5,
                                 quantity: 250
                             },
                             {
-                                name: 'Carrot',
+                                name: "Carrot",
                                 price: 1.5,
                                 quantity: 100
                             },
                             {
-                                name: 'Parsley',
+                                name: "Parsley",
                                 price: 1.5,
                                 quantity: 100
                             },
                             {
-                                name: 'Onion',
+                                name: "Onion",
                                 price: 1.5,
                                 quantity: 100
                             },
                             {
-                                name: 'Tomato',
+                                name: "Tomato",
                                 price: 1.5,
                                 quantity: 100
                             },
                             {
-                                name: 'Cucumber',
+                                name: "Cucumber",
                                 price: 1.5,
                                 quantity: 100
                             },
                             {
-                                name: 'Red_Wine_Bottle',
+                                name: "Red_Wine_Bottle",
                                 price: 5,
                                 quantity: 50
                             },
                             {
-                                name: 'Chicken',
+                                name: "Chicken",
                                 price: 3,
                                 quantity: 100
                             },
                             {
-                                name: 'Mushroom',
+                                name: "Mushroom",
                                 price: 1,
                                 quantity: 200
                             },
                             {
-                                name: 'Cabbage',
+                                name: "Cabbage",
                                 price: 2,
                                 quantity: 500
                             }
@@ -118,7 +118,7 @@ var ProductRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.ProductModel
                                 .insertMany(products)
                                 .then(function () {
-                                console.log('Products have been populated!');
+                                console.log("Products have been populated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -146,7 +146,7 @@ var ProductRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.ProductModel
                                 .create(product)
                                 .then(function () {
-                                console.log('Product ' + product.name + ' has been added!');
+                                console.log("Product " + product.name + " has been added!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -180,7 +180,7 @@ var ProductRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.ProductModel
                                 .deleteOne({ name: productName })
                                 .then(function () {
-                                console.log('Product ' + productName + ' has been deleted!');
+                                console.log("Product " + productName + " has been deleted!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -256,7 +256,7 @@ var ProductRepository = /** @class */ (function () {
                             productToUpdate.quantity = product.quantity;
                         return [4 /*yield*/, productToUpdate.save()
                                 .then(function () {
-                                console.log('Product ' + productName + ' has been updated!');
+                                console.log("Product " + productName + " has been updated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];

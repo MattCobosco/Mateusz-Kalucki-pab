@@ -59,17 +59,17 @@ var CustomerRepository = /** @class */ (function () {
                         _a.sent();
                         customers = [
                             {
-                                name: 'Customer1',
-                                email: 'customer1@gmail.com',
-                                phone: '123456789',
-                                address: 'CustomerAddress1',
+                                name: "Customer1",
+                                email: "customer1@gmail.com",
+                                phone: "123456789",
+                                address: "CustomerAddress1",
                                 loyaltyPoints: 0
                             },
                             {
-                                name: 'Customer2',
-                                email: 'customer2@gmail.com',
-                                phone: '987654321',
-                                address: 'CustomerAddress2',
+                                name: "Customer2",
+                                email: "customer2@gmail.com",
+                                phone: "987654321",
+                                address: "CustomerAddress2",
                                 loyaltyPoints: 0
                             }
                         ];
@@ -93,12 +93,19 @@ var CustomerRepository = /** @class */ (function () {
     };
     CustomerRepository.prototype.addCustomer = function (customer) {
         return __awaiter(this, void 0, void 0, function () {
+            var alreadyExists, existsAfter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        customer.loyaltyPoints = 0; // set default value for loyalty points before saving => loyaltyPoints are required in the schema
+                        return [4 /*yield*/, this.CustomerModel.findOne({ name: customer.name })];
+                    case 2:
+                        alreadyExists = _a.sent();
+                        if (alreadyExists)
+                            return [2 /*return*/, false];
+                        if (!customer.loyaltyPoints)
+                            customer.loyaltyPoints = 0; // set default value for loyalty points before saving => loyaltyPoints are required in the schema
                         return [4 /*yield*/, this.CustomerModel
                                 .create(customer)
                                 .then(function () {
@@ -106,8 +113,15 @@ var CustomerRepository = /** @class */ (function () {
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
+                        return [4 /*yield*/, this.CustomerModel.findOne({ name: customer.name })];
+                    case 4:
+                        existsAfter = _a.sent();
+                        if (existsAfter)
+                            return [2 /*return*/, true];
+                        else
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -115,11 +129,17 @@ var CustomerRepository = /** @class */ (function () {
     };
     CustomerRepository.prototype.deleteCustomerByName = function (customerName) {
         return __awaiter(this, void 0, void 0, function () {
+            var exists, existsAfter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.CustomerModel.exists({ name: customerName })];
+                    case 2:
+                        exists = _a.sent();
+                        if (!exists)
+                            return [2 /*return*/, false];
                         return [4 /*yield*/, this.CustomerModel
                                 .deleteOne({ name: customerName })
                                 .then(function () {
@@ -127,8 +147,15 @@ var CustomerRepository = /** @class */ (function () {
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
+                        return [4 /*yield*/, this.CustomerModel.exists({ name: customerName })];
+                    case 4:
+                        existsAfter = _a.sent();
+                        if (!existsAfter)
+                            return [2 /*return*/, true];
+                        else
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -148,47 +175,7 @@ var CustomerRepository = /** @class */ (function () {
                         if (customer)
                             return [2 /*return*/, customer];
                         else
-                            return [2 /*return*/, null];
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    CustomerRepository.prototype.getCustomerIdByName = function (customerName) {
-        return __awaiter(this, void 0, void 0, function () {
-            var customer;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
-                    case 1:
-                        _a.sent();
-                        return [4 /*yield*/, this.CustomerModel.findOne({ name: customerName })];
-                    case 2:
-                        customer = _a.sent();
-                        if (customer)
-                            return [2 /*return*/, customer.id];
-                        else
-                            return [2 /*return*/, null];
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    CustomerRepository.prototype.getCustomerById = function (customerId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var customer;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
-                    case 1:
-                        _a.sent();
-                        return [4 /*yield*/, this.CustomerModel.findById(customerId)];
-                    case 2:
-                        customer = _a.sent();
-                        if (customer)
-                            return [2 /*return*/, customer];
-                        else
-                            return [2 /*return*/, null];
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -196,13 +183,20 @@ var CustomerRepository = /** @class */ (function () {
     };
     CustomerRepository.prototype.getCustomers = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var customers;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, this.CustomerModel.find({})];
-                    case 2: return [2 /*return*/, _a.sent()];
+                    case 2:
+                        customers = _a.sent();
+                        if (customers.length > 0)
+                            return [2 /*return*/, customers];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
                 }
             });
         });
@@ -237,11 +231,8 @@ var CustomerRepository = /** @class */ (function () {
                             })];
                     case 3:
                         _a.sent();
-                        return [3 /*break*/, 5];
-                    case 4:
-                        console.log("Customer " + customerName + " does not exist!");
-                        _a.label = 5;
-                    case 5: return [2 /*return*/];
+                        return [2 /*return*/, true];
+                    case 4: return [2 /*return*/, false];
                 }
             });
         });
@@ -263,17 +254,14 @@ var CustomerRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.CustomerModel
                                 .updateOne({ name: customerName }, customer)
                                 .then(function () {
-                                console.log("Customer loyalty points have been added to " + customerName + "!");
+                                console.log(loyaltyPoints + " loyalty points have been added to " + customerName + "!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
                     case 3:
                         _a.sent();
-                        return [3 /*break*/, 5];
-                    case 4:
-                        console.log("Customer " + customerName + " does not exist!");
-                        _a.label = 5;
-                    case 5: return [2 /*return*/];
+                        return [2 /*return*/, true];
+                    case 4: return [2 /*return*/, false];
                 }
             });
         });

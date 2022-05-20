@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var express = require("express");
 var bodyParser = require("body-parser");
-// import { CustomerRepository } from './DataStore/CustomerRepository';
+var CustomerRepository_1 = require("./DataStore/CustomerRepository");
 // import { EmployeeRepository } from './DataStore/EmployeeRepository';
 // import { MenuItemRepository } from './DataStore/MenuItemRepository';
 // import { OrderRepository } from './DataStore/OrderRepository';
@@ -51,7 +51,7 @@ var router = express.Router();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', router);
-// const customerRepository = new CustomerRepository();
+var customerRepository = new CustomerRepository_1.CustomerRepository();
 // const employeeRepository = new EmployeeRepository();
 // const menuItemRepository = new MenuItemRepository();
 // const orderRepository = new OrderRepository();
@@ -60,7 +60,7 @@ var productRepository = new ProductRepository_1.ProductRepository();
 var restaurantRepository = new RestaurantRepository_1.RestaurantRepository();
 // const tableRepository = new TableRepository();
 // DATABASE POPULATION:
-// customerRepository.populateCustomers();
+customerRepository.populateCustomers();
 // employeeRepository.populateEmployees();
 // menuItemRepository.populateMenuItems();
 // orderRepository.populateOrders();
@@ -68,73 +68,124 @@ productRepository.populateProducts();
 // reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
 // tableRepository.populateTables();
-// // REST API for Customer
-// // get all customers
-// router.get('/customers', async (req: Request, res: Response) => {
-//     await customerRepository.getCustomers()
-//     .then(function(customers: any)
-//     {
-//         res.send(customers);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get customer by name
-// router.get('/customer/:name', async (req: Request, res: Response) => {
-//     await customerRepository.getCustomerByName(req.params.name)
-//     .then(function(customer: any)
-//     {
-//         res.send(customer);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // delete customer by name
-// router.delete('/customer/:name', async (req: Request, res: Response) => {
-//     await customerRepository.deleteCustomerByName(req.params.name)
-//     .then(function()
-//     {
-//         res.send('Customer ' + req.params.name + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // add customer from request body
-// router.post('/customer', async (req: Request, res: Response) => {
-//     await customerRepository.addCustomer(req.body)
-//     .then(function()
-//     {
-//         res.send('Customer ' + req.body.name + ' has been added!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // update customer from request body
-// router.put('/customer/:name', async (req: Request, res: Response) => {
-//     await customerRepository.updateCustomer(req.params.name, req.body)
-//     .then(function()
-//     {
-//         res.send('Customer ' + req.body.name + ' has been updated!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // add loyalty points to customer
-// router.put('/customer/:name/', async (req: Request, res: Response) => {
-//     await customerRepository.addLoyaltyPoints(req.params.name, req.body.loyaltyPoints)
-//     .then(function()
-//     {
-//         res.send(req.body.loyaltyPoints + ' loyalty points for ' + req.params.name + '!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// REST API for Customer
+// get all customers
+router.get('/customers', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, customerRepository.getCustomers()
+                    .then(function (customers) {
+                    if (customers)
+                        res.status(200).send(customers);
+                    else
+                        res.status(404).send("Customers could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get customer by name
+router.get('/customer/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, customerRepository.getCustomerByName(req.params.name)
+                    .then(function (customer) {
+                    if (customer)
+                        res.status(200).send(customer);
+                    else
+                        res.status(404).send("Customer " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// delete customer by name
+router["delete"]('/customer/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, customerRepository.deleteCustomerByName(req.params.name)
+                    .then(function (customerDeleted) {
+                    if (customerDeleted)
+                        res.status(200).send("Customer " + req.params.name + " has been successfully deleted.");
+                    else
+                        res.status(404).send("Customer " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// add customer from request body
+router.post('/customer', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var customer;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                customer = req.body;
+                return [4 /*yield*/, customerRepository.addCustomer(customer)
+                        .then(function (customerAdded) {
+                        if (customerAdded)
+                            res.status(201).send("Customer " + customer.name + " has been successfully added.");
+                        else
+                            res.status(404).send("Customer " + customer.name + " already exists.");
+                    })["catch"](function (err) {
+                        res.status(500).send(err);
+                    })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// update customer from request body
+router.put('/customer/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, customerRepository.updateCustomer(req.params.name, req.body)
+                    .then(function (customerUpdated) {
+                    if (customerUpdated)
+                        res.status(200).send("Customer " + req.params.name + " has been successfully updated.");
+                    else
+                        res.status(404).send("Customer " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// add loyalty points to customer
+router.put('/customer/:name/:loyaltyPoints', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, customerRepository.addLoyaltyPoints(req.params.name, +req.params.loyaltyPoints)
+                    .then(function (loyaltyPointsAdded) {
+                    if (loyaltyPointsAdded)
+                        res.status(200).send(req.params.loyaltyPoints + " loyalty points to " + req.params.name + ".");
+                    else
+                        res.status(400).send("Customer " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
 // // REST API for Employee
 // // get all employees
 // router.get('/employees', async (req: Request, res: Response) => {
@@ -357,7 +408,7 @@ router.get('/products', function (req, res) { return __awaiter(void 0, void 0, v
                     if (products)
                         res.status(200).send(products);
                     else
-                        res.status(404).send('Products could not be found.');
+                        res.status(404).send("Products could not be found.");
                 })["catch"](function (err) {
                     res.status(500).send(err);
                 })];
@@ -376,7 +427,7 @@ router.get('/product/:name', function (req, res) { return __awaiter(void 0, void
                     if (product)
                         res.status(200).send(product);
                     else
-                        res.status(404).send('Product ' + req.params.name + ' could not be found.');
+                        res.status(404).send("Product " + req.params.name + " could not be found.");
                 })["catch"](function (err) {
                     res.status(500).send(err);
                 })];
@@ -388,50 +439,60 @@ router.get('/product/:name', function (req, res) { return __awaiter(void 0, void
 }); });
 // delete product by name
 router["delete"]('/product/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var productDeleted;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, productRepository.deleteProductByName(req.params.name)];
+            case 0: return [4 /*yield*/, productRepository.deleteProductByName(req.params.name)
+                    .then(function (productDeleted) {
+                    if (productDeleted)
+                        res.status(200).send("Product " + req.params.name + " has been successfully deleted.");
+                    else
+                        res.status(404).send("Product " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
             case 1:
-                productDeleted = _a.sent();
-                if (productDeleted)
-                    res.send('Product ' + req.params.name + ' has been successfully deleted.');
-                else
-                    res.status(404).send('Product ' + req.params.name + ' could not be found.');
+                _a.sent();
                 return [2 /*return*/];
         }
     });
 }); });
 // add product from request body
 router.post('/product', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var product, productAdded;
+    var product;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 product = req.body;
-                return [4 /*yield*/, productRepository.addProduct(product)];
+                return [4 /*yield*/, productRepository.addProduct(product)
+                        .then(function (productAdded) {
+                        if (productAdded)
+                            res.status(201).send("Product " + product.name + " has been successfully added.");
+                        else
+                            res.status(400).send("Product " + product.name + " already exists.");
+                    })["catch"](function (err) {
+                        res.status(500).send(err);
+                    })];
             case 1:
-                productAdded = _a.sent();
-                if (productAdded)
-                    res.status(201).send('Product ' + product.name + ' has been successfully added.');
-                else
-                    res.status(400).send('Product ' + product.name + ' already exists.');
+                _a.sent();
                 return [2 /*return*/];
         }
     });
 }); });
 // update product from request body
 router.put('/product/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var productUpdated;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, productRepository.updateProduct(req.params.name, req.body)];
+            case 0: return [4 /*yield*/, productRepository.updateProduct(req.params.name, req.body)
+                    .then(function (productUpdated) {
+                    if (productUpdated)
+                        res.status(200).send("Product " + req.params.name + " has been successfully updated.");
+                    else
+                        res.status(404).send("Product " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
             case 1:
-                productUpdated = _a.sent();
-                if (productUpdated)
-                    res.status(200).send('Product ' + req.params.name + ' has been successfully updated.');
-                else
-                    res.status(404).send('Product ' + req.params.name + ' could not be found.');
+                _a.sent();
                 return [2 /*return*/];
         }
     });
@@ -524,7 +585,7 @@ router.get('/restaurants', function (req, res) { return __awaiter(void 0, void 0
                     if (restaurants)
                         res.status(200).send(restaurants);
                     else
-                        res.status(404).send('Restaurants could not be found.');
+                        res.status(404).send("Restaurants could not be found.");
                 })["catch"](function (err) {
                     res.status(500).send(err);
                 })];
@@ -543,7 +604,7 @@ router.get('/restaurant/:name', function (req, res) { return __awaiter(void 0, v
                     if (restaurant)
                         res.status(200).send(restaurant);
                     else
-                        res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
+                        res.status(404).send("Restaurant " + req.params.name + " could not be found.");
                 })["catch"](function (err) {
                     res.status(500).send(err);
                 })];
@@ -562,9 +623,9 @@ router["delete"]('/restaurant/:name', function (req, res) { return __awaiter(voi
             case 1:
                 restaurantDeleted = _a.sent();
                 if (restaurantDeleted)
-                    res.status(200).send('Restaurant ' + req.params.name + ' has been successfully deleted.');
+                    res.status(200).send("Restaurant " + req.params.name + " has been successfully deleted.");
                 else
-                    res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
+                    res.status(404).send("Restaurant " + req.params.name + " could not be found.");
                 return [2 /*return*/];
         }
     });
@@ -580,9 +641,9 @@ router.post('/restaurant', function (req, res) { return __awaiter(void 0, void 0
             case 1:
                 restaurantAdded = _a.sent();
                 if (restaurantAdded)
-                    res.status(201).send('Restaurant ' + restaurant.name + ' has been successfully added.');
+                    res.status(201).send("Restaurant " + restaurant.name + " has been successfully added.");
                 else
-                    res.status(400).send('Restaurant ' + restaurant.name + ' already exists.');
+                    res.status(400).send("Restaurant " + restaurant.name + " already exists.");
                 return [2 /*return*/];
         }
     });
@@ -596,9 +657,9 @@ router.put('/restaurant/:name', function (req, res) { return __awaiter(void 0, v
             case 1:
                 restaurantUpdated = _a.sent();
                 if (restaurantUpdated)
-                    res.status(200).send('Restaurant ' + req.params.name + ' has been successfully updated.');
+                    res.status(200).send("Restaurant " + req.params.name + " has been successfully updated.");
                 else
-                    res.status(404).send('Restaurant ' + req.params.name + ' could not be found.');
+                    res.status(404).send("Restaurant " + req.params.name + " could not be found.");
                 return [2 /*return*/];
         }
     });

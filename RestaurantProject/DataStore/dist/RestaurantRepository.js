@@ -61,12 +61,12 @@ var RestaurantRepository = /** @class */ (function () {
                         _a.sent();
                         restaurants = [
                             {
-                                name: 'Restaurant1',
-                                address: 'Address1',
-                                phone: '123456789',
-                                nip: '123456789',
-                                email: 'someEmail@something.com',
-                                website: 'someWebsite.com'
+                                name: "Restaurant1",
+                                address: "Address1",
+                                phone: "123456789",
+                                nip: "123456789",
+                                email: "someEmail@something.com",
+                                website: "someWebsite.com"
                             },
                         ];
                         return [4 /*yield*/, this.RestaurantModel.countDocuments()];
@@ -75,7 +75,7 @@ var RestaurantRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.RestaurantModel
                                 .insertMany(restaurants)
                                 .then(function () {
-                                console.log('Restaurants have been populated!');
+                                console.log("Restaurants have been populated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -103,7 +103,7 @@ var RestaurantRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.RestaurantModel
                                 .create(restaurant)
                                 .then(function () {
-                                console.log('Restaurant ' + restaurant.name + ' has been added!');
+                                console.log("Restaurant " + restaurant.name + " has been added!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -137,7 +137,7 @@ var RestaurantRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.RestaurantModel
                                 .deleteOne({ name: restaurantName })
                                 .then(function () {
-                                console.log('Restaurant ' + restaurantName + ' has been deleted!');
+                                console.log("Restaurant " + restaurantName + " has been deleted!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -224,7 +224,7 @@ var RestaurantRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.RestaurantModel
                                 .updateOne({ name: restaurantName }, restaurantToUpdate)
                                 .then(function () {
-                                console.log('Restaurant ' + restaurantName + ' has been updated!');
+                                console.log("Restaurant " + restaurantName + " has been updated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
