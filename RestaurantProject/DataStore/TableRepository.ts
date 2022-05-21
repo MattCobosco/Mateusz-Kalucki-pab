@@ -121,7 +121,7 @@ export class TableRepository
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
     
         const tables = await this.TableModel.find({});
-        if (tables)
+        if (tables.length > 0)
             return tables;
         else
             return false;
