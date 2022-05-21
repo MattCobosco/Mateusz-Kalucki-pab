@@ -1,22 +1,61 @@
+import { OrderedBulkOperation } from 'mongodb';
 import {Schema, model, connect} from 'mongoose';
 import Employee from '../CoreBusiness/Employee';
 import MenuItem from '../CoreBusiness/MenuItem';
 import Order from '../CoreBusiness/Order';
+import Product from '../CoreBusiness/Product';
+import Restaurant from '../CoreBusiness/Restaurant';
 import Table from '../CoreBusiness/Table';
-import { MenuItemRepository } from './MenuItemRepository';
 
 export class OrderRepository
 {
+    restaurantSchema = new Schema<Restaurant>({
+        name: {type: String, required: true},
+        address: {type: String, required: true},
+        phone: {type: String, required: true},
+        nip: {type: String, required: true},
+        email: {type: String, required: true},
+        website: {type: String, required: true},
+        description: {type: String, required: false}
+    });
+
+    employeeSchema = new Schema<Employee>({
+        name: {type: String, required: true},
+        surname: {type: String, required: true},
+        position: {type: String, required: true},
+        restaurant: {type: this.restaurantSchema, ref: 'Restaurant'}
+    });
+
+    productSchema = new Schema<Product>({
+        name: {type: String, required: true},
+        price: {type: Number, required: true},
+        quantity: {type: Number, required: true}
+    });
+
+    menuItemSchema = new Schema<MenuItem>({
+        name: {type: String, required: true},
+        price: {type: Number, required: true},
+        description: {type: String, required: false},
+        products: [{type:this.productSchema, ref: 'Product'}]
+    });
+    
+    tableSchema = new Schema<Table>({
+        number: {type: Number, required: true},
+        seats: {type: Number, required: true},
+        status: {type: Number, required: true}
+    });
+    
     orderSchema = new Schema<Order>(
         {
-            employee: {type: Employee, ref: 'Employee'},
-            items: [{type: MenuItem, ref: 'MenuItem'}],
+            dateTime: {type: Date, required: true},
+            employee: {type: this.employeeSchema, ref: 'Employee'},
+            items: [{type: this.menuItemSchema, ref: 'MenuItem'}],
             status: {type: Number, required: true},
-            table: {type: Table, ref: 'Table'},
+            table: {type: this.tableSchema, ref: 'Table'},
             price: {type: Number, required: true}
         });
 
-    orderModel = model<Order>('Order', this.orderSchema);
+    OrderModel = model<Order>('Order', this.orderSchema);
 
     async populateOrders() : Promise<void>
     {
@@ -24,20 +63,67 @@ export class OrderRepository
 
         const orders = [
             {
-                employee: '62826aff5986dcfe48d66dd4',
-                items: [
-                    '6283fc51124f7b21d9c97d61',
-                    '6283fc51124f7b21d9c97d65'
+                dateTime: new Date(),
+                employee: 
+                {
+                    name: "Employee2",
+                    surname: "Employee2",
+                    position: "Waiter",
+                    restaurant: 
+                    {
+                        name: "Restaurant1",
+                        address: "Address1",
+                        phone: "123456789",
+                        nip: "123456789",
+                        email: "someEmail@something.com",
+                        website: "someWebsite.com",
+                    }
+                },
+                items: 
+                [
+                    {
+                        name: "Coca_Cola",
+                        price: 5,
+                        type: 3,
+                        description: "Coca Cola can",
+                        products: 
+                        [
+                            {
+                                name: "Coca_Cola_Can",
+                                price: 2.5,
+                                quantity: 1
+                            }
+                        ]
+                    },
+                    {
+                        name: "Chicken_Nuggets",
+                        price: 30,
+                        type: 1,
+                        description: "Chicken nuggets",
+                        products:
+                        [
+                            {
+                                name: "Chicken",
+                                price: 3,
+                                quantity: 2
+                            }
+                        ]
+                    }
                 ],
                 status: 1,
-                table: '6284ab720b1b925fc9c801fe',
+                table: 
+                {
+                    number: 1,
+                    seats: 4,
+                    status: 0
+                },
                 price: 35
             }
         ];
 
-        if (await this.orderModel.countDocuments() === 0)
+        if (await this.OrderModel.countDocuments() === 0)
         {
-            await this.orderModel
+            await this.OrderModel
             .insertMany(orders)
             .then(function()
             {
@@ -49,22 +135,28 @@ export class OrderRepository
         }
     };
 
-    async addOrder(order: Order) : Promise<void>
+    async addOrder(order: Order) : Promise<boolean | string>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        if(!order.price)
+        const alreadyExists = await this.OrderModel.findOne({
+            dateTime: order.dateTime,
+           'employee.name': order.employee.name,
+        });
+        if(alreadyExists)
+            return "Such order already exists.";
+
+        if(!order.price || order.price === 0)
         {
             let price = 0;
-            for(let i = 0; i < order.items.length; i++)
+            for(let item of order.items)
             {
-                let item = order.items[i];
-                price += item.price;
+                price += +item.price;
             }
             order.price = price;
         }
 
-        await this.orderModel
+        await this.OrderModel
         .create(order)
         .then(function()
         {
@@ -73,46 +165,67 @@ export class OrderRepository
         {
             console.log(err);
         });
+
+        const exists = await this.OrderModel.findOne({
+            dateTime: order.dateTime,
+            'employee.name': order.employee.name,
+        });
+        if(exists)
+            return true;
+        else
+            return "Order has not been added.";
     }
 
-    async deleteOrderById(id: string) : Promise<boolean>
+    async deleteOrderById(orderId: string) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        const exists = await this.orderModel.exists({_id: id});
-        await this.orderModel
-        .findByIdAndDelete(id)
+        const exists = await this.OrderModel.findById(orderId);
+
+        await this.OrderModel
+        .findByIdAndDelete(orderId)
         .then(function()
         {
-            console.log("Order has been deleted!")
+            console.log("Order " + orderId + " has been deleted!")
         }).catch(function(err: any)
         {
             console.log(err);
         });
+
+        const existsAfter = await this.OrderModel.findById(orderId);
+        if(!existsAfter)
+            return true;
+        else
+            return false;
     }
 
-    async getOrderById(id: string) : Promise<Order>
+    async getOrderById(id: string) : Promise<Order | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        let order = await this.orderModel.findById(id);
+        const order = await this.OrderModel.findById(id);
         if (order)
             return order;
         else
-            return null as any;
+            return false;
     }
 
-    async getOrders() : Promise<Order[]>
+    async getOrders() : Promise<Order[] | boolean>
     {
-        return await this.orderModel.find();
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+    
+        const orders = await this.OrderModel.find({});
+        if(orders.length > 0)
+            return orders;
+        else
+            return false;
     };
 
     async updateOrderById(id: string, order: Order) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        let orderToUpdate = await this.orderModel.findById(id);
-
+        let orderToUpdate = await this.OrderModel.findById(id);
         if (orderToUpdate)
         {
             if(order.employee)
@@ -123,14 +236,14 @@ export class OrderRepository
                 orderToUpdate.status = order.status;
             if(order.table)
                 orderToUpdate.table = order.table;
-            if(order.price)
+            if(order.price || order.price !== 0)
                 orderToUpdate.price = order.price;
-            else {
+            else 
+            {
                 let price = 0;
-                for (let i = 0; i < orderToUpdate.items.length; i++)
+                for (let item of order.items)
                 {
-                    let itemPrice = orderToUpdate.items[i].price;
-                    price += +itemPrice;
+                    price += +item.price;
                 }
                 orderToUpdate.price = price;
             }
@@ -143,35 +256,34 @@ export class OrderRepository
             {
                 console.log(err);
             });
-
             return true;
         }
         else
             return false;
     }
 
-    // get orders by employee id
-    async getOrdersByEmployeeId(employeeId: string) : Promise<Order[]>
+    // get orders by employee name
+    async getOrdersByEmployeeName(employeeName: string) : Promise<Order[] | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        let orders = await this.orderModel.find({employee: employeeId});
-        if (orders)
+        const orders = await this.OrderModel.find({'employee.name': employeeName});
+        if (orders.length > 0)
             return orders;
         else
-            return null as any;
+            return false;
     }
 
     // get orders in a given time period
-    async getOrdersByTimePeriod(startDate: Date, endDate: Date) : Promise<Order[]>
+    async getOrdersByTimePeriod(startDate: Date, endDate: Date) : Promise<Order[] | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        let orders = await this.orderModel.find({createdAt: {$gte: startDate, $lte: endDate}});
-        if (orders)
+        let orders = await this.OrderModel.find({dateTime: {$gte: startDate, $lte: endDate}});
+        if (orders.length > 0)
             return orders;
         else
-            return null as any;
+            return false;
     }
 
     // get income in a given time period
@@ -179,15 +291,47 @@ export class OrderRepository
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        let orders = await this.orderModel.find({createdAt: {$gte: startDate, $lte: endDate}});
-        if (orders)
+        let orders = await this.OrderModel.find({dateTime: {$gte: startDate, $lte: endDate}});
+        if (orders.length > 0)
         {
             let income = 0;
             for (let order of orders)
-                income += order.price;
+            {
+                income += +order.price;
+            }
             return income;
         }
         else
-            return null as any;
+            return 0;
+    }
+
+    // get profit in a given time period
+    async getProfitByTimePeriod(startDate: Date, endDate: Date) : Promise<number>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        let orders = await this.OrderModel.find({dateTime: {$gte: startDate, $lte: endDate}});
+        if (orders.length > 0)
+        {
+            let income = 0;
+            let costs = 0;
+            let profit = 0;
+            for (let order of orders)
+            {
+                income += +order.price;
+                for(let item of order.items)
+                {
+                    for (let product of item.products)
+                    {
+                        costs += +product.price * +product.quantity;
+                    }
+                }
+                
+                profit = (+income - +costs);
+            }
+            return +profit;
+        }
+        else
+            return 0;
     }
 }
