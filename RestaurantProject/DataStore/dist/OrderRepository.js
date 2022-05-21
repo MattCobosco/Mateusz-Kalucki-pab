@@ -38,16 +38,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.OrderRepository = void 0;
 var mongoose_1 = require("mongoose");
-var EmployeeModel_1 = require("../CoreBusiness/EmployeeModel");
-var MenuItemModel_1 = require("../CoreBusiness/MenuItemModel");
-var TableModel_1 = require("../CoreBusiness/TableModel");
+var Employee_1 = require("../CoreBusiness/Employee");
+var MenuItem_1 = require("../CoreBusiness/MenuItem");
+var Table_1 = require("../CoreBusiness/Table");
 var OrderRepository = /** @class */ (function () {
     function OrderRepository() {
         this.orderSchema = new mongoose_1.Schema({
-            employee: { type: EmployeeModel_1["default"], ref: 'Employee' },
-            items: [{ type: MenuItemModel_1["default"], ref: 'MenuItem' }],
+            employee: { type: Employee_1["default"], ref: 'Employee' },
+            items: [{ type: MenuItem_1["default"], ref: 'MenuItem' }],
             status: { type: Number, required: true },
-            table: { type: TableModel_1["default"], ref: 'Table' },
+            table: { type: Table_1["default"], ref: 'Table' },
             price: { type: Number, required: true }
         });
         this.orderModel = mongoose_1.model('Order', this.orderSchema);

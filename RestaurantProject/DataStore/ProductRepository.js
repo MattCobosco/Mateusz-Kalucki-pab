@@ -40,12 +40,12 @@ exports.ProductDemandList = exports.ProductRepository = void 0;
 var mongoose_1 = require("mongoose");
 var ProductRepository = /** @class */ (function () {
     function ProductRepository() {
-        this.productSchema = new mongoose_1.Schema({
+        this.ProductSchema = new mongoose_1.Schema({
             name: { type: String, required: true },
             price: { type: Number, required: true },
             quantity: { type: Number, required: true }
         });
-        this.ProductModel = (0, mongoose_1.model)('Product', this.productSchema);
+        this.ProductModel = (0, mongoose_1.model)('Product', this.ProductSchema);
     }
     ProductRepository.prototype.populateProducts = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -226,8 +226,10 @@ var ProductRepository = /** @class */ (function () {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        products = this.ProductModel.find({});
-                        if (products)
+                        return [4 /*yield*/, this.ProductModel.find({})];
+                    case 2:
+                        products = _a.sent();
+                        if (products.length > 0)
                             return [2 /*return*/, products];
                         else
                             return [2 /*return*/, false];

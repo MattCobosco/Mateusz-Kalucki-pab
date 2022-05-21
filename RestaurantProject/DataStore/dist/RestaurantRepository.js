@@ -186,7 +186,7 @@ var RestaurantRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.RestaurantModel.find({})];
                     case 2:
                         restaurants = _a.sent();
-                        if (restaurants)
+                        if (restaurants.length > 0)
                             return [2 /*return*/, restaurants];
                         else
                             return [2 /*return*/, false];

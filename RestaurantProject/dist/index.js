@@ -12,38 +12,38 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const bodyParser = require("body-parser");
 const CustomerRepository_1 = require("./DataStore/CustomerRepository");
-// import { EmployeeRepository } from './DataStore/EmployeeRepository';
-// import { MenuItemRepository } from './DataStore/MenuItemRepository';
+const EmployeeRepository_1 = require("./DataStore/EmployeeRepository");
+const MenuItemRepository_1 = require("./DataStore/MenuItemRepository");
 // import { OrderRepository } from './DataStore/OrderRepository';
 const ProductRepository_1 = require("./DataStore/ProductRepository");
 // import { ReservationRepository } from './DataStore/ReservationRepository';
 const RestaurantRepository_1 = require("./DataStore/RestaurantRepository");
-// import { TableRepository } from './DataStore/TableRepository';
+const TableRepository_1 = require("./DataStore/TableRepository");
 const app = express();
 const router = express.Router();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', router);
 const customerRepository = new CustomerRepository_1.CustomerRepository();
-// const employeeRepository = new EmployeeRepository();
-// const menuItemRepository = new MenuItemRepository();
+const employeeRepository = new EmployeeRepository_1.EmployeeRepository();
+const menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
 // const orderRepository = new OrderRepository();
 const productRepository = new ProductRepository_1.ProductRepository();
 // const reservationRepository = new ReservationRepository();
 const restaurantRepository = new RestaurantRepository_1.RestaurantRepository();
-// const tableRepository = new TableRepository();
+const tableRepository = new TableRepository_1.TableRepository();
 // DATABASE POPULATION:
 customerRepository.populateCustomers();
-// employeeRepository.populateEmployees();
-// menuItemRepository.populateMenuItems();
+employeeRepository.populateEmployees();
+menuItemRepository.populateMenuItems();
 // orderRepository.populateOrders();
 productRepository.populateProducts();
 // reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
-// tableRepository.populateTables();
+tableRepository.populateTables();
 // REST API for Customer
 // get all customers
-router.get('/customers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/customers', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield customerRepository.getCustomers()
         .then(function (customers) {
         if (customers)
@@ -66,18 +66,6 @@ router.get('/customer/:name', (req, res) => __awaiter(void 0, void 0, void 0, fu
         res.status(500).send(err);
     });
 }));
-// delete customer by name
-router.delete('/customer/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield customerRepository.deleteCustomerByName(req.params.name)
-        .then(function (customerDeleted) {
-        if (customerDeleted)
-            res.status(200).send("Customer " + req.params.name + " has been successfully deleted.");
-        else
-            res.status(404).send("Customer " + req.params.name + " could not be found.");
-    }).catch(function (err) {
-        res.status(500).send(err);
-    });
-}));
 // add customer from request body
 router.post('/customer', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const customer = req.body;
@@ -87,6 +75,18 @@ router.post('/customer', (req, res) => __awaiter(void 0, void 0, void 0, functio
             res.status(201).send("Customer " + customer.name + " has been successfully added.");
         else
             res.status(404).send("Customer " + customer.name + " already exists.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// delete customer by name
+router.delete('/customer/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield customerRepository.deleteCustomerByName(req.params.name)
+        .then(function (customerDeleted) {
+        if (customerDeleted)
+            res.status(200).send("Customer " + req.params.name + " has been successfully deleted.");
+        else
+            res.status(404).send("Customer " + req.params.name + " could not be found.");
     }).catch(function (err) {
         res.status(500).send(err);
     });
@@ -115,129 +115,139 @@ router.put('/customer/:name/:loyaltyPoints', (req, res) => __awaiter(void 0, voi
         res.status(500).send(err);
     });
 }));
-// // REST API for Employee
-// // get all employees
-// router.get('/employees', async (req: Request, res: Response) => {
-//     await employeeRepository.getEmployees()
-//     .then(function(employees: any)
-//     {
-//         res.send(employees);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get employee by surname
-// router.get('/employee/:name', async (req: Request, res: Response) => {
-//     await employeeRepository.getEmployeeBySurname(req.params.name)
-//     .then(function(employee: any)
-//     {
-//         res.send(employee);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // delete employee by surname
-// router.delete('/employee/:name', async (req: Request, res: Response) => {
-//     await employeeRepository.deleteEmployeeBySurname(req.params.name)
-//     .then(function()
-//     {
-//         res.send('Employee ' + req.params.name + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // add employee from request body
-// router.post('/employee', async (req: Request, res: Response) => {
-//     await employeeRepository.addEmployee(req.body)
-//     .then(function()
-//     {
-//         res.send('Employee ' + req.body.name + ' has been added!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // update employee from request body
-// router.put('/employee/:name', async (req: Request, res: Response) => {
-//     await employeeRepository.updateEmployee(req.params.name, req.body)
-//     .then(function()
-//     {
-//         res.send('Employee ' + req.body.name + ' has been updated!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // REST API for Menu Item
-// // get all menu items
-// router.get('/menuItems', async (req: Request, res: Response) => {
-//     await menuItemRepository.getMenuItems()
-//     .then(function(menuItems: any)
-//     {
-//         res.send(menuItems);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get menu item by name
-// router.get('/menuItem/:name', async (req: Request, res: Response) => {
-//     await menuItemRepository.getMenuItemByName(req.params.name)
-//     .then(function(menuItem: any)
-//     {
-//         res.send(menuItem);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // delete menu item by name
-// router.delete('/menuItem/:name', async (req: Request, res: Response) => {
-//     await menuItemRepository.deleteMenuItemByName(req.params.name)
-//     .then(function()
-//     {
-//         res.send('Menu Item ' + req.params.name + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // add menu item from request body
-// router.post('/menuItem', async (req: Request, res: Response) => {
-//     await menuItemRepository.addMenuItem(req.body)
-//     .then(function()
-//     {
-//         res.send('Menu Item ' + req.body.name + ' has been added!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // update menu item from request body
-// router.put('/menuItem/:name', async (req: Request, res: Response) => {
-//     await menuItemRepository.updateMenuItem(req.params.name, req.body)
-//     .then(function()
-//     {
-//         res.send('Menu Item ' + req.body.name + ' has been updated!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get menu grouped by type
-// router.get('/menu', async (req: Request, res: Response) => {
-//     await menuItemRepository.getMenu()
-//     .then(function(menu: any)
-//     {
-//         res.send(menu);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// REST API for Employee
+// get all employees
+router.get('/employees', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield employeeRepository.getEmployees()
+        .then(function (employees) {
+        if (employees)
+            res.status(200).send(employees);
+        else
+            res.status(404).send("Employees could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// get employees by surname
+router.get('/employees/:surname', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield employeeRepository.getEmployeesBySurname(req.params.surname)
+        .then(function (employees) {
+        if (employees)
+            res.status(200).send(employees);
+        else
+            res.status(404).send("Employees of surname " + req.params.surname + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// add employee from request body
+router.post('/employee', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const employee = req.body;
+    yield employeeRepository.addEmployee(employee)
+        .then(function (employeeAdded) {
+        if (employeeAdded)
+            res.status(201).send("Employee " + employee.surname + " " + employee.name + " has been successfully added.");
+        else
+            res.status(400).send("Employee " + employee.surname + " " + employee.name + " already exists.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// delete employee by surname
+router.delete('/employee/:surname/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield employeeRepository.deleteEmployeeBySurnameAndName(req.params.surname, req.params.name)
+        .then(function (employeeDeleted) {
+        if (employeeDeleted)
+            res.status(200).send("Employee " + req.params.surname + " " + req.params.name + " has been successfully deleted.");
+        else
+            res.status(404).send("Employee " + req.params.surname + " " + req.params.name + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// update employee from request body
+router.put('/employee/:surname/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield employeeRepository.updateEmployeeBySurnameAndName(req.params.surname, req.params.name, req.body)
+        .then(function (employeeUpdated) {
+        if (employeeUpdated)
+            res.status(200).send("Employee " + req.params.surname + " " + req.params.name + " has been successfully updated.");
+        else
+            res.status(404).send("Employee " + req.params.surname + " " + req.params.name + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// REST API for Menu Item
+// get all menu items
+router.get('/menuItems', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield menuItemRepository.getMenuItems()
+        .then(function (menuItems) {
+        if (menuItems)
+            res.status(200).send(menuItems);
+        else
+            res.status(404).send("Menu Items could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// get menu item by name
+router.get('/menuItem/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield menuItemRepository.getMenuItemByName(req.params.name)
+        .then(function (menuItem) {
+        if (menuItem)
+            res.status(200).send(menuItem);
+        else
+            res.status(404).send("Menu Item " + req.params.name + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// add menu item from request body
+router.post('/menuItem', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const menuItem = req.body;
+    yield menuItemRepository.addMenuItem(menuItem)
+        .then(function (menuItemAdded) {
+        if (menuItemAdded)
+            res.status(201).send("Menu Item " + menuItem.name + " has been successfully added.");
+        else
+            res.status(400).send("Menu Item " + menuItem.name + " already exists.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// delete menu item by name
+router.delete('/menuItem/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield menuItemRepository.deleteMenuItemByName(req.params.name)
+        .then(function (menuItemDeleted) {
+        if (menuItemDeleted)
+            res.status(200).send("Menu Item " + req.params.name + " has been successfully deleted.");
+        else
+            res.status(404).send("Menu Item " + req.params.name + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// update menu item from request body
+router.put('/menuItem/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield menuItemRepository.updateMenuItem(req.params.name, req.body)
+        .then(function (menuItemUpdated) {
+        if (menuItemUpdated)
+            res.send("Menu Item " + req.params.name + " has been successfully updated.");
+        else
+            res.status(404).send("Menu Item " + req.params.name + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// get menu grouped by type
+router.get('/menu', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield menuItemRepository.getMenu()
+        .then(function (menu) {
+        res.send(menu);
+    }).catch(function (err) {
+        res.send(err);
+    });
+}));
 // // REST API for Order
 // // get all orders
 // router.get('/orders', async (req: Request, res: Response) => {
@@ -261,23 +271,23 @@ router.put('/customer/:name/:loyaltyPoints', (req, res) => __awaiter(void 0, voi
 //         res.send(err);
 //     });
 // });
-// // delete order by id
-// router.delete('/order/:id', async (req: Request, res: Response) => {
-//     await orderRepository.deleteOrderById(req.params.id)
-//     .then(function()
-//     {
-//         res.send('Order ' + req.params.id + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
 // // add order from request body
 // router.post('/order', async (req: Request, res: Response) => {
 //     await orderRepository.addOrder(req.body)
 //     .then(function()
 //     {
 //         res.send('Order ' + req.body.id + ' has been added!');
+//     }).catch(function(err: any)
+//     {
+//         res.send(err);
+//     });
+// });
+// // delete order by id
+// router.delete('/order/:id', async (req: Request, res: Response) => {
+//     await orderRepository.deleteOrderById(req.params.id)
+//     .then(function()
+//     {
+//         res.send('Order ' + req.params.id + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -329,7 +339,7 @@ router.put('/customer/:name/:loyaltyPoints', (req, res) => __awaiter(void 0, voi
 // });
 // REST API for Product in Storage
 // get all products
-router.get('/products', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/products', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield productRepository.getProducts()
         .then(function (products) {
         if (products)
@@ -352,18 +362,6 @@ router.get('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, fun
         res.status(500).send(err);
     });
 }));
-// delete product by name
-router.delete('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield productRepository.deleteProductByName(req.params.name)
-        .then(function (productDeleted) {
-        if (productDeleted)
-            res.status(200).send("Product " + req.params.name + " has been successfully deleted.");
-        else
-            res.status(404).send("Product " + req.params.name + " could not be found.");
-    }).catch(function (err) {
-        res.status(500).send(err);
-    });
-}));
 // add product from request body
 router.post('/product', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const product = req.body;
@@ -373,6 +371,18 @@ router.post('/product', (req, res) => __awaiter(void 0, void 0, void 0, function
             res.status(201).send("Product " + product.name + " has been successfully added.");
         else
             res.status(400).send("Product " + product.name + " already exists.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// delete product by name
+router.delete('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield productRepository.deleteProductByName(req.params.name)
+        .then(function (productDeleted) {
+        if (productDeleted)
+            res.status(200).send("Product " + req.params.name + " has been successfully deleted.");
+        else
+            res.status(404).send("Product " + req.params.name + " could not be found.");
     }).catch(function (err) {
         res.status(500).send(err);
     });
@@ -412,23 +422,23 @@ router.put('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, fun
 //         res.send(err);
 //     });
 // });
-// // delete reservation by id
-// router.delete('/reservation/:id', async (req: Request, res: Response) => {
-//     await reservationRepository.deleteReservationById(req.params.id)
-//     .then(function()
-//     {
-//         res.send('Reservation ' + req.params.id + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
 // // add reservation from request body
 // router.post('/reservation', async (req: Request, res: Response) => {
 //     await reservationRepository.addReservation(req.body)
 //     .then(function()
 //     {
 //         res.send('Reservation ' + req.body.id + ' has been added!');
+//     }).catch(function(err: any)
+//     {
+//         res.send(err);
+//     });
+// });
+// // delete reservation by id
+// router.delete('/reservation/:id', async (req: Request, res: Response) => {
+//     await reservationRepository.deleteReservationById(req.params.id)
+//     .then(function()
+//     {
+//         res.send('Reservation ' + req.params.id + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -469,7 +479,7 @@ router.put('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, fun
 // });
 // REST API for Restaurant
 // get all restaurants
-router.get('/restaurants', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/restaurants', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield restaurantRepository.getRestaurants()
         .then(function (restaurants) {
         if (restaurants)
@@ -492,14 +502,6 @@ router.get('/restaurant/:name', (req, res) => __awaiter(void 0, void 0, void 0, 
         res.status(500).send(err);
     });
 }));
-// delete restaurant by name
-router.delete('/restaurant/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const restaurantDeleted = yield restaurantRepository.deleteRestaurantByName(req.params.name);
-    if (restaurantDeleted)
-        res.status(200).send("Restaurant " + req.params.name + " has been successfully deleted.");
-    else
-        res.status(404).send("Restaurant " + req.params.name + " could not be found.");
-}));
 // add a restaurant from request body
 router.post('/restaurant', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const restaurant = req.body;
@@ -509,6 +511,14 @@ router.post('/restaurant', (req, res) => __awaiter(void 0, void 0, void 0, funct
     else
         res.status(400).send("Restaurant " + restaurant.name + " already exists.");
 }));
+// delete restaurant by name
+router.delete('/restaurant/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const restaurantDeleted = yield restaurantRepository.deleteRestaurantByName(req.params.name);
+    if (restaurantDeleted)
+        res.status(200).send("Restaurant " + req.params.name + " has been successfully deleted.");
+    else
+        res.status(404).send("Restaurant " + req.params.name + " could not be found.");
+}));
 // update restaurant from request body
 router.put('/restaurant/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const restaurantUpdated = yield restaurantRepository.updateRestaurant(req.params.name, req.body);
@@ -517,71 +527,66 @@ router.put('/restaurant/:name', (req, res) => __awaiter(void 0, void 0, void 0, 
     else
         res.status(404).send("Restaurant " + req.params.name + " could not be found.");
 }));
-// // REST API for Table
-// // get all tables
-// router.get('/tables', async (req: Request, res: Response) => {
-//     await tableRepository.getTables()
-//     .then(function(tables: any)
-//     {
-//         res.send(tables);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get table by number
-// router.get('/table/:number', async (req: Request, res: Response) => {
-//     await tableRepository.getTableByNumber(+req.params.number)
-//     .then(function(table: any)
-//     {
-//         res.send(table);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // delete table by number
-// router.delete('/table/:number', async (req: Request, res: Response) => {
-//     await tableRepository.deleteTableByNumber(+req.params.number)
-//     .then(function()
-//     {
-//         res.send('Table ' + +req.params.number + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // add table from request body
-// router.post('/table', async (req: Request, res: Response) => {
-//     await tableRepository.addTable(req.body)
-//     .then(function()
-//     {
-//         res.send('Table ' + req.body.number + ' has been added!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // update table from request body
-// router.put('/table/:number', async (req: Request, res: Response) => {
-//     await tableRepository.updateTableByNumber(+req.params.number, req.body)
-//     .then(function()
-//     {
-//         res.send('Table ' + req.params.number + ' has been updated!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get free tables in a given time period for a given number of people from body request
-// router.post('/tables/free', async (req: Request, res: Response) => {
-//     await tableRepository.getFreeTables(new Date(req.body.startDateTime), new Date(req.body.endDateTime), req.body.people)
-//     .then(function(tables: any)
-//     {
-//         res.send(tables);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// REST API for Table
+// get all tables
+router.get('/tables', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield tableRepository.getTables()
+        .then(function (tables) {
+        if (tables)
+            res.status(200).send(tables);
+        else
+            res.status(404).send("Tables could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// get table by number
+router.get('/table/:number', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield tableRepository.getTableByNumber(+req.params.number)
+        .then(function (table) {
+        if (table)
+            res.status(200).send(table);
+        else
+            res.status(404).send("Table " + req.params.number + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// add table from request body
+router.post('/table', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield tableRepository.addTable(req.body)
+        .then(function (tableAdded) {
+        if (tableAdded)
+            res.status(201).send("Table " + req.body.number + " has been successfully added.");
+        else
+            res.status(400).send("Table " + req.body.number + " already exists.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// delete table by number
+router.delete('/table/:number', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield tableRepository.deleteTableByNumber(+req.params.number)
+        .then(function (tableDeleted) {
+        if (tableDeleted)
+            res.status(200).send("Table " + req.params.number + " has been successfully deleted.");
+        else
+            res.status(404).send("Table " + req.params.number + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// update table from request body
+router.put('/table/:number', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield tableRepository.updateTableByNumber(+req.params.number, req.body)
+        .then(function (tableUpdated) {
+        if (tableUpdated)
+            res.status(200).send("Table " + req.params.number + " has been successfully updated.");
+        else
+            res.status(404).send("Table " + req.params.number + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// TODO: get free tables in a given time period for a given number of people from body request
 app.listen(3000);

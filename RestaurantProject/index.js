@@ -39,38 +39,38 @@ exports.__esModule = true;
 var express = require("express");
 var bodyParser = require("body-parser");
 var CustomerRepository_1 = require("./DataStore/CustomerRepository");
-// import { EmployeeRepository } from './DataStore/EmployeeRepository';
-// import { MenuItemRepository } from './DataStore/MenuItemRepository';
+var EmployeeRepository_1 = require("./DataStore/EmployeeRepository");
+var MenuItemRepository_1 = require("./DataStore/MenuItemRepository");
 // import { OrderRepository } from './DataStore/OrderRepository';
 var ProductRepository_1 = require("./DataStore/ProductRepository");
 // import { ReservationRepository } from './DataStore/ReservationRepository';
 var RestaurantRepository_1 = require("./DataStore/RestaurantRepository");
-// import { TableRepository } from './DataStore/TableRepository';
+var TableRepository_1 = require("./DataStore/TableRepository");
 var app = express();
 var router = express.Router();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', router);
 var customerRepository = new CustomerRepository_1.CustomerRepository();
-// const employeeRepository = new EmployeeRepository();
-// const menuItemRepository = new MenuItemRepository();
+var employeeRepository = new EmployeeRepository_1.EmployeeRepository();
+var menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
 // const orderRepository = new OrderRepository();
 var productRepository = new ProductRepository_1.ProductRepository();
 // const reservationRepository = new ReservationRepository();
 var restaurantRepository = new RestaurantRepository_1.RestaurantRepository();
-// const tableRepository = new TableRepository();
+var tableRepository = new TableRepository_1.TableRepository();
 // DATABASE POPULATION:
 customerRepository.populateCustomers();
-// employeeRepository.populateEmployees();
-// menuItemRepository.populateMenuItems();
+employeeRepository.populateEmployees();
+menuItemRepository.populateMenuItems();
 // orderRepository.populateOrders();
 productRepository.populateProducts();
 // reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
-// tableRepository.populateTables();
+tableRepository.populateTables();
 // REST API for Customer
 // get all customers
-router.get('/customers', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+router.get('/customers', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, customerRepository.getCustomers()
@@ -107,25 +107,6 @@ router.get('/customer/:name', function (req, res) { return __awaiter(void 0, voi
         }
     });
 }); });
-// delete customer by name
-router["delete"]('/customer/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, customerRepository.deleteCustomerByName(req.params.name)
-                    .then(function (customerDeleted) {
-                    if (customerDeleted)
-                        res.status(200).send("Customer " + req.params.name + " has been successfully deleted.");
-                    else
-                        res.status(404).send("Customer " + req.params.name + " could not be found.");
-                })["catch"](function (err) {
-                    res.status(500).send(err);
-                })];
-            case 1:
-                _a.sent();
-                return [2 /*return*/];
-        }
-    });
-}); });
 // add customer from request body
 router.post('/customer', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var customer;
@@ -142,6 +123,25 @@ router.post('/customer', function (req, res) { return __awaiter(void 0, void 0, 
                     })["catch"](function (err) {
                         res.status(500).send(err);
                     })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// delete customer by name
+router["delete"]('/customer/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, customerRepository.deleteCustomerByName(req.params.name)
+                    .then(function (customerDeleted) {
+                    if (customerDeleted)
+                        res.status(200).send("Customer " + req.params.name + " has been successfully deleted.");
+                    else
+                        res.status(404).send("Customer " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
             case 1:
                 _a.sent();
                 return [2 /*return*/];
@@ -186,129 +186,220 @@ router.put('/customer/:name/:loyaltyPoints', function (req, res) { return __awai
         }
     });
 }); });
-// // REST API for Employee
-// // get all employees
-// router.get('/employees', async (req: Request, res: Response) => {
-//     await employeeRepository.getEmployees()
-//     .then(function(employees: any)
-//     {
-//         res.send(employees);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get employee by surname
-// router.get('/employee/:name', async (req: Request, res: Response) => {
-//     await employeeRepository.getEmployeeBySurname(req.params.name)
-//     .then(function(employee: any)
-//     {
-//         res.send(employee);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // delete employee by surname
-// router.delete('/employee/:name', async (req: Request, res: Response) => {
-//     await employeeRepository.deleteEmployeeBySurname(req.params.name)
-//     .then(function()
-//     {
-//         res.send('Employee ' + req.params.name + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // add employee from request body
-// router.post('/employee', async (req: Request, res: Response) => {
-//     await employeeRepository.addEmployee(req.body)
-//     .then(function()
-//     {
-//         res.send('Employee ' + req.body.name + ' has been added!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // update employee from request body
-// router.put('/employee/:name', async (req: Request, res: Response) => {
-//     await employeeRepository.updateEmployee(req.params.name, req.body)
-//     .then(function()
-//     {
-//         res.send('Employee ' + req.body.name + ' has been updated!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // REST API for Menu Item
-// // get all menu items
-// router.get('/menuItems', async (req: Request, res: Response) => {
-//     await menuItemRepository.getMenuItems()
-//     .then(function(menuItems: any)
-//     {
-//         res.send(menuItems);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get menu item by name
-// router.get('/menuItem/:name', async (req: Request, res: Response) => {
-//     await menuItemRepository.getMenuItemByName(req.params.name)
-//     .then(function(menuItem: any)
-//     {
-//         res.send(menuItem);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // delete menu item by name
-// router.delete('/menuItem/:name', async (req: Request, res: Response) => {
-//     await menuItemRepository.deleteMenuItemByName(req.params.name)
-//     .then(function()
-//     {
-//         res.send('Menu Item ' + req.params.name + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // add menu item from request body
-// router.post('/menuItem', async (req: Request, res: Response) => {
-//     await menuItemRepository.addMenuItem(req.body)
-//     .then(function()
-//     {
-//         res.send('Menu Item ' + req.body.name + ' has been added!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // update menu item from request body
-// router.put('/menuItem/:name', async (req: Request, res: Response) => {
-//     await menuItemRepository.updateMenuItem(req.params.name, req.body)
-//     .then(function()
-//     {
-//         res.send('Menu Item ' + req.body.name + ' has been updated!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get menu grouped by type
-// router.get('/menu', async (req: Request, res: Response) => {
-//     await menuItemRepository.getMenu()
-//     .then(function(menu: any)
-//     {
-//         res.send(menu);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// REST API for Employee
+// get all employees
+router.get('/employees', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, employeeRepository.getEmployees()
+                    .then(function (employees) {
+                    if (employees)
+                        res.status(200).send(employees);
+                    else
+                        res.status(404).send("Employees could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get employees by surname
+router.get('/employees/:surname', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, employeeRepository.getEmployeesBySurname(req.params.surname)
+                    .then(function (employees) {
+                    if (employees)
+                        res.status(200).send(employees);
+                    else
+                        res.status(404).send("Employees of surname " + req.params.surname + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// add employee from request body
+router.post('/employee', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var employee;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                employee = req.body;
+                return [4 /*yield*/, employeeRepository.addEmployee(employee)
+                        .then(function (employeeAdded) {
+                        if (employeeAdded)
+                            res.status(201).send("Employee " + employee.surname + " " + employee.name + " has been successfully added.");
+                        else
+                            res.status(400).send("Employee " + employee.surname + " " + employee.name + " already exists.");
+                    })["catch"](function (err) {
+                        res.status(500).send(err);
+                    })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// delete employee by surname
+router["delete"]('/employee/:surname/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, employeeRepository.deleteEmployeeBySurnameAndName(req.params.surname, req.params.name)
+                    .then(function (employeeDeleted) {
+                    if (employeeDeleted)
+                        res.status(200).send("Employee " + req.params.surname + " " + req.params.name + " has been successfully deleted.");
+                    else
+                        res.status(404).send("Employee " + req.params.surname + " " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// update employee from request body
+router.put('/employee/:surname/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, employeeRepository.updateEmployeeBySurnameAndName(req.params.surname, req.params.name, req.body)
+                    .then(function (employeeUpdated) {
+                    if (employeeUpdated)
+                        res.status(200).send("Employee " + req.params.surname + " " + req.params.name + " has been successfully updated.");
+                    else
+                        res.status(404).send("Employee " + req.params.surname + " " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// REST API for Menu Item
+// get all menu items
+router.get('/menuItems', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, menuItemRepository.getMenuItems()
+                    .then(function (menuItems) {
+                    if (menuItems)
+                        res.status(200).send(menuItems);
+                    else
+                        res.status(404).send("Menu Items could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get menu item by name
+router.get('/menuItem/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, menuItemRepository.getMenuItemByName(req.params.name)
+                    .then(function (menuItem) {
+                    if (menuItem)
+                        res.status(200).send(menuItem);
+                    else
+                        res.status(404).send("Menu Item " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// add menu item from request body
+router.post('/menuItem', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var menuItem;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                menuItem = req.body;
+                return [4 /*yield*/, menuItemRepository.addMenuItem(menuItem)
+                        .then(function (menuItemAdded) {
+                        if (menuItemAdded)
+                            res.status(201).send("Menu Item " + menuItem.name + " has been successfully added.");
+                        else
+                            res.status(400).send("Menu Item " + menuItem.name + " already exists.");
+                    })["catch"](function (err) {
+                        res.status(500).send(err);
+                    })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// delete menu item by name
+router["delete"]('/menuItem/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, menuItemRepository.deleteMenuItemByName(req.params.name)
+                    .then(function (menuItemDeleted) {
+                    if (menuItemDeleted)
+                        res.status(200).send("Menu Item " + req.params.name + " has been successfully deleted.");
+                    else
+                        res.status(404).send("Menu Item " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// update menu item from request body
+router.put('/menuItem/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, menuItemRepository.updateMenuItem(req.params.name, req.body)
+                    .then(function (menuItemUpdated) {
+                    if (menuItemUpdated)
+                        res.send("Menu Item " + req.params.name + " has been successfully updated.");
+                    else
+                        res.status(404).send("Menu Item " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get menu grouped by type
+router.get('/menu', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, menuItemRepository.getMenu()
+                    .then(function (menu) {
+                    res.send(menu);
+                })["catch"](function (err) {
+                    res.send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
 // // REST API for Order
 // // get all orders
 // router.get('/orders', async (req: Request, res: Response) => {
@@ -332,23 +423,23 @@ router.put('/customer/:name/:loyaltyPoints', function (req, res) { return __awai
 //         res.send(err);
 //     });
 // });
-// // delete order by id
-// router.delete('/order/:id', async (req: Request, res: Response) => {
-//     await orderRepository.deleteOrderById(req.params.id)
-//     .then(function()
-//     {
-//         res.send('Order ' + req.params.id + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
 // // add order from request body
 // router.post('/order', async (req: Request, res: Response) => {
 //     await orderRepository.addOrder(req.body)
 //     .then(function()
 //     {
 //         res.send('Order ' + req.body.id + ' has been added!');
+//     }).catch(function(err: any)
+//     {
+//         res.send(err);
+//     });
+// });
+// // delete order by id
+// router.delete('/order/:id', async (req: Request, res: Response) => {
+//     await orderRepository.deleteOrderById(req.params.id)
+//     .then(function()
+//     {
+//         res.send('Order ' + req.params.id + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -400,7 +491,7 @@ router.put('/customer/:name/:loyaltyPoints', function (req, res) { return __awai
 // });
 // REST API for Product in Storage
 // get all products
-router.get('/products', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+router.get('/products', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, productRepository.getProducts()
@@ -437,25 +528,6 @@ router.get('/product/:name', function (req, res) { return __awaiter(void 0, void
         }
     });
 }); });
-// delete product by name
-router["delete"]('/product/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, productRepository.deleteProductByName(req.params.name)
-                    .then(function (productDeleted) {
-                    if (productDeleted)
-                        res.status(200).send("Product " + req.params.name + " has been successfully deleted.");
-                    else
-                        res.status(404).send("Product " + req.params.name + " could not be found.");
-                })["catch"](function (err) {
-                    res.status(500).send(err);
-                })];
-            case 1:
-                _a.sent();
-                return [2 /*return*/];
-        }
-    });
-}); });
 // add product from request body
 router.post('/product', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var product;
@@ -472,6 +544,25 @@ router.post('/product', function (req, res) { return __awaiter(void 0, void 0, v
                     })["catch"](function (err) {
                         res.status(500).send(err);
                     })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// delete product by name
+router["delete"]('/product/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, productRepository.deleteProductByName(req.params.name)
+                    .then(function (productDeleted) {
+                    if (productDeleted)
+                        res.status(200).send("Product " + req.params.name + " has been successfully deleted.");
+                    else
+                        res.status(404).send("Product " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
             case 1:
                 _a.sent();
                 return [2 /*return*/];
@@ -520,23 +611,23 @@ router.put('/product/:name', function (req, res) { return __awaiter(void 0, void
 //         res.send(err);
 //     });
 // });
-// // delete reservation by id
-// router.delete('/reservation/:id', async (req: Request, res: Response) => {
-//     await reservationRepository.deleteReservationById(req.params.id)
-//     .then(function()
-//     {
-//         res.send('Reservation ' + req.params.id + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
 // // add reservation from request body
 // router.post('/reservation', async (req: Request, res: Response) => {
 //     await reservationRepository.addReservation(req.body)
 //     .then(function()
 //     {
 //         res.send('Reservation ' + req.body.id + ' has been added!');
+//     }).catch(function(err: any)
+//     {
+//         res.send(err);
+//     });
+// });
+// // delete reservation by id
+// router.delete('/reservation/:id', async (req: Request, res: Response) => {
+//     await reservationRepository.deleteReservationById(req.params.id)
+//     .then(function()
+//     {
+//         res.send('Reservation ' + req.params.id + ' has been deleted!');
 //     }).catch(function(err: any)
 //     {
 //         res.send(err);
@@ -577,7 +668,7 @@ router.put('/product/:name', function (req, res) { return __awaiter(void 0, void
 // });
 // REST API for Restaurant
 // get all restaurants
-router.get('/restaurants', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+router.get('/restaurants', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, restaurantRepository.getRestaurants()
@@ -614,22 +705,6 @@ router.get('/restaurant/:name', function (req, res) { return __awaiter(void 0, v
         }
     });
 }); });
-// delete restaurant by name
-router["delete"]('/restaurant/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var restaurantDeleted;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, restaurantRepository.deleteRestaurantByName(req.params.name)];
-            case 1:
-                restaurantDeleted = _a.sent();
-                if (restaurantDeleted)
-                    res.status(200).send("Restaurant " + req.params.name + " has been successfully deleted.");
-                else
-                    res.status(404).send("Restaurant " + req.params.name + " could not be found.");
-                return [2 /*return*/];
-        }
-    });
-}); });
 // add a restaurant from request body
 router.post('/restaurant', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var restaurant, restaurantAdded;
@@ -644,6 +719,22 @@ router.post('/restaurant', function (req, res) { return __awaiter(void 0, void 0
                     res.status(201).send("Restaurant " + restaurant.name + " has been successfully added.");
                 else
                     res.status(400).send("Restaurant " + restaurant.name + " already exists.");
+                return [2 /*return*/];
+        }
+    });
+}); });
+// delete restaurant by name
+router["delete"]('/restaurant/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var restaurantDeleted;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, restaurantRepository.deleteRestaurantByName(req.params.name)];
+            case 1:
+                restaurantDeleted = _a.sent();
+                if (restaurantDeleted)
+                    res.status(200).send("Restaurant " + req.params.name + " has been successfully deleted.");
+                else
+                    res.status(404).send("Restaurant " + req.params.name + " could not be found.");
                 return [2 /*return*/];
         }
     });
@@ -664,71 +755,101 @@ router.put('/restaurant/:name', function (req, res) { return __awaiter(void 0, v
         }
     });
 }); });
-// // REST API for Table
-// // get all tables
-// router.get('/tables', async (req: Request, res: Response) => {
-//     await tableRepository.getTables()
-//     .then(function(tables: any)
-//     {
-//         res.send(tables);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get table by number
-// router.get('/table/:number', async (req: Request, res: Response) => {
-//     await tableRepository.getTableByNumber(+req.params.number)
-//     .then(function(table: any)
-//     {
-//         res.send(table);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // delete table by number
-// router.delete('/table/:number', async (req: Request, res: Response) => {
-//     await tableRepository.deleteTableByNumber(+req.params.number)
-//     .then(function()
-//     {
-//         res.send('Table ' + +req.params.number + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // add table from request body
-// router.post('/table', async (req: Request, res: Response) => {
-//     await tableRepository.addTable(req.body)
-//     .then(function()
-//     {
-//         res.send('Table ' + req.body.number + ' has been added!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // update table from request body
-// router.put('/table/:number', async (req: Request, res: Response) => {
-//     await tableRepository.updateTableByNumber(+req.params.number, req.body)
-//     .then(function()
-//     {
-//         res.send('Table ' + req.params.number + ' has been updated!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get free tables in a given time period for a given number of people from body request
-// router.post('/tables/free', async (req: Request, res: Response) => {
-//     await tableRepository.getFreeTables(new Date(req.body.startDateTime), new Date(req.body.endDateTime), req.body.people)
-//     .then(function(tables: any)
-//     {
-//         res.send(tables);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// REST API for Table
+// get all tables
+router.get('/tables', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, tableRepository.getTables()
+                    .then(function (tables) {
+                    if (tables)
+                        res.status(200).send(tables);
+                    else
+                        res.status(404).send("Tables could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get table by number
+router.get('/table/:number', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, tableRepository.getTableByNumber(+req.params.number)
+                    .then(function (table) {
+                    if (table)
+                        res.status(200).send(table);
+                    else
+                        res.status(404).send("Table " + req.params.number + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// add table from request body
+router.post('/table', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, tableRepository.addTable(req.body)
+                    .then(function (tableAdded) {
+                    if (tableAdded)
+                        res.status(201).send("Table " + req.body.number + " has been successfully added.");
+                    else
+                        res.status(400).send("Table " + req.body.number + " already exists.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// delete table by number
+router["delete"]('/table/:number', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, tableRepository.deleteTableByNumber(+req.params.number)
+                    .then(function (tableDeleted) {
+                    if (tableDeleted)
+                        res.status(200).send("Table " + req.params.number + " has been successfully deleted.");
+                    else
+                        res.status(404).send("Table " + req.params.number + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// update table from request body
+router.put('/table/:number', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, tableRepository.updateTableByNumber(+req.params.number, req.body)
+                    .then(function (tableUpdated) {
+                    if (tableUpdated)
+                        res.status(200).send("Table " + req.params.number + " has been successfully updated.");
+                    else
+                        res.status(404).send("Table " + req.params.number + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// TODO: get free tables in a given time period for a given number of people from body request
 app.listen(3000);

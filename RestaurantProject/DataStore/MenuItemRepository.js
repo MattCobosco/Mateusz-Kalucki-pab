@@ -40,12 +40,20 @@ exports.MenuPosition = exports.MenuCategory = exports.MenuItemRepository = void 
 var mongoose_1 = require("mongoose");
 var MenuItemRepository = /** @class */ (function () {
     function MenuItemRepository() {
+        this.ProductSchema = new mongoose_1.Schema({
+            name: { type: String, required: true },
+            price: { type: Number, required: true },
+            quantity: { type: Number, required: true }
+        });
         this.MenuItemSchema = new mongoose_1.Schema({
             name: { type: String, required: true },
             price: { type: Number, required: true },
             type: { type: Number, required: true },
             description: { type: String, required: true },
-            products: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'Product', required: true }]
+            products: [{
+                    type: this.ProductSchema,
+                    required: true
+                }]
         });
         this.MenuItemModel = (0, mongoose_1.model)('MenuItem', this.MenuItemSchema);
     }
@@ -64,7 +72,24 @@ var MenuItemRepository = /** @class */ (function () {
                                 type: 3,
                                 description: 'Coca Cola can',
                                 products: [
-                                    '6283f1ac7309e224f7c500ee'
+                                    {
+                                        name: "Coca_Cola_Can",
+                                        price: 2.5,
+                                        quantity: 1
+                                    }
+                                ]
+                            },
+                            {
+                                name: 'Fanta',
+                                price: 5,
+                                type: 3,
+                                description: 'Fanta can',
+                                products: [
+                                    {
+                                        name: "Fanta_Can",
+                                        price: 2.5,
+                                        quantity: 1
+                                    }
                                 ]
                             },
                             {
@@ -73,11 +98,31 @@ var MenuItemRepository = /** @class */ (function () {
                                 type: 2,
                                 description: 'Vegetable soup made of carrot, parsley, onion, tomato and cucumber',
                                 products: [
-                                    '6283f1ac7309e224f7c500f0',
-                                    '6283f1ac7309e224f7c500f1',
-                                    '6283f1ac7309e224f7c500f2',
-                                    '6283f1ac7309e224f7c500f3',
-                                    '6283f1ac7309e224f7c500f4'
+                                    {
+                                        name: "Carrot",
+                                        price: 1.5,
+                                        quantity: 2
+                                    },
+                                    {
+                                        name: "Parsley",
+                                        price: 1.5,
+                                        quantity: 1
+                                    },
+                                    {
+                                        name: "Onion",
+                                        price: 1.5,
+                                        quantity: 1
+                                    },
+                                    {
+                                        name: "Tomato",
+                                        price: 1.5,
+                                        quantity: 2
+                                    },
+                                    {
+                                        name: "Cucumber",
+                                        price: 1.5,
+                                        quantity: 1
+                                    }
                                 ]
                             },
                             {
@@ -86,7 +131,11 @@ var MenuItemRepository = /** @class */ (function () {
                                 type: 3,
                                 description: 'Red wine bottle',
                                 products: [
-                                    '6283f1ac7309e224f7c500f5'
+                                    {
+                                        name: "Red_Wine_Bottle",
+                                        price: 5,
+                                        quantity: 1
+                                    }
                                 ]
                             },
                             {
@@ -95,11 +144,31 @@ var MenuItemRepository = /** @class */ (function () {
                                 type: 0,
                                 description: 'Springrolls made of chicken, cabbage, onion, carrot and mushroom',
                                 products: [
-                                    '6283f1ac7309e224f7c500f6',
-                                    '6283f1ac7309e224f7c500f8',
-                                    '6283f1ac7309e224f7c500f2',
-                                    '6283f1ac7309e224f7c500f0',
-                                    '6283f1ac7309e224f7c500f7'
+                                    {
+                                        name: "Chicken",
+                                        price: 3,
+                                        quantity: 1
+                                    },
+                                    {
+                                        name: "Cabbage",
+                                        price: 2,
+                                        quantity: 1
+                                    },
+                                    {
+                                        name: "Onion",
+                                        price: 1.5,
+                                        quantity: 1
+                                    },
+                                    {
+                                        name: "Carrot",
+                                        price: 1.5,
+                                        quantity: 1
+                                    },
+                                    {
+                                        name: "Mushroom",
+                                        price: 1,
+                                        quantity: 1
+                                    }
                                 ]
                             },
                             {
@@ -108,7 +177,11 @@ var MenuItemRepository = /** @class */ (function () {
                                 type: 1,
                                 description: 'Chicken nuggets',
                                 products: [
-                                    '6283f1ac7309e224f7c500f6'
+                                    {
+                                        name: "Chicken",
+                                        price: 3,
+                                        quantity: 2
+                                    }
                                 ]
                             }
                         ];
@@ -118,7 +191,7 @@ var MenuItemRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.MenuItemModel
                                 .insertMany(menuItems)
                                 .then(function () {
-                                console.log('Menu items populated');
+                                console.log("Menu items have been populated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -132,41 +205,67 @@ var MenuItemRepository = /** @class */ (function () {
     };
     MenuItemRepository.prototype.addMenuItem = function (menuItem) {
         return __awaiter(this, void 0, void 0, function () {
+            var alreadyExists, existsAfter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.MenuItemModel.findOne({ name: menuItem.name })];
+                    case 2:
+                        alreadyExists = _a.sent();
+                        if (alreadyExists)
+                            return [2 /*return*/, false];
                         return [4 /*yield*/, this.MenuItemModel
                                 .create(menuItem)
                                 .then(function () {
-                                console.log('Menu item ' + menuItem.name + ' has been added!');
+                                console.log("Menu item " + menuItem.name + " has been added!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
+                        return [4 /*yield*/, this.MenuItemModel.findOne({ name: menuItem.name })];
+                    case 4:
+                        existsAfter = _a.sent();
+                        if (existsAfter)
+                            return [2 /*return*/, true];
+                        else
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
         });
     };
-    MenuItemRepository.prototype.deleteMenuItemByName = function (menuItem) {
+    MenuItemRepository.prototype.deleteMenuItemByName = function (menuItemName) {
         return __awaiter(this, void 0, void 0, function () {
+            var exists, existsAfter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.MenuItemModel.findOne({ name: menuItemName })];
+                    case 2:
+                        exists = _a.sent();
+                        if (!exists)
+                            return [2 /*return*/, false];
                         return [4 /*yield*/, this.MenuItemModel
-                                .deleteOne({ name: menuItem })
+                                .deleteOne({ name: menuItemName })
                                 .then(function () {
-                                console.log('Menu item ' + menuItem + ' has been deleted!');
+                                console.log("Menu item " + menuItemName + " has been deleted!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
+                        return [4 /*yield*/, this.MenuItemModel.findOne({ name: menuItemName })];
+                    case 4:
+                        existsAfter = _a.sent();
+                        if (!existsAfter)
+                            return [2 /*return*/, true];
+                        else
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -183,35 +282,10 @@ var MenuItemRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.MenuItemModel.findOne({ name: menuItemName })];
                     case 2:
                         menuItem = _a.sent();
-                        if (menuItem) {
+                        if (menuItem)
                             return [2 /*return*/, menuItem];
-                        }
-                        else {
-                            console.log("Menu item " + menuItemName + " not found!");
-                            return [2 /*return*/, null];
-                        }
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    MenuItemRepository.prototype.getMenuItemById = function (id) {
-        return __awaiter(this, void 0, void 0, function () {
-            var menuItem;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
-                    case 1:
-                        _a.sent();
-                        return [4 /*yield*/, this.MenuItemModel.findById(id)];
-                    case 2:
-                        menuItem = _a.sent();
-                        if (menuItem) {
-                            return [2 /*return*/, menuItem];
-                        }
-                        else {
-                            return [2 /*return*/, null];
-                        }
+                        else
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -219,13 +293,20 @@ var MenuItemRepository = /** @class */ (function () {
     };
     MenuItemRepository.prototype.getMenuItems = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var menuItems;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, this.MenuItemModel.find()];
-                    case 2: return [2 /*return*/, _a.sent()];
+                    case 2:
+                        menuItems = _a.sent();
+                        if (menuItems)
+                            return [2 /*return*/, menuItems];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
                 }
             });
         });
@@ -254,17 +335,14 @@ var MenuItemRepository = /** @class */ (function () {
                             menuItemToUpdate.products = menuItem.products;
                         return [4 /*yield*/, menuItemToUpdate.save()
                                 .then(function () {
-                                console.log('Menu item ' + menuItemName + ' has been updated!');
+                                console.log("Menu item " + menuItemName + " has been updated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
                     case 3:
                         _a.sent();
-                        return [3 /*break*/, 5];
-                    case 4:
-                        console.log('Menu item ' + menuItemName + ' does not exist!');
-                        _a.label = 5;
-                    case 5: return [2 /*return*/];
+                        return [2 /*return*/, true];
+                    case 4: return [2 /*return*/, false];
                 }
             });
         });
