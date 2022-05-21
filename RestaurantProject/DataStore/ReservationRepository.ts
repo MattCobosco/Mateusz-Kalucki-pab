@@ -1,15 +1,29 @@
 import {Schema, model, connect} from 'mongoose';
-import Reservation from '../CoreBusiness/ReservationModel';
+import Reservation from '../CoreBusiness/Reservation';
+import Table from '../CoreBusiness/Table';
+import Customer from '../CoreBusiness/Customer';
 
 export class ReservationRepository
 {
+    tableSchema = new Schema<Table>(
+       {
+            number: {type: Number, required: true},
+            seats: {type: Number, required: true},
+            status: {type: Number, required: true}
+       });
+    customerSchema = new Schema<Customer>(
+        {
+            name: {type: String, required: true},
+            email: {type: String, required: true},
+            phone: {type: String, required: true}
+        });
+
     reservationSchema = new Schema<Reservation>(
         {
-            id: {type: Schema.Types.ObjectId, required: false},
-            table: {type: Schema.Types.ObjectId, ref: 'Table'},
+            table: {type: this.tableSchema, ref: 'Table'},
             startDateTime: {type: Date, required: true},
             endDateTime: {type: Date, required: true},
-            customer: {type: Schema.Types.ObjectId, ref: 'Customer'}
+            customer: {type: this.customerSchema, ref: 'Customer'}
         });
 
     ReservationModel = model<Reservation>('Reservation', this.reservationSchema);
@@ -21,16 +35,38 @@ export class ReservationRepository
         const reservations = 
         [
             {
-                table: '628616ee7bf995e24d0d7681',
+                table: 
+                {
+                    number: 1,
+                    seats: 4,
+                    status: 0
+                },
                 startDateTime: new Date(2020, 1, 1, 10, 0, 0, 0),
                 endDateTime: new Date(2020, 1, 1, 11, 0, 0, 0),
-                customer: '6282601eb18137f01f157f6f'
+                customer: 
+                {
+                    name: "Customer1",
+                    email: "customer1@gmail.com",
+                    phone: "123456789",
+                    address: "CustomerAddress1"
+                }
             },
             {
-                table: '628616ee7bf995e24d0d7682',
+                table: 
+                {
+                    number: 2,
+                    seats: 4,
+                    status: 1
+                },
                 startDateTime: new Date(2020, 1, 1, 11, 0, 0, 0),
                 endDateTime: new Date(2020, 1, 1, 12, 0, 0, 0),
-                customer: '62826610ec4736a45905ecae'
+                customer: 
+                {
+                    name: "Customer2",
+                    email: "customer2@gmail.com",
+                    phone: "987654321",
+                    address: "CustomerAddress2"
+                }
             }
         ];
 
@@ -48,9 +84,18 @@ export class ReservationRepository
         }
     }
 
-    async addReservation(reservation: Reservation) : Promise<void>
+    async addReservation(reservation: Reservation) : Promise<boolean | string >
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        const alreadyExists = await this.ReservationModel.findOne({
+            'table.number': reservation.table.number,
+            startDateTime: reservation.startDateTime,
+            endDateTime: reservation.endDateTime,
+            'customer.name': reservation.customer.name
+        });
+        if(alreadyExists)
+            return "Such reservation already exists.";
 
         await this.ReservationModel
         .create(reservation)
@@ -61,14 +106,29 @@ export class ReservationRepository
         {
             console.log(err);
         });
+
+        const exists = await this.ReservationModel.findOne({
+            'table.number': reservation.table.number,
+            startDateTime: reservation.startDateTime,
+            endDateTime: reservation.endDateTime,
+            'customer.name': reservation.customer.name
+        });
+        if(exists)
+            return true;
+        else
+            return "Reservation has not been added.";
     }
 
-    async deleteReservationById(reservationId: string) : Promise<void>
+    async deleteReservationById(reservationId: string) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
+        const exists = await this.ReservationModel.findById(reservationId);
+        if(!exists)
+            return false;
+
         await this.ReservationModel
-        .deleteOne({_id: reservationId})
+        .findByIdAndDelete({_id: reservationId})
         .then(function()
         {
             console.log("Reservation of ID " + reservationId + " has been deleted!");
@@ -76,33 +136,41 @@ export class ReservationRepository
         {
             console.log(err);
         });
+
+        const existsAfter = await this.ReservationModel.findById(reservationId);
+        if(!existsAfter)
+            return true;
+        else
+            return false;
     }
 
-    async getReservations() : Promise<Reservation[]>
-    {
-        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
-    
-        return await this.ReservationModel.find({});
-    }
-
-    async getReservationById(reservationId: string) : Promise<Reservation>
+    async getReservationById(reservationId: string) : Promise<Reservation | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        let reservation = await this.ReservationModel.findById(reservationId);
-
+        const reservation = await this.ReservationModel.findById(reservationId);
         if(reservation)
             return reservation;
         else
             return null as any;
     }
 
-    async updateReservationById(reservationId: string, reservation: Reservation) : Promise<void>
+    async getReservations() : Promise<Reservation[] | boolean>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+    
+        const reservations = await this.ReservationModel.find({});
+        if(reservations.length > 0)
+            return reservations;
+        else
+            return false;
+    }
+
+    async updateReservationById(reservationId: string, reservation: Reservation) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
         let reservationToUpdate = await this.ReservationModel.findById(reservationId);
-
         if(reservationToUpdate)
         {
             if(reservation.table)
@@ -122,20 +190,31 @@ export class ReservationRepository
             {
                 console.log(err);
             });
+            return true;
         }
+        else
+            return false;
     }
 
-    async getReservationsByCustomerId(customerId: string) : Promise<Reservation[]>
+    async getReservationsByCustomerName(customerName: string) : Promise<Reservation[] | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        return await this.ReservationModel.find({customer: customerId});
+        const reservations = await this.ReservationModel.find({'customer.name': customerName});
+        if(reservations.length > 0)
+            return reservations;
+        else
+            return false;
     }
 
-    async getReservationsByTableId(tableId: string) : Promise<Reservation[]>
+    async getReservationsByTableNumber(tableNumber: number) : Promise<Reservation[] | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        return await this.ReservationModel.find({table: tableId});
+        const reservations = await this.ReservationModel.find({'table.number': tableNumber});
+        if(reservations.length > 0)
+            return reservations;
+        else
+            return false;
     }
 }
