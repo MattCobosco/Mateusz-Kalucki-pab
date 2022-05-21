@@ -43,6 +43,7 @@ var EmployeeRepository_1 = require("./DataStore/EmployeeRepository");
 var MenuItemRepository_1 = require("./DataStore/MenuItemRepository");
 var OrderRepository_1 = require("./DataStore/OrderRepository");
 var ProductRepository_1 = require("./DataStore/ProductRepository");
+var ProductDemandListRepository_1 = require("./DataStore/ProductDemandListRepository");
 var ReservationRepository_1 = require("./DataStore/ReservationRepository");
 var RestaurantRepository_1 = require("./DataStore/RestaurantRepository");
 var TableRepository_1 = require("./DataStore/TableRepository");
@@ -56,6 +57,7 @@ var employeeRepository = new EmployeeRepository_1.EmployeeRepository();
 var menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
 var orderRepository = new OrderRepository_1.OrderRepository();
 var productRepository = new ProductRepository_1.ProductRepository();
+var productDemandListRepository = new ProductDemandListRepository_1.ProductDemandListRepository();
 var reservationRepository = new ReservationRepository_1.ReservationRepository();
 var restaurantRepository = new RestaurantRepository_1.RestaurantRepository();
 var tableRepository = new TableRepository_1.TableRepository();
@@ -65,6 +67,7 @@ employeeRepository.populateEmployees();
 menuItemRepository.populateMenuItems();
 orderRepository.populateOrders();
 productRepository.populateProducts();
+productDemandListRepository.populateProductDemandList();
 reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
 tableRepository.populateTables();
@@ -656,6 +659,105 @@ router.put('/product/:name', function (req, res) { return __awaiter(void 0, void
                         res.status(200).send("Product " + req.params.name + " has been successfully updated.");
                     else
                         res.status(404).send("Product " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// REST API for Product Demand List
+// get the demand list
+router.get('/demand', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, productDemandListRepository.getProductDemandList()
+                    .then(function (demandList) {
+                    if (demandList)
+                        res.status(200).send(demandList);
+                    else
+                        res.status(404).send("Demand List could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get product from demand list by name
+router.get('/demand/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, productDemandListRepository.getProductFromDemandListByName(req.params.name)
+                    .then(function (product) {
+                    if (product)
+                        res.status(200).send(product);
+                    else
+                        res.status(404).send("Product " + req.params.name + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// add product to demand list from request body
+router.post('/demand', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var product;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                product = req.body;
+                return [4 /*yield*/, productDemandListRepository.addProductToDemandList(product)
+                        .then(function (productAdded) {
+                        if (productAdded)
+                            res.status(201).send("Product " + product.name + " has been successfully added.");
+                        else
+                            res.status(400).send(productAdded);
+                    })["catch"](function (err) {
+                        res.status(500).send(err);
+                    })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// remove product from demand list by name
+router["delete"]('/demand/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, productDemandListRepository.removeProductFromDemandListByName(req.params.name)
+                    .then(function (productDeleted) {
+                    if (productDeleted)
+                        res.status(200).send("Product " + req.params.name + " has been successfully deleted.");
+                    else
+                        res.status(404).send(productDeleted);
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// update product from demand list by name
+router.put('/demand/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, productDemandListRepository.updateProductInDemandListByName(req.params.name, req.body)
+                    .then(function (productUpdated) {
+                    if (productUpdated)
+                        res.status(200).send("Product " + req.params.name + " has been successfully updated.");
+                    else
+                        res.status(404).send(productUpdated);
                 })["catch"](function (err) {
                     res.status(500).send(err);
                 })];

@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.ProductDemandList = exports.ProductRepository = void 0;
+exports.ProductRepository = void 0;
 var mongoose_1 = require("mongoose");
 var ProductRepository = /** @class */ (function () {
     function ProductRepository() {
@@ -273,36 +273,3 @@ var ProductRepository = /** @class */ (function () {
     return ProductRepository;
 }());
 exports.ProductRepository = ProductRepository;
-var ProductDemandList = /** @class */ (function () {
-    function ProductDemandList() {
-        this.productNames = [];
-        this.productQuantities = [];
-        this.productNames = [];
-        this.productQuantities = [];
-    }
-    ProductDemandList.prototype.AddProduct = function (product) {
-        var index = this.productNames.indexOf(product.name);
-        if (index == -1) {
-            this.productNames.push(product.name);
-            this.productQuantities.push(product.quantity);
-        }
-        else {
-            this.productQuantities[index] += product.quantity;
-        }
-    };
-    ProductDemandList.prototype.GetProductNames = function () {
-        return this.productNames;
-    };
-    ProductDemandList.prototype.GetDemandList = function () {
-        return this;
-    };
-    ProductDemandList.prototype.GetProductQuantityByName = function (name) {
-        var index = this.productNames.indexOf(name);
-        return this.productQuantities[index];
-    };
-    ProductDemandList.prototype.GetProductQuantityByIndex = function (index) {
-        return this.productQuantities[index];
-    };
-    return ProductDemandList;
-}());
-exports.ProductDemandList = ProductDemandList;

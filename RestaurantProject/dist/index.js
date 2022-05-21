@@ -16,6 +16,7 @@ const EmployeeRepository_1 = require("./DataStore/EmployeeRepository");
 const MenuItemRepository_1 = require("./DataStore/MenuItemRepository");
 const OrderRepository_1 = require("./DataStore/OrderRepository");
 const ProductRepository_1 = require("./DataStore/ProductRepository");
+const ProductDemandListRepository_1 = require("./DataStore/ProductDemandListRepository");
 const ReservationRepository_1 = require("./DataStore/ReservationRepository");
 const RestaurantRepository_1 = require("./DataStore/RestaurantRepository");
 const TableRepository_1 = require("./DataStore/TableRepository");
@@ -29,6 +30,7 @@ const employeeRepository = new EmployeeRepository_1.EmployeeRepository();
 const menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
 const orderRepository = new OrderRepository_1.OrderRepository();
 const productRepository = new ProductRepository_1.ProductRepository();
+const productDemandListRepository = new ProductDemandListRepository_1.ProductDemandListRepository();
 const reservationRepository = new ReservationRepository_1.ReservationRepository();
 const restaurantRepository = new RestaurantRepository_1.RestaurantRepository();
 const tableRepository = new TableRepository_1.TableRepository();
@@ -38,6 +40,7 @@ employeeRepository.populateEmployees();
 menuItemRepository.populateMenuItems();
 orderRepository.populateOrders();
 productRepository.populateProducts();
+productDemandListRepository.populateProductDemandList();
 reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
 tableRepository.populateTables();
@@ -409,6 +412,68 @@ router.put('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, fun
             res.status(200).send("Product " + req.params.name + " has been successfully updated.");
         else
             res.status(404).send("Product " + req.params.name + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// REST API for Product Demand List
+// get the demand list
+router.get('/demand', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield productDemandListRepository.getProductDemandList()
+        .then(function (demandList) {
+        if (demandList)
+            res.status(200).send(demandList);
+        else
+            res.status(404).send("Demand List could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// get product from demand list by name
+router.get('/demand/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield productDemandListRepository.getProductFromDemandListByName(req.params.name)
+        .then(function (product) {
+        if (product)
+            res.status(200).send(product);
+        else
+            res.status(404).send("Product " + req.params.name + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// add product to demand list from request body
+router.post('/demand', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const product = req.body;
+    yield productDemandListRepository.addProductToDemandList(product)
+        .then(function (productAdded) {
+        if (productAdded)
+            res.status(201).send("Product " + product.name + " has been successfully added.");
+        else
+            res.status(400).send(productAdded);
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// remove product from demand list by name
+router.delete('/demand/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield productDemandListRepository.removeProductFromDemandListByName(req.params.name)
+        .then(function (productDeleted) {
+        if (productDeleted)
+            res.status(200).send("Product " + req.params.name + " has been successfully deleted.");
+        else
+            res.status(404).send(productDeleted);
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// update product from demand list by name
+router.put('/demand/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield productDemandListRepository.updateProductInDemandListByName(req.params.name, req.body)
+        .then(function (productUpdated) {
+        if (productUpdated)
+            res.status(200).send("Product " + req.params.name + " has been successfully updated.");
+        else
+            res.status(404).send(productUpdated);
     }).catch(function (err) {
         res.status(500).send(err);
     });

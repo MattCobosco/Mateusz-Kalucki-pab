@@ -220,6 +220,8 @@ var OrderRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.OrderModel.findById(orderId)];
                     case 2:
                         exists = _a.sent();
+                        if (!exists)
+                            return [2 /*return*/, false];
                         return [4 /*yield*/, this.OrderModel
                                 .findByIdAndDelete(orderId)
                                 .then(function () {
