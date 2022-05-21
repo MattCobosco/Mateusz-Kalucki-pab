@@ -1,8 +1,2 @@
-Order - model, repo check and fix + REST API + postman requests
-
 !!! Product Demand List REST API !!! 
 !!! free tables in a given time period for a given number of people !!!
-
-* report of orders per waiter 
-* report of orders in a given time period 
-* report of income in a given time period 
