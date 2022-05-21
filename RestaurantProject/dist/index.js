@@ -14,7 +14,7 @@ const bodyParser = require("body-parser");
 const CustomerRepository_1 = require("./DataStore/CustomerRepository");
 const EmployeeRepository_1 = require("./DataStore/EmployeeRepository");
 const MenuItemRepository_1 = require("./DataStore/MenuItemRepository");
-// import { OrderRepository } from './DataStore/OrderRepository';
+const OrderRepository_1 = require("./DataStore/OrderRepository");
 const ProductRepository_1 = require("./DataStore/ProductRepository");
 const ReservationRepository_1 = require("./DataStore/ReservationRepository");
 const RestaurantRepository_1 = require("./DataStore/RestaurantRepository");
@@ -27,7 +27,7 @@ app.use('/', router);
 const customerRepository = new CustomerRepository_1.CustomerRepository();
 const employeeRepository = new EmployeeRepository_1.EmployeeRepository();
 const menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
-// const orderRepository = new OrderRepository();
+const orderRepository = new OrderRepository_1.OrderRepository();
 const productRepository = new ProductRepository_1.ProductRepository();
 const reservationRepository = new ReservationRepository_1.ReservationRepository();
 const restaurantRepository = new RestaurantRepository_1.RestaurantRepository();
@@ -36,7 +36,7 @@ const tableRepository = new TableRepository_1.TableRepository();
 customerRepository.populateCustomers();
 employeeRepository.populateEmployees();
 menuItemRepository.populateMenuItems();
-// orderRepository.populateOrders();
+orderRepository.populateOrders();
 productRepository.populateProducts();
 reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
@@ -248,95 +248,109 @@ router.get('/menu', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.send(err);
     });
 }));
-// // REST API for Order
-// // get all orders
-// router.get('/orders', async (req: Request, res: Response) => {
-//     await orderRepository.getOrders()
-//     .then(function(orders: any)
-//     {
-//         res.send(orders);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get order by id
-// router.get('/order/:id', async (req: Request, res: Response) => {
-//     await orderRepository.getOrderById(req.params.id)
-//     .then(function(order: any)
-//     {
-//         res.send(order);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // add order from request body
-// router.post('/order', async (req: Request, res: Response) => {
-//     await orderRepository.addOrder(req.body)
-//     .then(function()
-//     {
-//         res.send('Order ' + req.body.id + ' has been added!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // delete order by id
-// router.delete('/order/:id', async (req: Request, res: Response) => {
-//     await orderRepository.deleteOrderById(req.params.id)
-//     .then(function()
-//     {
-//         res.send('Order ' + req.params.id + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // update order from request body
-// router.put('/order/:id', async (req: Request, res: Response) => {
-//     await orderRepository.updateOrderById(req.params.id, req.body)
-//     .then(function()
-//     {
-//         res.send('Order ' + req.body.id + ' has been updated!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get orders by employee id
-// router.get('/orders/employee/:id', async (req: Request, res: Response) => {
-//     await orderRepository.getOrdersByEmployeeId(req.params.id)
-//     .then(function(orders: any)
-//     {
-//         res.send(orders);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get orders in a given time period
-// router.get('/orders/time/:start/:end', async (req: Request, res: Response) => {
-//     await orderRepository.getOrdersByTimePeriod(new Date(req.params.start), new Date(req.params.end))
-//     .then(function(orders: any)
-//     {
-//         res.send(orders);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get income in a given time period
-// router.get('/income/time/:start/:end', async (req: Request, res: Response) => {
-//     await orderRepository.getIncomeByTimePeriod(new Date(req.params.start), new Date(req.params.end))
-//     .then(function(income: any)
-//     {
-//         res.send(income);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// REST API for Order
+// get all orders
+router.get('/orders', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield orderRepository.getOrders()
+        .then(function (orders) {
+        if (orders)
+            res.status(200).send(orders);
+        else
+            res.status(404).send("Orders could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// get order by id
+router.get('/order/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield orderRepository.getOrderById(req.params.id)
+        .then(function (order) {
+        if (order)
+            res.status(200).send(order);
+        else
+            res.status(404).send("Order " + req.params.id + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// add order from request body
+router.post('/order', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield orderRepository.addOrder(req.body)
+        .then(function (orderAdded) {
+        if (orderAdded === true)
+            res.status(201).send("Order has been successfully added.");
+        else
+            res.status(400).send(orderAdded);
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// delete order by id
+router.delete('/order/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield orderRepository.deleteOrderById(req.params.id)
+        .then(function (orderDeleted) {
+        if (orderDeleted)
+            res.status(200).send("Order " + req.params.id + " has been successfully deleted.");
+        else
+            res.status(404).send("Order " + req.params.id + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// update order from request body
+router.put('/order/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield orderRepository.updateOrderById(req.params.id, req.body)
+        .then(function (orderUpdated) {
+        if (orderUpdated)
+            res.send("Order " + req.params.id + " has been successfully updated.");
+        else
+            res.status(404).send("Order " + req.params.id + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// get orders by employee name
+router.get('/orders/employee/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield orderRepository.getOrdersByEmployeeName(req.params.name)
+        .then(function (orders) {
+        if (orders)
+            res.status(200).send(orders);
+        else
+            res.status(404).send("Orders could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// get orders in a given time period
+router.get('/orders/time/:start/:end', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield orderRepository.getOrdersByTimePeriod(new Date(req.params.start), new Date(req.params.end))
+        .then(function (orders) {
+        if (orders)
+            res.status(200).send(orders);
+        else
+            res.status(404).send("Orders could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// get income in a given time period
+router.get('/income/time/:start/:end', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield orderRepository.getIncomeByTimePeriod(new Date(req.params.start), new Date(req.params.end))
+        .then(function (income) {
+        res.status(200).send(income.toString());
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// get profit in a given time period
+router.get('/profit/time/:start/:end', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield orderRepository.getProfitByTimePeriod(new Date(req.params.start), new Date(req.params.end))
+        .then(function (profit) {
+        res.status(200).send(profit.toString());
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
 // REST API for Product in Storage
 // get all products
 router.get('/products', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {

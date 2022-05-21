@@ -176,7 +176,7 @@ var ReservationRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.ReservationModel
                                 .findByIdAndDelete({ _id: reservationId })
                                 .then(function () {
-                                console.log("Reservation of ID " + reservationId + " has been deleted!");
+                                console.log("Reservation " + reservationId + " has been deleted!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -208,7 +208,7 @@ var ReservationRepository = /** @class */ (function () {
                         if (reservation)
                             return [2 /*return*/, reservation];
                         else
-                            return [2 /*return*/, null];
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });

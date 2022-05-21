@@ -176,7 +176,7 @@ var ReservationRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.ReservationModel
                                 .findByIdAndDelete({ _id: reservationId })
                                 .then(function () {
-                                console.log("Reservation of ID " + reservationId + " has been deleted!");
+                                console.log("Reservation " + reservationId + " has been deleted!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -208,7 +208,7 @@ var ReservationRepository = /** @class */ (function () {
                         if (reservation)
                             return [2 /*return*/, reservation];
                         else
-                            return [2 /*return*/, null];
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -301,46 +301,6 @@ var ReservationRepository = /** @class */ (function () {
                         reservations = _a.sent();
                         if (reservations.length > 0)
                             return [2 /*return*/, reservations];
-                        else
-                            return [2 /*return*/, false];
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    ReservationRepository.prototype.getFreeTables = function (startDateTime, endDateTime, people) {
-        return __awaiter(this, void 0, void 0, function () {
-            var tableModel, tables, freeTables, i, reservations;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
-                    case 1:
-                        _a.sent();
-                        tableModel = (0, mongoose_1.model)('Table', this.tableSchema);
-                        return [4 /*yield*/, tableModel.find({})];
-                    case 2:
-                        tables = _a.sent();
-                        freeTables = [];
-                        i = 0;
-                        _a.label = 3;
-                    case 3:
-                        if (!(i < tables.length)) return [3 /*break*/, 6];
-                        return [4 /*yield*/, this.ReservationModel.find({
-                                'table.number': tables[i].number,
-                                startDateTime: { $gte: startDateTime },
-                                endDateTime: { $lte: endDateTime }
-                            })];
-                    case 4:
-                        reservations = _a.sent();
-                        if (reservations.length == 0 && tables[i].seats >= people)
-                            freeTables.push(tables[i]);
-                        _a.label = 5;
-                    case 5:
-                        i++;
-                        return [3 /*break*/, 3];
-                    case 6:
-                        if (freeTables.length > 0)
-                            return [2 /*return*/, freeTables];
                         else
                             return [2 /*return*/, false];
                         return [2 /*return*/];

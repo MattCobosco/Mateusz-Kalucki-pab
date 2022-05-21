@@ -41,7 +41,7 @@ var bodyParser = require("body-parser");
 var CustomerRepository_1 = require("./DataStore/CustomerRepository");
 var EmployeeRepository_1 = require("./DataStore/EmployeeRepository");
 var MenuItemRepository_1 = require("./DataStore/MenuItemRepository");
-// import { OrderRepository } from './DataStore/OrderRepository';
+var OrderRepository_1 = require("./DataStore/OrderRepository");
 var ProductRepository_1 = require("./DataStore/ProductRepository");
 var ReservationRepository_1 = require("./DataStore/ReservationRepository");
 var RestaurantRepository_1 = require("./DataStore/RestaurantRepository");
@@ -54,7 +54,7 @@ app.use('/', router);
 var customerRepository = new CustomerRepository_1.CustomerRepository();
 var employeeRepository = new EmployeeRepository_1.EmployeeRepository();
 var menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
-// const orderRepository = new OrderRepository();
+var orderRepository = new OrderRepository_1.OrderRepository();
 var productRepository = new ProductRepository_1.ProductRepository();
 var reservationRepository = new ReservationRepository_1.ReservationRepository();
 var restaurantRepository = new RestaurantRepository_1.RestaurantRepository();
@@ -63,7 +63,7 @@ var tableRepository = new TableRepository_1.TableRepository();
 customerRepository.populateCustomers();
 employeeRepository.populateEmployees();
 menuItemRepository.populateMenuItems();
-// orderRepository.populateOrders();
+orderRepository.populateOrders();
 productRepository.populateProducts();
 reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
@@ -400,95 +400,172 @@ router.get('/menu', function (req, res) { return __awaiter(void 0, void 0, void 
         }
     });
 }); });
-// // REST API for Order
-// // get all orders
-// router.get('/orders', async (req: Request, res: Response) => {
-//     await orderRepository.getOrders()
-//     .then(function(orders: any)
-//     {
-//         res.send(orders);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get order by id
-// router.get('/order/:id', async (req: Request, res: Response) => {
-//     await orderRepository.getOrderById(req.params.id)
-//     .then(function(order: any)
-//     {
-//         res.send(order);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // add order from request body
-// router.post('/order', async (req: Request, res: Response) => {
-//     await orderRepository.addOrder(req.body)
-//     .then(function()
-//     {
-//         res.send('Order ' + req.body.id + ' has been added!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // delete order by id
-// router.delete('/order/:id', async (req: Request, res: Response) => {
-//     await orderRepository.deleteOrderById(req.params.id)
-//     .then(function()
-//     {
-//         res.send('Order ' + req.params.id + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // update order from request body
-// router.put('/order/:id', async (req: Request, res: Response) => {
-//     await orderRepository.updateOrderById(req.params.id, req.body)
-//     .then(function()
-//     {
-//         res.send('Order ' + req.body.id + ' has been updated!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get orders by employee id
-// router.get('/orders/employee/:id', async (req: Request, res: Response) => {
-//     await orderRepository.getOrdersByEmployeeId(req.params.id)
-//     .then(function(orders: any)
-//     {
-//         res.send(orders);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get orders in a given time period
-// router.get('/orders/time/:start/:end', async (req: Request, res: Response) => {
-//     await orderRepository.getOrdersByTimePeriod(new Date(req.params.start), new Date(req.params.end))
-//     .then(function(orders: any)
-//     {
-//         res.send(orders);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get income in a given time period
-// router.get('/income/time/:start/:end', async (req: Request, res: Response) => {
-//     await orderRepository.getIncomeByTimePeriod(new Date(req.params.start), new Date(req.params.end))
-//     .then(function(income: any)
-//     {
-//         res.send(income);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// REST API for Order
+// get all orders
+router.get('/orders', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, orderRepository.getOrders()
+                    .then(function (orders) {
+                    if (orders)
+                        res.status(200).send(orders);
+                    else
+                        res.status(404).send("Orders could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get order by id
+router.get('/order/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, orderRepository.getOrderById(req.params.id)
+                    .then(function (order) {
+                    if (order)
+                        res.status(200).send(order);
+                    else
+                        res.status(404).send("Order " + req.params.id + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// add order from request body
+router.post('/order', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, orderRepository.addOrder(req.body)
+                    .then(function (orderAdded) {
+                    if (orderAdded === true)
+                        res.status(201).send("Order has been successfully added.");
+                    else
+                        res.status(400).send(orderAdded);
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// delete order by id
+router["delete"]('/order/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, orderRepository.deleteOrderById(req.params.id)
+                    .then(function (orderDeleted) {
+                    if (orderDeleted)
+                        res.status(200).send("Order " + req.params.id + " has been successfully deleted.");
+                    else
+                        res.status(404).send("Order " + req.params.id + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// update order from request body
+router.put('/order/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, orderRepository.updateOrderById(req.params.id, req.body)
+                    .then(function (orderUpdated) {
+                    if (orderUpdated)
+                        res.send("Order " + req.params.id + " has been successfully updated.");
+                    else
+                        res.status(404).send("Order " + req.params.id + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get orders by employee name
+router.get('/orders/employee/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, orderRepository.getOrdersByEmployeeName(req.params.name)
+                    .then(function (orders) {
+                    if (orders)
+                        res.status(200).send(orders);
+                    else
+                        res.status(404).send("Orders could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get orders in a given time period
+router.get('/orders/time/:start/:end', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, orderRepository.getOrdersByTimePeriod(new Date(req.params.start), new Date(req.params.end))
+                    .then(function (orders) {
+                    if (orders)
+                        res.status(200).send(orders);
+                    else
+                        res.status(404).send("Orders could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get income in a given time period
+router.get('/income/time/:start/:end', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, orderRepository.getIncomeByTimePeriod(new Date(req.params.start), new Date(req.params.end))
+                    .then(function (income) {
+                    res.status(200).send(income.toString());
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get profit in a given time period
+router.get('/profit/time/:start/:end', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, orderRepository.getProfitByTimePeriod(new Date(req.params.start), new Date(req.params.end))
+                    .then(function (profit) {
+                    res.status(200).send(profit.toString());
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
 // REST API for Product in Storage
 // get all products
 router.get('/products', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -712,25 +789,6 @@ router.get('/reservations/table/:number', function (req, res) { return __awaiter
                         res.status(200).send(reservations);
                     else
                         res.status(404).send("Reservations could not be found.");
-                })["catch"](function (err) {
-                    res.status(500).send(err);
-                })];
-            case 1:
-                _a.sent();
-                return [2 /*return*/];
-        }
-    });
-}); });
-// get free tables
-router.get('/reservations/free', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, reservationRepository.getFreeTables(req.body.startDateTime, req.body.endDateTime, req.body.partySize)
-                    .then(function (tables) {
-                    if (tables)
-                        res.status(200).send(tables);
-                    else
-                        res.status(404).send("Tables could not be found.");
                 })["catch"](function (err) {
                     res.status(500).send(err);
                 })];
