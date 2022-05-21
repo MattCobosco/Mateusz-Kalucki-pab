@@ -36,7 +36,8 @@ export class EmployeeRepository
                 name: "Employee1",
                 surname: "Employee1",
                 position: "Manager",
-                restaurant: {
+                restaurant: 
+                {
                     name: "Restaurant1",
                     address: "Address1",
                     phone: "123456789",
