@@ -1,8 +1,8 @@
 import {Schema, model, connect} from 'mongoose';
-import Employee from '../CoreBusiness/EmployeeModel';
-import MenuItem from '../CoreBusiness/MenuItemModel';
-import Order from '../CoreBusiness/OrderModel';
-import Table from '../CoreBusiness/TableModel';
+import Employee from '../CoreBusiness/Employee';
+import MenuItem from '../CoreBusiness/MenuItem';
+import Order from '../CoreBusiness/Order';
+import Table from '../CoreBusiness/Table';
 import { MenuItemRepository } from './MenuItemRepository';
 
 export class OrderRepository
