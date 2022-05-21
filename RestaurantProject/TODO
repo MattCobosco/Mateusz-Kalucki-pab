@@ -1,12 +1,7 @@
-MenuItem - model, repo check and fix + REST API + postman requests
 Order - model, repo check and fix + REST API + postman requests
-Reservation - model, repo check and fix + REST API + postman requests
-
-EXTRA: Find a way to import Schemas to Repos from outside instead of duplicating them inside!
 
 !!! Product Demand List REST API !!! 
 !!! free tables in a given time period for a given number of people !!!
-
 
 * report of orders per waiter 
 * report of orders in a given time period 
