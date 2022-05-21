@@ -131,7 +131,7 @@ export class ReservationRepository
         .findByIdAndDelete({_id: reservationId})
         .then(function()
         {
-            console.log("Reservation of ID " + reservationId + " has been deleted!");
+            console.log("Reservation " + reservationId + " has been deleted!");
         }).catch(function(err: any)
         {
             console.log(err);
@@ -152,7 +152,7 @@ export class ReservationRepository
         if(reservation)
             return reservation;
         else
-            return null as any;
+            return false;
     }
 
     async getReservations() : Promise<Reservation[] | boolean>
