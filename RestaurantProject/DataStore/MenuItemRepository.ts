@@ -1,18 +1,29 @@
 import {Schema, model, connect} from 'mongoose';
-import MenuItem from '../CoreBusiness/MenuItemModel';
+import MenuItem from '../CoreBusiness/MenuItem';
+import Product from '../CoreBusiness/Product';
 
 export class MenuItemRepository
 {
-    MenuItemSchema = new Schema<MenuItem>(
+    productSchema = new Schema<Product>({
+        name: {type: String, required: true},
+        price: {type: Number, required: true},
+        quantity: {type: Number, required: true}
+    });
+
+    menuItemSchema = new Schema<MenuItem>(
         {
             name: {type: String, required: true},
             price: {type: Number, required: true},
             type: {type: Number, required: true},
             description: {type: String, required: true},
-            products: [{type: Schema.Types.ObjectId, ref: 'Product', required: true}]
+            products: 
+            [{
+                type: this.productSchema, 
+                required: true
+            }]
         });
 
-    MenuItemModel = model<MenuItem>('MenuItem', this.MenuItemSchema);
+    MenuItemModel = model<MenuItem>('MenuItem', this.menuItemSchema);
 
     async populateMenuItems() : Promise<void>
     {
@@ -27,8 +38,26 @@ export class MenuItemRepository
                 description: 'Coca Cola can',
                 products: 
                 [
-                        '6283f1ac7309e224f7c500ee'
+                    {
+                        name: "Coca_Cola_Can",
+                        price: 2.5,
+                        quantity: 1
+                    }
                 ]
+            },
+            {
+                name: 'Fanta',
+                price: 5,
+                type: 3,
+                description: 'Fanta can',
+                products:
+                [
+                    {
+                        name: "Fanta_Can",
+                        price: 2.5,
+                        quantity: 1
+                    }
+                ]        
             },
             {
                 name: 'Vegetable_Soup',
@@ -37,11 +66,31 @@ export class MenuItemRepository
                 description: 'Vegetable soup made of carrot, parsley, onion, tomato and cucumber',
                 products: 
                 [
-                    '6283f1ac7309e224f7c500f0',
-                    '6283f1ac7309e224f7c500f1',
-                    '6283f1ac7309e224f7c500f2',
-                    '6283f1ac7309e224f7c500f3',
-                    '6283f1ac7309e224f7c500f4'
+                    {
+                        name: "Carrot",
+                        price: 1.5,
+                        quantity: 2
+                    },
+                    {
+                        name: "Parsley",
+                        price: 1.5,
+                        quantity: 1
+                    },
+                    {
+                        name: "Onion",
+                        price: 1.5,
+                        quantity: 1
+                    },
+                    {
+                        name: "Tomato",
+                        price: 1.5,
+                        quantity: 2
+                    },
+                    {
+                        name: "Cucumber",
+                        price: 1.5,
+                        quantity: 1
+                    }
                 ]
             },
             {
@@ -51,7 +100,11 @@ export class MenuItemRepository
                 description: 'Red wine bottle',
                 products: 
                 [
-                    '6283f1ac7309e224f7c500f5'
+                    {
+                        name: "Red_Wine_Bottle",
+                        price: 5,
+                        quantity: 1
+                    }
                 ]
             },
             {
@@ -61,11 +114,31 @@ export class MenuItemRepository
                 description: 'Springrolls made of chicken, cabbage, onion, carrot and mushroom',
                 products:
                 [
-                    '6283f1ac7309e224f7c500f6',
-                    '6283f1ac7309e224f7c500f8',
-                    '6283f1ac7309e224f7c500f2',
-                    '6283f1ac7309e224f7c500f0',
-                    '6283f1ac7309e224f7c500f7'
+                    {
+                        name: "Chicken",
+                        price: 3,
+                        quantity: 1
+                    },
+                    {
+                        name: "Cabbage",
+                        price: 2,
+                        quantity: 1
+                    },
+                    {
+                        name: "Onion",
+                        price: 1.5,
+                        quantity: 1
+                    },
+                    {
+                        name: "Carrot",
+                        price: 1.5,
+                        quantity: 1
+                    },
+                    {
+                        name: "Mushroom",
+                        price: 1,
+                        quantity: 1
+                    }
                 ]
             },
             {
@@ -75,7 +148,11 @@ export class MenuItemRepository
                 description: 'Chicken nuggets',
                 products:
                 [
-                    '6283f1ac7309e224f7c500f6'
+                    {
+                        name: "Chicken",
+                        price: 3,
+                        quantity: 2
+                    }
                 ]
             }
         ];
@@ -86,7 +163,7 @@ export class MenuItemRepository
             .insertMany(menuItems)
             .then(function()
             {
-                console.log('Menu items populated');
+                console.log("Menu items have been populated!");
             }).catch(function(err: any)
             {
                 console.log(err);
@@ -94,78 +171,79 @@ export class MenuItemRepository
         }
     }
 
-    async addMenuItem(menuItem: MenuItem) : Promise<void>
+    async addMenuItem(menuItem: MenuItem) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        const alreadyExists = await this.MenuItemModel.findOne({name: menuItem.name});
+        if(alreadyExists)
+            return false;
 
         await this.MenuItemModel
         .create(menuItem)
         .then(function()
         {
-            console.log('Menu item ' + menuItem.name + ' has been added!');
+            console.log("Menu item " + menuItem.name + " has been added!");
         }).catch(function(err: any)
         {
             console.log(err);
         });
+
+        const existsAfter = await this.MenuItemModel.findOne({name: menuItem.name});
+        if(existsAfter)
+            return true;
+        else
+            return false;
     }
 
-    async deleteMenuItemByName(menuItem: string) : Promise<void>
+    async deleteMenuItemByName(menuItemName: string) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        const exists = await this.MenuItemModel.findOne({name: menuItemName});
+        if(!exists)
+            return false;
 
         await this.MenuItemModel
-        .deleteOne({name: menuItem})
+        .deleteOne({name: menuItemName})
         .then(function()
         {
-            console.log('Menu item ' + menuItem + ' has been deleted!');
+            console.log("Menu item " + menuItemName + " has been deleted!");
         }).catch(function(err: any)
         {
             console.log(err);
         });
 
-    }
-
-    async getMenuItemByName(menuItemName: string) : Promise<MenuItem>
-    {
-        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
-
-        let menuItem = await this.MenuItemModel.findOne({name: menuItemName});
-
-        if(menuItem)
-        {
-            return menuItem;
-        }
+        const existsAfter = await this.MenuItemModel.findOne({name: menuItemName});
+        if(!existsAfter)
+            return true;
         else
-        {
-            console.log("Menu item " + menuItemName + " not found!");
-            return null as any;
-        }
+            return false;
     }
 
-    async getMenuItemById(id: string) : Promise<MenuItem>
+    async getMenuItemByName(menuItemName: string) : Promise<MenuItem | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        let menuItem = await this.MenuItemModel.findById(id);
-
+        const menuItem = await this.MenuItemModel.findOne({name: menuItemName});
         if(menuItem)
-        {
             return menuItem;
-        }
         else
-        {
-            return null as any;
-        }
+            return false;
     }
 
-    async getMenuItems() : Promise<MenuItem[]>
+    async getMenuItems() : Promise<MenuItem[] | boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        return await this.MenuItemModel.find();
+        const menuItems = await this.MenuItemModel.find();
+        if(menuItems)
+            return menuItems;
+        else
+            return false;
     }
 
-    async updateMenuItem(menuItemName: string, menuItem: MenuItem) : Promise<void>
+    async updateMenuItem(menuItemName: string, menuItem: MenuItem) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
@@ -187,15 +265,15 @@ export class MenuItemRepository
             await menuItemToUpdate.save()
             .then(function()
             {
-                console.log('Menu item ' + menuItemName + ' has been updated!');
+                console.log("Menu item " + menuItemName + " has been updated!");
             }).catch(function(err: any)
             {
                 console.log(err);
             });
+            return true;
         }
-        else {
-            console.log('Menu item ' + menuItemName + ' does not exist!');
-        }
+        else
+            return false;
     }
 
     async getMenu() : Promise<MenuCategory[]>
