@@ -10,7 +10,7 @@ export class ProductDemandListRepository
         quantity: {type: Number, required: true}
     });
 
-    async PopulateProductDemandList() : Promise<void>
+    async populateProductDemandList() : Promise<void>
     {
         //create demandlist.json
         const demandList =
@@ -32,7 +32,7 @@ export class ProductDemandListRepository
             }
         ];
 
-        if(!fs.existsSync('./DataStore/ProductDemandList.json'))
+        if(!fs.existsSync('../DemandList.json'))
         {
             fs.writeFileSync('../DemandList.json', JSON.stringify(demandList));
 
@@ -49,8 +49,19 @@ export class ProductDemandListRepository
         else
             return false;
     }
+    
+    async getProductFromDemandListByName(productName: string) : Promise<Product | boolean>
+    {
+        const demandList = await JSON.parse(fs.readFileSync('../DemandList.json', 'utf8'));
 
-    async addToProductDemandList(product: Product) : Promise<boolean | string>
+        const product = await demandList.find((product: { name: string; }) => product.name === productName);
+        if(product)
+            return product;
+        else
+            return false;
+    }
+
+    async addProductToDemandList(product: Product) : Promise<boolean | string>
     {
         const demandList = await JSON.parse(fs.readFileSync('../DemandList.json', 'utf8'));
 
@@ -68,25 +79,7 @@ export class ProductDemandListRepository
             return "Product " + product.name + " has not been added to the list.";
     }
 
-    async removeFromProductDemandList(product: Product) : Promise<boolean | string>
-    {
-        const demandList = await JSON.parse(fs.readFileSync('../DemandList.json', 'utf8'));
-
-        const exists = await demandList.find((p: { name: string; }) => p.name === product.name);
-        if(!exists)
-            return "Product does not exist in the list.";
-
-        demandList.splice(demandList.indexOf(product), 1);
-        fs.writeFileSync('../DemandList.json', JSON.stringify(demandList));
-
-        const existsAfter = await demandList.find((p: { name: string; }) => p.name === product.name);
-        if(!existsAfter)
-            return true;
-        else
-            return "Product " + product.name + " has not been removed from the list.";
-    }
-
-    async updateProductDemandList(productName: string, product: Product) : Promise<boolean | string>
+    async removeProductFromDemandListByName(productName: string) : Promise<boolean | string>
     {
         const demandList = await JSON.parse(fs.readFileSync('../DemandList.json', 'utf8'));
 
@@ -94,23 +87,33 @@ export class ProductDemandListRepository
         if(!exists)
             return "Product does not exist in the list.";
 
-        demandList[demandList.indexOf(productName)] = product;
+        demandList.splice(demandList.indexOf(exists), 1);
         fs.writeFileSync('../DemandList.json', JSON.stringify(demandList));
 
         const existsAfter = await demandList.find((p: { name: string; }) => p.name === productName);
-        if(existsAfter)
+        if(!existsAfter)
             return true;
         else
-            return "Product " + productName + " has not been updated.";
+            return "Product " + productName + " has not been removed from the list.";
     }
 
-    async getProductFromDemandListByName(productName: string) : Promise<Product | boolean>
+    async updateProductInDemandListByName(productName: string, product: Product) : Promise<boolean>
     {
         const demandList = await JSON.parse(fs.readFileSync('../DemandList.json', 'utf8'));
 
-        const product = demandList[demandList.indexOf(productName)];
-        if(product)
-            return product;
+        let productToUpdate = await demandList.find((p: { name: string; }) => p.name === productName);
+        if(productToUpdate)
+        {
+            if(product.name)
+                productToUpdate.name = product.name;
+            if(product.price)
+                productToUpdate.price = product.price;
+            if(product.quantity)
+                productToUpdate.quantity = product.quantity;
+
+            fs.writeFileSync('../DemandList.json', JSON.stringify(demandList));
+            return true;
+        }
         else
             return false;
     }
@@ -130,8 +133,12 @@ export class ProductDemandListRepository
             const productToUpdate = await ProductModel.findOne({name: productName});
             if(productToUpdate)
             {
-                productToUpdate.quantity -= +product.quantity;
+                productToUpdate.quantity += +product.quantity;
                 await productToUpdate.save();
+            }
+            else
+            {
+                await ProductModel.create(product);
             }
             // delete product from demandlist
             demandList.splice(demandList.indexOf(product), 1);
