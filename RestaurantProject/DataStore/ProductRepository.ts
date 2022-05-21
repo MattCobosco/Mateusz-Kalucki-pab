@@ -186,10 +186,8 @@ export class ProductRepository
 
             return true;
         }
-        else    
-        {
+        else
             return false;
-        }
     }
 }
 
