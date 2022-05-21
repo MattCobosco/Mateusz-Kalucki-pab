@@ -7,6 +7,7 @@ import { EmployeeRepository } from './DataStore/EmployeeRepository';
 import { MenuItemRepository } from './DataStore/MenuItemRepository';
 import { OrderRepository } from './DataStore/OrderRepository';
 import { ProductRepository } from './DataStore/ProductRepository';
+import { ProductDemandListRepository } from './DataStore/ProductDemandListRepository';
 import { ReservationRepository } from './DataStore/ReservationRepository';
 import { RestaurantRepository } from './DataStore/RestaurantRepository';
 import { TableRepository } from './DataStore/TableRepository';
@@ -23,6 +24,7 @@ const employeeRepository = new EmployeeRepository();
 const menuItemRepository = new MenuItemRepository();
 const orderRepository = new OrderRepository();
 const productRepository = new ProductRepository();
+const productDemandListRepository = new ProductDemandListRepository();
 const reservationRepository = new ReservationRepository();
 const restaurantRepository = new RestaurantRepository();
 const tableRepository = new TableRepository();
@@ -33,6 +35,7 @@ employeeRepository.populateEmployees();
 menuItemRepository.populateMenuItems();
 orderRepository.populateOrders();
 productRepository.populateProducts();
+productDemandListRepository.populateProductDemandList();
 reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
 tableRepository.populateTables();
@@ -503,6 +506,84 @@ router.put('/product/:name', async (req: Request, res: Response) => {
         res.status(500).send(err);
     });
 });
+
+// REST API for Product Demand List
+// get the demand list
+router.get('/demand', async (_req: Request, res: Response) => {
+    await productDemandListRepository.getProductDemandList()
+    .then(function(demandList: any)
+    {
+        if(demandList)
+            res.status(200).send(demandList);
+        else
+            res.status(404).send("Demand List could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get product from demand list by name
+router.get('/demand/:name', async (req: Request, res: Response) => {
+    await productDemandListRepository.getProductFromDemandListByName(req.params.name)
+    .then(function(product: any)
+    {
+        if(product)
+            res.status(200).send(product);
+        else
+            res.status(404).send("Product " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// add product to demand list from request body
+router.post('/demand', async (req: Request, res: Response) => {
+    const product = req.body;
+    await productDemandListRepository.addProductToDemandList(product)
+    .then(function(productAdded: boolean | string)
+    {
+        if(productAdded)
+            res.status(201).send("Product " + product.name + " has been successfully added.");
+        else
+            res.status(400).send(productAdded);
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// remove product from demand list by name
+router.delete('/demand/:name', async (req: Request, res: Response) => {
+    await productDemandListRepository.removeProductFromDemandListByName(req.params.name)
+    .then(function(productDeleted: boolean | string)
+    {
+        if(productDeleted)
+            res.status(200).send("Product " + req.params.name + " has been successfully deleted.");
+        else
+            res.status(404).send(productDeleted);
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// update product from demand list by name
+router.put('/demand/:name', async (req: Request, res: Response) => {
+    await productDemandListRepository.updateProductInDemandListByName(req.params.name, req.body)
+    .then(function(productUpdated: boolean | string)
+    {
+        if(productUpdated)
+            res.status(200).send("Product " + req.params.name + " has been successfully updated.");
+        else
+            res.status(404).send(productUpdated);
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
 
 // REST API for Reservation
 // get all reservations
