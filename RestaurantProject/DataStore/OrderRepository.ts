@@ -180,6 +180,8 @@ export class OrderRepository
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
         const exists = await this.OrderModel.findById(orderId);
+        if(!exists)
+            return false;
 
         await this.OrderModel
         .findByIdAndDelete(orderId)
