@@ -40,12 +40,21 @@ exports.ReservationRepository = void 0;
 var mongoose_1 = require("mongoose");
 var ReservationRepository = /** @class */ (function () {
     function ReservationRepository() {
+        this.tableSchema = new mongoose_1.Schema({
+            number: { type: Number, required: true },
+            seats: { type: Number, required: true },
+            status: { type: Number, required: true }
+        });
+        this.customerSchema = new mongoose_1.Schema({
+            name: { type: String, required: true },
+            email: { type: String, required: true },
+            phone: { type: String, required: true }
+        });
         this.reservationSchema = new mongoose_1.Schema({
-            id: { type: mongoose_1.Schema.Types.ObjectId, required: false },
-            table: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Table' },
+            table: { type: this.tableSchema, ref: 'Table' },
             startDateTime: { type: Date, required: true },
             endDateTime: { type: Date, required: true },
-            customer: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Customer' }
+            customer: { type: this.customerSchema, ref: 'Customer' }
         });
         this.ReservationModel = mongoose_1.model('Reservation', this.reservationSchema);
     }
@@ -59,16 +68,34 @@ var ReservationRepository = /** @class */ (function () {
                         _a.sent();
                         reservations = [
                             {
-                                table: '628616ee7bf995e24d0d7681',
+                                table: {
+                                    number: 1,
+                                    seats: 4,
+                                    status: 0
+                                },
                                 startDateTime: new Date(2020, 1, 1, 10, 0, 0, 0),
                                 endDateTime: new Date(2020, 1, 1, 11, 0, 0, 0),
-                                customer: '6282601eb18137f01f157f6f'
+                                customer: {
+                                    name: "Customer1",
+                                    email: "customer1@gmail.com",
+                                    phone: "123456789",
+                                    address: "CustomerAddress1"
+                                }
                             },
                             {
-                                table: '628616ee7bf995e24d0d7682',
+                                table: {
+                                    number: 2,
+                                    seats: 4,
+                                    status: 1
+                                },
                                 startDateTime: new Date(2020, 1, 1, 11, 0, 0, 0),
                                 endDateTime: new Date(2020, 1, 1, 12, 0, 0, 0),
-                                customer: '62826610ec4736a45905ecae'
+                                customer: {
+                                    name: "Customer2",
+                                    email: "customer2@gmail.com",
+                                    phone: "987654321",
+                                    address: "CustomerAddress2"
+                                }
                             }
                         ];
                         return [4 /*yield*/, this.ReservationModel.countDocuments()];
@@ -91,11 +118,22 @@ var ReservationRepository = /** @class */ (function () {
     };
     ReservationRepository.prototype.addReservation = function (reservation) {
         return __awaiter(this, void 0, Promise, function () {
+            var alreadyExists, exists;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.ReservationModel.findOne({
+                                'table.number': reservation.table.number,
+                                startDateTime: reservation.startDateTime,
+                                endDateTime: reservation.endDateTime,
+                                'customer.name': reservation.customer.name
+                            })];
+                    case 2:
+                        alreadyExists = _a.sent();
+                        if (alreadyExists)
+                            return [2 /*return*/, "Such reservation already exists."];
                         return [4 /*yield*/, this.ReservationModel
                                 .create(reservation)
                                 .then(function () {
@@ -103,8 +141,20 @@ var ReservationRepository = /** @class */ (function () {
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
+                        return [4 /*yield*/, this.ReservationModel.findOne({
+                                'table.number': reservation.table.number,
+                                startDateTime: reservation.startDateTime,
+                                endDateTime: reservation.endDateTime,
+                                'customer.name': reservation.customer.name
+                            })];
+                    case 4:
+                        exists = _a.sent();
+                        if (exists)
+                            return [2 /*return*/, true];
+                        else
+                            return [2 /*return*/, "Reservation has not been added."];
                         return [2 /*return*/];
                 }
             });
@@ -112,34 +162,34 @@ var ReservationRepository = /** @class */ (function () {
     };
     ReservationRepository.prototype.deleteReservationById = function (reservationId) {
         return __awaiter(this, void 0, Promise, function () {
+            var exists, existsAfter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.ReservationModel.findById(reservationId)];
+                    case 2:
+                        exists = _a.sent();
+                        if (!exists)
+                            return [2 /*return*/, false];
                         return [4 /*yield*/, this.ReservationModel
-                                .deleteOne({ _id: reservationId })
+                                .findByIdAndDelete({ _id: reservationId })
                                 .then(function () {
                                 console.log("Reservation of ID " + reservationId + " has been deleted!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
+                        return [4 /*yield*/, this.ReservationModel.findById(reservationId)];
+                    case 4:
+                        existsAfter = _a.sent();
+                        if (!existsAfter)
+                            return [2 /*return*/, true];
+                        else
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
-                }
-            });
-        });
-    };
-    ReservationRepository.prototype.getReservations = function () {
-        return __awaiter(this, void 0, Promise, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
-                    case 1:
-                        _a.sent();
-                        return [4 /*yield*/, this.ReservationModel.find({})];
-                    case 2: return [2 /*return*/, _a.sent()];
                 }
             });
         });
@@ -159,6 +209,26 @@ var ReservationRepository = /** @class */ (function () {
                             return [2 /*return*/, reservation];
                         else
                             return [2 /*return*/, null];
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    ReservationRepository.prototype.getReservations = function () {
+        return __awaiter(this, void 0, Promise, function () {
+            var reservations;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.ReservationModel.find({})];
+                    case 2:
+                        reservations = _a.sent();
+                        if (reservations.length > 0)
+                            return [2 /*return*/, reservations];
+                        else
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -192,34 +262,48 @@ var ReservationRepository = /** @class */ (function () {
                             })];
                     case 3:
                         _a.sent();
-                        _a.label = 4;
-                    case 4: return [2 /*return*/];
+                        return [2 /*return*/, true];
+                    case 4: return [2 /*return*/, false];
                 }
             });
         });
     };
-    ReservationRepository.prototype.getReservationsByCustomerId = function (customerId) {
+    ReservationRepository.prototype.getReservationsByCustomerName = function (customerName) {
         return __awaiter(this, void 0, Promise, function () {
+            var reservations;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.ReservationModel.find({ customer: customerId })];
-                    case 2: return [2 /*return*/, _a.sent()];
+                        return [4 /*yield*/, this.ReservationModel.find({ 'customer.name': customerName })];
+                    case 2:
+                        reservations = _a.sent();
+                        if (reservations.length > 0)
+                            return [2 /*return*/, reservations];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
                 }
             });
         });
     };
-    ReservationRepository.prototype.getReservationsByTableId = function (tableId) {
+    ReservationRepository.prototype.getReservationsByTableNumber = function (tableNumber) {
         return __awaiter(this, void 0, Promise, function () {
+            var reservations;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.ReservationModel.find({ table: tableId })];
-                    case 2: return [2 /*return*/, _a.sent()];
+                        return [4 /*yield*/, this.ReservationModel.find({ 'table.number': tableNumber })];
+                    case 2:
+                        reservations = _a.sent();
+                        if (reservations.length > 0)
+                            return [2 /*return*/, reservations];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
                 }
             });
         });

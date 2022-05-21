@@ -40,22 +40,22 @@ exports.MenuPosition = exports.MenuCategory = exports.MenuItemRepository = void 
 var mongoose_1 = require("mongoose");
 var MenuItemRepository = /** @class */ (function () {
     function MenuItemRepository() {
-        this.ProductSchema = new mongoose_1.Schema({
+        this.productSchema = new mongoose_1.Schema({
             name: { type: String, required: true },
             price: { type: Number, required: true },
             quantity: { type: Number, required: true }
         });
-        this.MenuItemSchema = new mongoose_1.Schema({
+        this.menuItemSchema = new mongoose_1.Schema({
             name: { type: String, required: true },
             price: { type: Number, required: true },
             type: { type: Number, required: true },
             description: { type: String, required: true },
             products: [{
-                    type: this.ProductSchema,
+                    type: this.productSchema,
                     required: true
                 }]
         });
-        this.MenuItemModel = (0, mongoose_1.model)('MenuItem', this.MenuItemSchema);
+        this.MenuItemModel = (0, mongoose_1.model)('MenuItem', this.menuItemSchema);
     }
     MenuItemRepository.prototype.populateMenuItems = function () {
         return __awaiter(this, void 0, void 0, function () {

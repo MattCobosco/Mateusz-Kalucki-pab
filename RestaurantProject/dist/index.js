@@ -16,7 +16,7 @@ const EmployeeRepository_1 = require("./DataStore/EmployeeRepository");
 const MenuItemRepository_1 = require("./DataStore/MenuItemRepository");
 // import { OrderRepository } from './DataStore/OrderRepository';
 const ProductRepository_1 = require("./DataStore/ProductRepository");
-// import { ReservationRepository } from './DataStore/ReservationRepository';
+const ReservationRepository_1 = require("./DataStore/ReservationRepository");
 const RestaurantRepository_1 = require("./DataStore/RestaurantRepository");
 const TableRepository_1 = require("./DataStore/TableRepository");
 const app = express();
@@ -29,7 +29,7 @@ const employeeRepository = new EmployeeRepository_1.EmployeeRepository();
 const menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
 // const orderRepository = new OrderRepository();
 const productRepository = new ProductRepository_1.ProductRepository();
-// const reservationRepository = new ReservationRepository();
+const reservationRepository = new ReservationRepository_1.ReservationRepository();
 const restaurantRepository = new RestaurantRepository_1.RestaurantRepository();
 const tableRepository = new TableRepository_1.TableRepository();
 // DATABASE POPULATION:
@@ -38,7 +38,7 @@ employeeRepository.populateEmployees();
 menuItemRepository.populateMenuItems();
 // orderRepository.populateOrders();
 productRepository.populateProducts();
-// reservationRepository.populateReservations();
+reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
 tableRepository.populateTables();
 // REST API for Customer
@@ -399,84 +399,90 @@ router.put('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, fun
         res.status(500).send(err);
     });
 }));
-// // REST API for Reservation
-// // get all reservations
-// router.get('/reservations', async (req: Request, res: Response) => {
-//     await reservationRepository.getReservations()
-//     .then(function(reservations: any)
-//     {
-//         res.send(reservations);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get reservation by id
-// router.get('/reservation/:id', async (req: Request, res: Response) => {
-//     await reservationRepository.getReservationById(req.params.id)
-//     .then(function(reservation: any)
-//     {
-//         res.send(reservation);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // add reservation from request body
-// router.post('/reservation', async (req: Request, res: Response) => {
-//     await reservationRepository.addReservation(req.body)
-//     .then(function()
-//     {
-//         res.send('Reservation ' + req.body.id + ' has been added!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // delete reservation by id
-// router.delete('/reservation/:id', async (req: Request, res: Response) => {
-//     await reservationRepository.deleteReservationById(req.params.id)
-//     .then(function()
-//     {
-//         res.send('Reservation ' + req.params.id + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // update reservation from request body
-// router.put('/reservation/:id', async (req: Request, res: Response) => {
-//     await reservationRepository.updateReservationById(req.params.id, req.body)
-//     .then(function()
-//     {
-//         res.send('Reservation ' + req.params.id + ' has been updated!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get reservations by customer id
-// router.get('/reservations/customer/:id', async (req: Request, res: Response) => {
-//     await reservationRepository.getReservationsByCustomerId(req.params.id)
-//     .then(function(reservations: any)
-//     {
-//         res.send(reservations);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get reservations by table id
-// router.get('/reservations/table/:id', async (req: Request, res: Response) => {
-//     await reservationRepository.getReservationsByTableId(req.params.id)
-//     .then(function(reservations: any)
-//     {
-//         res.send(reservations);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// REST API for Reservation
+// get all reservations
+router.get('/reservations', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield reservationRepository.getReservations()
+        .then(function (reservations) {
+        if (reservations)
+            res.status(200).send(reservations);
+        else
+            res.status(404).send("Reservations could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+router.get('/reservation/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield reservationRepository.getReservationById(req.params.id)
+        .then(function (reservation) {
+        if (reservation)
+            res.status(200).send(reservation);
+        else
+            res.status(404).send("Reservation " + req.params.id + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// add reservation from request body
+router.post('/reservation', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield reservationRepository.addReservation(req.body)
+        .then(function (reservationAdded) {
+        if (reservationAdded === true)
+            res.status(201).send("Reservation has been successfully added.");
+        else
+            res.status(400).send(reservationAdded);
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// delete reservation by id
+router.delete('/reservation/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield reservationRepository.deleteReservationById(req.params.id)
+        .then(function (reservationDeleted) {
+        if (reservationDeleted)
+            res.status(200).send("Reservation " + req.params.id + " has been successfully deleted.");
+        else
+            res.status(404).send("Reservation " + req.params.id + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// update reservation from request body
+router.put('/reservation/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield reservationRepository.updateReservationById(req.params.id, req.body)
+        .then(function (reservationUpdated) {
+        if (reservationUpdated)
+            res.status(200).send("Reservation " + req.params.id + " has been successfully updated.");
+        else
+            res.status(404).send("Reservation " + req.params.id + " could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// get reservations by customer name
+router.get('/reservations/customer/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield reservationRepository.getReservationsByCustomerName(req.params.name)
+        .then(function (reservations) {
+        if (reservations)
+            res.status(200).send(reservations);
+        else
+            res.status(404).send("Reservations could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// get reservations by table number
+router.get('/reservations/table/:number', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield reservationRepository.getReservationsByTableNumber(+req.params.number)
+        .then(function (reservations) {
+        if (reservations)
+            res.status(200).send(reservations);
+        else
+            res.status(404).send("Reservations could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
 // REST API for Restaurant
 // get all restaurants
 router.get('/restaurants', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -588,5 +594,4 @@ router.put('/table/:number', (req, res) => __awaiter(void 0, void 0, void 0, fun
         res.status(500).send(err);
     });
 }));
-// TODO: get free tables in a given time period for a given number of people from body request
 app.listen(3000);

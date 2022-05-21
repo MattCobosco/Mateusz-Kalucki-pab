@@ -194,7 +194,7 @@ var TableRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.TableModel.find({})];
                     case 2:
                         tables = _a.sent();
-                        if (tables)
+                        if (tables.length > 0)
                             return [2 /*return*/, tables];
                         else
                             return [2 /*return*/, false];

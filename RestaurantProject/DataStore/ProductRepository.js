@@ -40,12 +40,12 @@ exports.ProductDemandList = exports.ProductRepository = void 0;
 var mongoose_1 = require("mongoose");
 var ProductRepository = /** @class */ (function () {
     function ProductRepository() {
-        this.ProductSchema = new mongoose_1.Schema({
+        this.productSchema = new mongoose_1.Schema({
             name: { type: String, required: true },
             price: { type: Number, required: true },
             quantity: { type: Number, required: true }
         });
-        this.ProductModel = (0, mongoose_1.model)('Product', this.ProductSchema);
+        this.ProductModel = (0, mongoose_1.model)('Product', this.productSchema);
     }
     ProductRepository.prototype.populateProducts = function () {
         return __awaiter(this, void 0, void 0, function () {

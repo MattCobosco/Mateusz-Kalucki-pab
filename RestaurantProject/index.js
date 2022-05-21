@@ -43,7 +43,7 @@ var EmployeeRepository_1 = require("./DataStore/EmployeeRepository");
 var MenuItemRepository_1 = require("./DataStore/MenuItemRepository");
 // import { OrderRepository } from './DataStore/OrderRepository';
 var ProductRepository_1 = require("./DataStore/ProductRepository");
-// import { ReservationRepository } from './DataStore/ReservationRepository';
+var ReservationRepository_1 = require("./DataStore/ReservationRepository");
 var RestaurantRepository_1 = require("./DataStore/RestaurantRepository");
 var TableRepository_1 = require("./DataStore/TableRepository");
 var app = express();
@@ -56,7 +56,7 @@ var employeeRepository = new EmployeeRepository_1.EmployeeRepository();
 var menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
 // const orderRepository = new OrderRepository();
 var productRepository = new ProductRepository_1.ProductRepository();
-// const reservationRepository = new ReservationRepository();
+var reservationRepository = new ReservationRepository_1.ReservationRepository();
 var restaurantRepository = new RestaurantRepository_1.RestaurantRepository();
 var tableRepository = new TableRepository_1.TableRepository();
 // DATABASE POPULATION:
@@ -65,7 +65,7 @@ employeeRepository.populateEmployees();
 menuItemRepository.populateMenuItems();
 // orderRepository.populateOrders();
 productRepository.populateProducts();
-// reservationRepository.populateReservations();
+reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
 tableRepository.populateTables();
 // REST API for Customer
@@ -588,84 +588,158 @@ router.put('/product/:name', function (req, res) { return __awaiter(void 0, void
         }
     });
 }); });
-// // REST API for Reservation
-// // get all reservations
-// router.get('/reservations', async (req: Request, res: Response) => {
-//     await reservationRepository.getReservations()
-//     .then(function(reservations: any)
-//     {
-//         res.send(reservations);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get reservation by id
-// router.get('/reservation/:id', async (req: Request, res: Response) => {
-//     await reservationRepository.getReservationById(req.params.id)
-//     .then(function(reservation: any)
-//     {
-//         res.send(reservation);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // add reservation from request body
-// router.post('/reservation', async (req: Request, res: Response) => {
-//     await reservationRepository.addReservation(req.body)
-//     .then(function()
-//     {
-//         res.send('Reservation ' + req.body.id + ' has been added!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // delete reservation by id
-// router.delete('/reservation/:id', async (req: Request, res: Response) => {
-//     await reservationRepository.deleteReservationById(req.params.id)
-//     .then(function()
-//     {
-//         res.send('Reservation ' + req.params.id + ' has been deleted!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // update reservation from request body
-// router.put('/reservation/:id', async (req: Request, res: Response) => {
-//     await reservationRepository.updateReservationById(req.params.id, req.body)
-//     .then(function()
-//     {
-//         res.send('Reservation ' + req.params.id + ' has been updated!');
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get reservations by customer id
-// router.get('/reservations/customer/:id', async (req: Request, res: Response) => {
-//     await reservationRepository.getReservationsByCustomerId(req.params.id)
-//     .then(function(reservations: any)
-//     {
-//         res.send(reservations);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
-// // get reservations by table id
-// router.get('/reservations/table/:id', async (req: Request, res: Response) => {
-//     await reservationRepository.getReservationsByTableId(req.params.id)
-//     .then(function(reservations: any)
-//     {
-//         res.send(reservations);
-//     }).catch(function(err: any)
-//     {
-//         res.send(err);
-//     });
-// });
+// REST API for Reservation
+// get all reservations
+router.get('/reservations', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, reservationRepository.getReservations()
+                    .then(function (reservations) {
+                    if (reservations)
+                        res.status(200).send(reservations);
+                    else
+                        res.status(404).send("Reservations could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+router.get('/reservation/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, reservationRepository.getReservationById(req.params.id)
+                    .then(function (reservation) {
+                    if (reservation)
+                        res.status(200).send(reservation);
+                    else
+                        res.status(404).send("Reservation " + req.params.id + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// add reservation from request body
+router.post('/reservation', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, reservationRepository.addReservation(req.body)
+                    .then(function (reservationAdded) {
+                    if (reservationAdded === true)
+                        res.status(201).send("Reservation has been successfully added.");
+                    else
+                        res.status(400).send(reservationAdded);
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// delete reservation by id
+router["delete"]('/reservation/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, reservationRepository.deleteReservationById(req.params.id)
+                    .then(function (reservationDeleted) {
+                    if (reservationDeleted)
+                        res.status(200).send("Reservation " + req.params.id + " has been successfully deleted.");
+                    else
+                        res.status(404).send("Reservation " + req.params.id + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// update reservation from request body
+router.put('/reservation/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, reservationRepository.updateReservationById(req.params.id, req.body)
+                    .then(function (reservationUpdated) {
+                    if (reservationUpdated)
+                        res.status(200).send("Reservation " + req.params.id + " has been successfully updated.");
+                    else
+                        res.status(404).send("Reservation " + req.params.id + " could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get reservations by customer name
+router.get('/reservations/customer/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, reservationRepository.getReservationsByCustomerName(req.params.name)
+                    .then(function (reservations) {
+                    if (reservations)
+                        res.status(200).send(reservations);
+                    else
+                        res.status(404).send("Reservations could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get reservations by table number
+router.get('/reservations/table/:number', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, reservationRepository.getReservationsByTableNumber(+req.params.number)
+                    .then(function (reservations) {
+                    if (reservations)
+                        res.status(200).send(reservations);
+                    else
+                        res.status(404).send("Reservations could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get free tables
+router.get('/reservations/free', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, reservationRepository.getFreeTables(req.body.startDateTime, req.body.endDateTime, req.body.partySize)
+                    .then(function (tables) {
+                    if (tables)
+                        res.status(200).send(tables);
+                    else
+                        res.status(404).send("Tables could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
 // REST API for Restaurant
 // get all restaurants
 router.get('/restaurants', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -851,5 +925,4 @@ router.put('/table/:number', function (req, res) { return __awaiter(void 0, void
         }
     });
 }); });
-// TODO: get free tables in a given time period for a given number of people from body request
 app.listen(3000);
