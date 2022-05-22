@@ -238,7 +238,7 @@ var ProductRepository = /** @class */ (function () {
             });
         });
     };
-    ProductRepository.prototype.updateProduct = function (productName, product) {
+    ProductRepository.prototype.updateProductByName = function (productName, product) {
         return __awaiter(this, void 0, void 0, function () {
             var productToUpdate;
             return __generator(this, function (_a) {

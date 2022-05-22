@@ -40,10 +40,11 @@ employeeRepository.populateEmployees();
 menuItemRepository.populateMenuItems();
 orderRepository.populateOrders();
 productRepository.populateProducts();
-productDemandListRepository.populateProductDemandList();
 reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
 tableRepository.populateTables();
+// DEMAND LIST POPULATION:
+productDemandListRepository.populateProductDemandList();
 // REST API for Customer
 // get all customers
 router.get('/customers', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -406,7 +407,7 @@ router.delete('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, 
 }));
 // update product from request body
 router.put('/product/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield productRepository.updateProduct(req.params.name, req.body)
+    yield productRepository.updateProductByName(req.params.name, req.body)
         .then(function (productUpdated) {
         if (productUpdated)
             res.status(200).send("Product " + req.params.name + " has been successfully updated.");
@@ -454,11 +455,11 @@ router.post('/demand', (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(500).send(err);
     });
 }));
-// remove product from demand list by name
+// delete product from demand list by name
 router.delete('/demand/:name', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield productDemandListRepository.removeProductFromDemandListByName(req.params.name)
+    yield productDemandListRepository.deleteProductFromDemandListByName(req.params.name)
         .then(function (productDeleted) {
-        if (productDeleted)
+        if (productDeleted === true)
             res.status(200).send("Product " + req.params.name + " has been successfully deleted.");
         else
             res.status(404).send(productDeleted);
@@ -474,6 +475,15 @@ router.put('/demand/:name', (req, res) => __awaiter(void 0, void 0, void 0, func
             res.status(200).send("Product " + req.params.name + " has been successfully updated.");
         else
             res.status(404).send(productUpdated);
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
+// get demand list value
+router.get('/cost/demand', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield productDemandListRepository.getDemandListValue()
+        .then(function (demandListValue) {
+        res.status(200).send(demandListValue.toString());
     }).catch(function (err) {
         res.status(500).send(err);
     });

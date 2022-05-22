@@ -67,10 +67,11 @@ employeeRepository.populateEmployees();
 menuItemRepository.populateMenuItems();
 orderRepository.populateOrders();
 productRepository.populateProducts();
-productDemandListRepository.populateProductDemandList();
 reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
 tableRepository.populateTables();
+// DEMAND LIST POPULATION:
+productDemandListRepository.populateProductDemandList();
 // REST API for Customer
 // get all customers
 router.get('/customers', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -653,7 +654,7 @@ router["delete"]('/product/:name', function (req, res) { return __awaiter(void 0
 router.put('/product/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, productRepository.updateProduct(req.params.name, req.body)
+            case 0: return [4 /*yield*/, productRepository.updateProductByName(req.params.name, req.body)
                     .then(function (productUpdated) {
                     if (productUpdated)
                         res.status(200).send("Product " + req.params.name + " has been successfully updated.");
@@ -729,13 +730,13 @@ router.post('/demand', function (req, res) { return __awaiter(void 0, void 0, vo
         }
     });
 }); });
-// remove product from demand list by name
+// delete product from demand list by name
 router["delete"]('/demand/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, productDemandListRepository.removeProductFromDemandListByName(req.params.name)
+            case 0: return [4 /*yield*/, productDemandListRepository.deleteProductFromDemandListByName(req.params.name)
                     .then(function (productDeleted) {
-                    if (productDeleted)
+                    if (productDeleted === true)
                         res.status(200).send("Product " + req.params.name + " has been successfully deleted.");
                     else
                         res.status(404).send(productDeleted);
@@ -758,6 +759,22 @@ router.put('/demand/:name', function (req, res) { return __awaiter(void 0, void 
                         res.status(200).send("Product " + req.params.name + " has been successfully updated.");
                     else
                         res.status(404).send(productUpdated);
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+// get demand list value
+router.get('/cost/demand', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, productDemandListRepository.getDemandListValue()
+                    .then(function (demandListValue) {
+                    res.status(200).send(demandListValue.toString());
                 })["catch"](function (err) {
                     res.status(500).send(err);
                 })];

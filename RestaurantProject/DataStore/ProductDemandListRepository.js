@@ -140,7 +140,7 @@ var ProductDemandListRepository = /** @class */ (function () {
             });
         });
     };
-    ProductDemandListRepository.prototype.removeProductFromDemandListByName = function (productName) {
+    ProductDemandListRepository.prototype.deleteProductFromDemandListByName = function (productName) {
         return __awaiter(this, void 0, void 0, function () {
             var demandList, exists, existsAfter;
             return __generator(this, function (_a) {
@@ -161,7 +161,7 @@ var ProductDemandListRepository = /** @class */ (function () {
                         if (!existsAfter)
                             return [2 /*return*/, true];
                         else
-                            return [2 /*return*/, "Product " + productName + " has not been removed from the list."];
+                            return [2 /*return*/, "Product " + productName + " has not been deleted from the list."];
                         return [2 /*return*/];
                 }
             });
@@ -195,41 +195,20 @@ var ProductDemandListRepository = /** @class */ (function () {
             });
         });
     };
-    ProductDemandListRepository.prototype.productIsBought = function (productName) {
+    ProductDemandListRepository.prototype.getDemandListValue = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var demandList, ProductModel, product, productToUpdate;
+            var demandList, demandListValue, _i, demandList_1, listItem;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 0: return [4 /*yield*/, JSON.parse(fs.readFileSync('../DemandList.json', 'utf8'))];
                     case 1:
-                        _a.sent();
-                        return [4 /*yield*/, JSON.parse(fs.readFileSync('../DemandList.json', 'utf8'))];
-                    case 2:
                         demandList = _a.sent();
-                        ProductModel = (0, mongoose_1.model)('Product', this.productSchema);
-                        return [4 /*yield*/, demandList.find(function (p) { return p.name === productName; })];
-                    case 3:
-                        product = _a.sent();
-                        if (!product) return [3 /*break*/, 9];
-                        return [4 /*yield*/, ProductModel.findOne({ name: productName })];
-                    case 4:
-                        productToUpdate = _a.sent();
-                        if (!productToUpdate) return [3 /*break*/, 6];
-                        productToUpdate.quantity += +product.quantity;
-                        return [4 /*yield*/, productToUpdate.save()];
-                    case 5:
-                        _a.sent();
-                        return [3 /*break*/, 8];
-                    case 6: return [4 /*yield*/, ProductModel.create(product)];
-                    case 7:
-                        _a.sent();
-                        _a.label = 8;
-                    case 8:
-                        // delete product from demandlist
-                        demandList.splice(demandList.indexOf(product), 1);
-                        fs.writeFileSync('../DemandList.json', JSON.stringify(demandList));
-                        return [2 /*return*/, true];
-                    case 9: return [2 /*return*/, false];
+                        demandListValue = 0;
+                        for (_i = 0, demandList_1 = demandList; _i < demandList_1.length; _i++) {
+                            listItem = demandList_1[_i];
+                            demandListValue += +listItem.price * +listItem.quantity;
+                        }
+                        return [2 /*return*/, +demandListValue];
                 }
             });
         });
