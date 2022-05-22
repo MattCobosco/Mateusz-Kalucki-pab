@@ -35,10 +35,13 @@ employeeRepository.populateEmployees();
 menuItemRepository.populateMenuItems();
 orderRepository.populateOrders();
 productRepository.populateProducts();
-productDemandListRepository.populateProductDemandList();
 reservationRepository.populateReservations();
 restaurantRepository.populateRestaurants();
 tableRepository.populateTables();
+
+// DEMAND LIST POPULATION:
+productDemandListRepository.populateProductDemandList();
+
 
 // REST API for Customer
 // get all customers
@@ -494,7 +497,7 @@ router.delete('/product/:name', async (req: Request, res: Response) => {
 
 // update product from request body
 router.put('/product/:name', async (req: Request, res: Response) => {
-    await productRepository.updateProduct(req.params.name, req.body)
+    await productRepository.updateProductByName(req.params.name, req.body)
     .then(function(productUpdated: boolean)
     {
         if(productUpdated)
@@ -554,12 +557,12 @@ router.post('/demand', async (req: Request, res: Response) => {
     });
 });
 
-// remove product from demand list by name
+// delete product from demand list by name
 router.delete('/demand/:name', async (req: Request, res: Response) => {
-    await productDemandListRepository.removeProductFromDemandListByName(req.params.name)
+    await productDemandListRepository.deleteProductFromDemandListByName(req.params.name)
     .then(function(productDeleted: boolean | string)
     {
-        if(productDeleted)
+        if(productDeleted === true)
             res.status(200).send("Product " + req.params.name + " has been successfully deleted.");
         else
             res.status(404).send(productDeleted);
@@ -578,6 +581,18 @@ router.put('/demand/:name', async (req: Request, res: Response) => {
             res.status(200).send("Product " + req.params.name + " has been successfully updated.");
         else
             res.status(404).send(productUpdated);
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get demand list value
+router.get('/cost/demand', async (_req: Request, res: Response) => {
+    await productDemandListRepository.getDemandListValue()
+    .then(function(demandListValue: number)
+    {
+            res.status(200).send(demandListValue.toString());
     }).catch(function(err: any)
     {
         res.status(500).send(err);
