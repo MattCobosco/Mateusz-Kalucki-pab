@@ -79,7 +79,7 @@ export class ProductDemandListRepository
             return "Product " + product.name + " has not been added to the list.";
     }
 
-    async removeProductFromDemandListByName(productName: string) : Promise<boolean | string>
+    async deleteProductFromDemandListByName(productName: string) : Promise<boolean | string>
     {
         const demandList = await JSON.parse(fs.readFileSync('../DemandList.json', 'utf8'));
 
@@ -94,7 +94,7 @@ export class ProductDemandListRepository
         if(!existsAfter)
             return true;
         else
-            return "Product " + productName + " has not been removed from the list.";
+            return "Product " + productName + " has not been deleted from the list.";
     }
 
     async updateProductInDemandListByName(productName: string, product: Product) : Promise<boolean>
@@ -118,34 +118,14 @@ export class ProductDemandListRepository
             return false;
     }
 
-    async productIsBought(productName: string) : Promise<boolean>
+    async getDemandListValue() : Promise<number>
     {
-        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
-        const demandList = await JSON.parse(fs.readFileSync('../DemandList.json', 'utf8'));
-
-        const ProductModel = model('Product', this.productSchema);
-
-        const product = await demandList.find((p: { name: string; }) => p.name === productName);
-        if(product)
+        const demandList : Product[] = await JSON.parse(fs.readFileSync('../DemandList.json', 'utf8'));
+        let demandListValue = 0;
+        for(let listItem of demandList)
         {
-
-            //update product quantity
-            const productToUpdate = await ProductModel.findOne({name: productName});
-            if(productToUpdate)
-            {
-                productToUpdate.quantity += +product.quantity;
-                await productToUpdate.save();
-            }
-            else
-            {
-                await ProductModel.create(product);
-            }
-            // delete product from demandlist
-            demandList.splice(demandList.indexOf(product), 1);
-            fs.writeFileSync('../DemandList.json', JSON.stringify(demandList));
-            return true;
+            demandListValue += +listItem.price * +listItem.quantity;
         }
-        else
-            return false;
+        return +demandListValue;
     }
 }
