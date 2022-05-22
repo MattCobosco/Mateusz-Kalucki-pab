@@ -161,7 +161,7 @@ export class ProductRepository
             return false;
     }
 
-    async updateProduct(productName:string, product: Product) : Promise<boolean>
+    async updateProductByName(productName:string, product: Product) : Promise<boolean>
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
