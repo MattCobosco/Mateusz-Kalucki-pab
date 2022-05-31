@@ -280,7 +280,7 @@ export class OrderRepository
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        let orders = await this.OrderModel.find({dateTime: {$gte: startDate, $lte: endDate}});
+        const orders = await this.OrderModel.find({dateTime: {$gte: startDate, $lte: endDate}});
         if (orders.length > 0)
             return orders;
         else
@@ -292,7 +292,7 @@ export class OrderRepository
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        let orders = await this.OrderModel.find({dateTime: {$gte: startDate, $lte: endDate}});
+        const orders = await this.OrderModel.find({dateTime: {$gte: startDate, $lte: endDate}});
         if (orders.length > 0)
         {
             let income = 0;
@@ -311,7 +311,7 @@ export class OrderRepository
     {
         await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
 
-        let orders = await this.OrderModel.find({dateTime: {$gte: startDate, $lte: endDate}});
+        const orders = await this.OrderModel.find({dateTime: {$gte: startDate, $lte: endDate}});
         if (orders.length > 0)
         {
             let income = 0;
@@ -334,5 +334,17 @@ export class OrderRepository
         }
         else
             return 0;
+    }
+
+    // get orders by table number
+    async getOrdersByTableNumber(tableNumber: number) : Promise<Order[] | boolean>
+    {
+        await connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority');
+
+        const orders = await this.OrderModel.find({'table.number': tableNumber});
+        if (orders.length > 0)  
+            return orders;
+        else
+            return false;
     }
 }

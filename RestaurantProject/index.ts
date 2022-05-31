@@ -432,6 +432,20 @@ router.get('/profit/time/:start/:end', async (req: Request, res: Response) => {
     });
 });
 
+// get orders by table number
+router.get('/orders/table/:tableNumber', async (req: Request, res: Response) => {
+    await orderRepository.getOrdersByTableNumber(+req.params.tableNumber)
+    .then(function(orders: any)
+    {
+        if(orders)
+            res.status(200).send(orders);
+        else
+            res.status(404).send("Orders could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
 
 // REST API for Product in Storage
 // get all products
