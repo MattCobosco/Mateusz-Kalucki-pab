@@ -570,6 +570,25 @@ router.get('/profit/time/:start/:end', function (req, res) { return __awaiter(vo
         }
     });
 }); });
+// get orders by table number
+router.get('/orders/table/:tableNumber', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, orderRepository.getOrdersByTableNumber(+req.params.tableNumber)
+                    .then(function (orders) {
+                    if (orders)
+                        res.status(200).send(orders);
+                    else
+                        res.status(404).send("Orders could not be found.");
+                })["catch"](function (err) {
+                    res.status(500).send(err);
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
 // REST API for Product in Storage
 // get all products
 router.get('/products', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {

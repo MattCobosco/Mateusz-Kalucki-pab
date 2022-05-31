@@ -355,6 +355,18 @@ router.get('/profit/time/:start/:end', (req, res) => __awaiter(void 0, void 0, v
         res.status(500).send(err);
     });
 }));
+// get orders by table number
+router.get('/orders/table/:tableNumber', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield orderRepository.getOrdersByTableNumber(+req.params.tableNumber)
+        .then(function (orders) {
+        if (orders)
+            res.status(200).send(orders);
+        else
+            res.status(404).send("Orders could not be found.");
+    }).catch(function (err) {
+        res.status(500).send(err);
+    });
+}));
 // REST API for Product in Storage
 // get all products
 router.get('/products', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -434,6 +434,27 @@ var OrderRepository = /** @class */ (function () {
             });
         });
     };
+    // get orders by table number
+    OrderRepository.prototype.getOrdersByTableNumber = function (tableNumber) {
+        return __awaiter(this, void 0, Promise, function () {
+            var orders;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, mongoose_1.connect('mongodb+srv://username:username123@cluster.itsrg.mongodb.net/RestaurantDb?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.OrderModel.find({ 'table.number': tableNumber })];
+                    case 2:
+                        orders = _a.sent();
+                        if (orders.length > 0)
+                            return [2 /*return*/, orders];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     return OrderRepository;
 }());
 exports.OrderRepository = OrderRepository;
