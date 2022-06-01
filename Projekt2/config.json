@@ -1,4 +1,0 @@
-{
-    "readFromFile" : true,
-    "mongoConnectionString" : "mongodb+srv://username:username123@cluster0.lwps0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
-}
